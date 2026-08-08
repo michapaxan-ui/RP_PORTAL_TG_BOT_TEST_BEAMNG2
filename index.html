@@ -3,43 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BeamNG RP — Портал КПК</title>
+    <title>BeamNG RP — Госуслуги / КПК</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #121820;
-            --card-bg: #1c2531;
-            --accent-color: #2f80ed;
-            --text-color: #ffffff;
-            --text-muted: #8c9ba5;
-            --border-color: #2c3a4e;
-            --danger-color: #eb5757;
-            --success-color: #27ae60;
+            --bg-main: #000000;
+            --card-bg: #121212;
+            --accent-green: #21a038;
+            --accent-green-glow: rgba(33, 160, 56, 0.4);
+            --danger-red: #ff3b30;
+            --text-primary: #ffffff;
+            --text-secondary: #8e8e93;
+            --border-color: #262626;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
             margin: 0;
-            padding: 12px;
+            padding: 16px;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* Шапка и навигация вкладок */
         .app-container {
             width: 100%;
             max-width: 420px;
         }
 
+        /* Шапка Сбер UI */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: -0.5px;
+        }
+
+        .sber-circle {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #21a038, #00d26a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 12px var(--accent-green-glow);
+            font-size: 14px;
+        }
+
+        /* Навигационные табы */
         .nav-tabs {
             display: flex;
-            background: var(--card-bg);
-            border-radius: 10px;
+            background: #1a1a1a;
+            border-radius: 14px;
             padding: 4px;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
             border: 1px solid var(--border-color);
         }
 
@@ -47,324 +77,402 @@
             flex: 1;
             background: transparent;
             border: none;
-            color: var(--text-muted);
-            padding: 10px 4px;
-            border-radius: 8px;
+            color: var(--text-secondary);
+            padding: 12px 6px;
+            border-radius: 10px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.25s ease;
         }
 
         .tab-btn.active {
-            background: var(--accent-color);
+            background: linear-gradient(135deg, #21a038, #157326);
             color: #ffffff;
+            box-shadow: 0 4px 12px var(--accent-green-glow);
         }
 
-        /* Карточка профиля / Паспорта */
-        .tab-content {
-            display: none;
-        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        .tab-content.active {
-            display: block;
-        }
-
+        /* Карточки в стиле Sber Dark */
         .card {
             background: var(--card-bg);
-            border-radius: 14px;
-            padding: 16px;
+            border-radius: 20px;
+            padding: 20px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            margin-bottom: 12px;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .passport-header {
+        /* 5RP Реалистичный Паспорт */
+        .passport-card {
+            background: linear-gradient(145deg, #18191c, #0d0e10);
+            border: 2px solid #333842;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        .passport-watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 60px;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.02);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .passport-stamp {
+            position: absolute;
+            bottom: 25px;
+            right: 20px;
+            width: 85px;
+            height: 85px;
+            border: 3px double #d32f2f;
+            border-radius: 50%;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px dashed var(--border-color);
-            padding-bottom: 10px;
-            margin-bottom: 12px;
-        }
-
-        .passport-title {
-            font-size: 16px;
+            justify-content: center;
+            color: #d32f2f;
+            font-size: 8px;
             font-weight: bold;
-            color: var(--accent-color);
+            transform: rotate(-12deg);
+            opacity: 0.85;
+            text-transform: uppercase;
+            text-align: center;
+            pointer-events: none;
+            box-shadow: inset 0 0 4px rgba(211, 47, 47, 0.3);
+        }
+
+        .passport-row {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 6px;
-        }
-
-        .passport-serial {
-            font-family: monospace;
-            font-size: 12px;
-            background: #10141b;
-            padding: 4px 8px;
-            border-radius: 6px;
-            color: #f2c94c;
-            border: 1px solid #333;
-        }
-
-        .profile-body {
-            display: flex;
-            gap: 14px;
             margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 8px;
         }
 
-        .avatar-box {
-            width: 80px;
-            height: 95px;
-            background: #10141b;
-            border-radius: 8px;
+        .field-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+        .field-value { font-size: 15px; font-weight: 600; color: #ffffff; }
+
+        /* Элементы управления (Inputs & Buttons) */
+        input, select {
+            width: 100%;
+            background: #1a1a1a;
             border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 6px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, #21a038, #157326);
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px var(--accent-green-glow);
+        }
+
+        .btn-primary:active { transform: scale(0.98); }
+
+        /* Модальное окно «Успешно» с анимированной зелёной галочкой */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .success-box {
+            background: #181818;
+            padding: 30px;
+            border-radius: 24px;
+            text-align: center;
+            border: 1px solid #333;
+            max-width: 280px;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        .checkmark-circle {
+            width: 70px;
+            height: 70px;
+            background: var(--accent-green);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
-            flex-shrink: 0;
+            margin: 0 auto 16px auto;
+            box-shadow: 0 0 25px var(--accent-green-glow);
         }
 
-        .info-grid {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .info-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .label {
-            font-size: 10px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .value {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 5px;
-            font-size: 11px;
-            font-weight: bold;
-            width: fit-content;
-            margin-top: 2px;
-        }
-
-        .badge-clear { background: rgba(39, 174, 96, 0.2); color: var(--success-color); border: 1px solid var(--success-color); }
-        .badge-wanted { background: rgba(235, 87, 87, 0.2); color: var(--danger-color); border: 1px solid var(--danger-color); }
-
-        /* Таблица лицензий и транспорта */
-        .licenses-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .lic-box {
-            background: #10141b;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Список в базе данных */
-        .db-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .db-item {
-            background: #10141b;
-            padding: 10px;
-            border-radius: 8px;
-            border-left: 4px solid var(--accent-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .db-item.wanted {
-            border-left-color: var(--danger-color);
-        }
-
-        .close-btn {
-            width: 100%;
-            background: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+        .checkmark-icon { font-size: 38px; color: #fff; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <!-- Переключение вкладок -->
+    <!-- Шапка Сбер UI -->
+    <div class="app-header">
+        <div class="brand-logo">
+            <div class="sber-circle">✓</div>
+            <span>ГОСУСЛУГИ RP</span>
+        </div>
+        <div style="font-size: 12px; color: var(--text-secondary);" id="user-role-badge">Гражданин</div>
+    </div>
+
+    <!-- Табы -->
     <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('profile')">🪪 Паспорт</button>
-        <button class="tab-btn" onclick="switchTab('database')">🚔 КПК МВД</button>
-        <button class="tab-btn" onclick="switchTab('garage')">🚗 Гараж</button>
+        <button class="tab-btn active" onclick="switchTab('passport')">🪪 Паспорт</button>
+        <button class="tab-btn" onclick="switchTab('vehicle')">🚗 Транспорт</button>
+        <button class="tab-btn" id="admin-tab-btn" style="display:none; color: #ff9500;" onclick="switchTab('admin')">⚙️ Управление</button>
     </div>
 
-    <!-- Вкладка 1: Уникальный Паспорт -->
-    <div id="tab-profile" class="tab-content active">
-        <div class="card">
-            <div class="passport-header">
-                <div class="passport-title">🪪 ПАСПОРТ ГРАЖДАНИНА</div>
-                <div class="passport-serial" id="pass-code">4520-890123</div>
+    <!-- Вкладка 1: Паспорт 5RP Style -->
+    <div id="tab-passport" class="tab-content active">
+        <div class="card passport-card">
+            <div class="passport-watermark">STATE OF BEAMNG</div>
+            <div class="passport-stamp">
+                ПРАВИТЕЛЬСТВО<br>ПЕЧАТЬ<br>УДОСТОВЕРЕНО
             </div>
 
-            <div class="profile-body">
-                <div class="avatar-box" id="avatar-icon">👤</div>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="label">ФИО / RP ИМЯ</div>
-                        <div class="value" id="rp-name">Загрузка...</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="label">Организация / Должность</div>
-                        <div class="value" id="rp-faction" style="color: #64b5ef;">Гражданский</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="label">Статус в базе</div>
-                        <span id="rp-status" class="badge badge-clear">Не разыскивается</span>
-                    </div>
+            <div style="font-size: 12px; color: #f2c94c; font-family: monospace; margin-bottom: 14px;" id="p-number">СЕРИЯ: 4500-000000</div>
+
+            <div class="passport-row">
+                <div>
+                    <div class="field-label">Имя и Фамилия</div>
+                    <div class="field-value" id="p-name">Загрузка...</div>
                 </div>
             </div>
 
-            <div class="info-grid">
-                <div class="info-item">
-                    <div class="label">Группа крови / Дата выдачи</div>
-                    <div class="value" id="rp-details">A(II) Rh+ | 12.04.2024</div>
+            <div class="passport-row">
+                <div>
+                    <div class="field-label">Фракция / Должность</div>
+                    <div class="field-value" id="p-faction">Гражданский</div>
                 </div>
             </div>
 
-            <div style="margin-top: 12px;">
-                <div class="label" style="margin-bottom: 6px;">Лицензии и Разрешения:</div>
-                <div class="licenses-grid">
-                    <div class="lic-box"><span>🚗 Кат. B</span> <b style="color: #27ae60;">АКТИВНА</b></div>
-                    <div class="lic-box"><span>🚛 Кат. C</span> <b style="color: #27ae60;">АКТИВНА</b></div>
-                    <div class="lic-box"><span>🔫 Оружие</span> <b style="color: #eb5757;">НЕТ</b></div>
-                    <div class="lic-box"><span>🚁 Авиация</span> <b style="color: #eb5757;">НЕТ</b></div>
+            <div class="passport-row">
+                <div>
+                    <div class="field-label">Статус Розыска</div>
+                    <div class="field-value" id="p-wanted" style="color: var(--accent-green);">Не разыскивается</div>
+                </div>
+            </div>
+
+            <div class="passport-row">
+                <div>
+                    <div class="field-label">Лицензии</div>
+                    <div class="field-value" id="p-licenses">Авто (B)</div>
+                </div>
+            </div>
+
+            <div class="passport-row" style="border:none;">
+                <div>
+                    <div class="field-label">Неуплаченные Штрафы</div>
+                    <div class="field-value" id="p-fines" style="color: #fff;">0 $</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Вкладка 2: База данных RP -->
-    <div id="tab-database" class="tab-content">
+    <!-- Вкладка 2: Транспорт -->
+    <div id="tab-vehicle" class="tab-content">
         <div class="card">
-            <div class="passport-header">
-                <div class="passport-title">🚔 БОРТОВОЙ КОМПЬЮТЕР МВД</div>
+            <div style="font-weight: 700; margin-bottom: 12px;">Зарегистрированный Автомобиль</div>
+            <div class="passport-row">
+                <div>
+                    <div class="field-label">Модель ТС</div>
+                    <div class="field-value" id="v-model">Нет авто</div>
+                </div>
             </div>
-            <div class="db-list">
-                <div class="db-item wanted">
-                    <div>
-                        <div style="font-weight: bold;">Алексей Громов</div>
-                        <div style="font-size: 11px; color: #8c9ba5;">Статья: 2.1 УК (Уход от погони)</div>
-                    </div>
-                    <span class="badge badge-wanted">2 УР. РОЗЫСКА</span>
-                </div>
-                <div class="db-item">
-                    <div>
-                        <div style="font-weight: bold;">Михаил Паханич</div>
-                        <div style="font-size: 11px; color: #8c9ba5;">Шериф Департамента</div>
-                    </div>
-                    <span class="badge badge-clear">СОТРУДНИК</span>
-                </div>
-                <div class="db-item">
-                    <div>
-                        <div style="font-weight: bold;" id="db-user-name">Текущий Пользователь</div>
-                        <div style="font-size: 11px; color: #8c9ba5;">Гражданин BeamNG</div>
-                    </div>
-                    <span class="badge badge-clear">ЧИСТ</span>
+            <div class="passport-row" style="border:none;">
+                <div>
+                    <div class="field-label">Государственный номер</div>
+                    <div class="field-value" id="v-plate" style="color: #f2c94c;">---</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Вкладка 3: Гараж / Транспорт -->
-    <div id="tab-garage" class="tab-content">
+    <!-- Вкладка 3: Админ-Панель (Только для Владельца) -->
+    <div id="tab-admin" class="tab-content">
         <div class="card">
-            <div class="passport-header">
-                <div class="passport-title">🚗 ЗАРЕГИСТРИРОВАННЫЙ ТРАНСПОРТ</div>
-            </div>
-            <div class="db-list">
-                <div class="db-item">
-                    <div>
-                        <div style="font-weight: bold;">Gavril Grand Marshal</div>
-                        <div style="font-size: 11px; color: #8c9ba5;">Гос. номер: <span style="color: #f2c94c;">A777AA | 77</span></div>
-                    </div>
-                    <span class="badge badge-clear">СТРАХОВКА</span>
-                </div>
-                <div class="db-item">
-                    <div>
-                        <div style="font-weight: bold;">Bruckell LeGran</div>
-                        <div style="font-size: 11px; color: #8c9ba5;">Гос. номер: <span style="color: #f2c94c;">B451OP | 77</span></div>
-                    </div>
-                    <span class="badge badge-clear">СТРАХОВКА</span>
-                </div>
-            </div>
+            <div style="font-weight: 700; color: #ff9500; margin-bottom: 12px;">⚙️ Панель Управления Гражданами</div>
+            
+            <label class="field-label">Выберите гражданина:</label>
+            <select id="admin-user-select" onchange="loadUserToAdminForm()"></select>
+
+            <label class="field-label">Фракция / Должность:</label>
+            <input type="text" id="adm-faction" placeholder="Например: Шериф LSPD">
+
+            <label class="field-label">Статус Розыска:</label>
+            <select id="adm-wanted">
+                <option value="Не разыскивается">Не разыскивается</option>
+                <option value="В розыске (1 ст.)">В розыске (1 ст.)</option>
+                <option value="ОПАСЕН (ОСОБЫЙ РОЗЫСК)">ОПАСЕН (ОСОБЫЙ РОЗЫСК)</option>
+            </select>
+
+            <label class="field-label">Лицензии:</label>
+            <input type="text" id="adm-licenses" placeholder="Авто (B), Оружие, Авиация">
+
+            <label class="field-label">Штрафы ($):</label>
+            <input type="number" id="adm-fines" placeholder="0">
+
+            <label class="field-label">Модель Автомобиля BeamNG:</label>
+            <input type="text" id="adm-vmodel" placeholder="Gavril Grand Marshal">
+
+            <label class="field-label">Гос. Номер Авто:</label>
+            <input type="text" id="adm-vplate" placeholder="A777AA 77">
+
+            <button class="btn-primary" onclick="saveCitizenData()">Сохранить изменения</button>
         </div>
     </div>
 
-    <button class="close-btn" onclick="Telegram.WebApp.close()">Закрыть КПК</button>
+    <button class="btn-primary" style="background: #1a1a1a; margin-top: 10px; box-shadow:none;" onclick="Telegram.WebApp.close()">Закрыть</button>
+</div>
+
+<!-- Модальное окно Успеха с зелёной галочкой -->
+<div class="modal-overlay" id="success-modal">
+    <div class="success-box">
+        <div class="checkmark-circle">
+            <span class="checkmark-icon">✓</span>
+        </div>
+        <div style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">Успешно!</div>
+        <div style="font-size: 13px; color: var(--text-secondary);">Данные обновлены в базе.</div>
+    </div>
 </div>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Генерация уникального номера паспорта на основе Telegram ID
-    function generatePassportCode(userId) {
-        const series = 4000 + (userId % 900);
-        const number = 100000 + ((userId * 173) % 899999);
-        return `${series}-${number}`;
+    const currentUser = tg.initDataUnsafe?.user || { id: 12345678, first_name: "Тестовый", last_name: "Игрок" };
+    let allCitizensData = {};
+
+    // ⚠️ ВАШ TELEGRAM ID ВЛАДЕЛЬЦА СЕРВЕРА (Заменится автоматически с Python)
+    const OWNER_ID = 0; 
+
+    // Загрузка данных при старте
+    async function loadData() {
+        try {
+            const res = await fetch(`/api/get_all_data?user_id=${currentUser.id}`);
+            const data = await res.json();
+            
+            allCitizensData = data.citizens;
+            renderMyPassport(data.citizens[currentUser.id]);
+
+            // Если зашел владелец — открываем панель админа
+            if (data.is_owner) {
+                document.getElementById('admin-tab-btn').style.display = 'block';
+                document.getElementById('user-role-badge').innerText = "Владелец / Admin";
+                document.getElementById('user-role-badge').style.color = "#ff9500";
+                populateAdminSelect();
+            }
+        } catch (e) {
+            console.log("Ошибка подключения к серверу API");
+        }
     }
 
-    // Заполнение данных пользователя
-    const user = tg.initDataUnsafe?.user;
-
-    if (user) {
-        const userId = user.id;
-        const fullName = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-        
-        document.getElementById('rp-name').innerText = fullName;
-        document.getElementById('db-user-name').innerText = fullName;
-        document.getElementById('pass-code').innerText = generatePassportCode(userId);
-    } else {
-        document.getElementById('rp-name').innerText = "Гость RP Сервера";
-        document.getElementById('pass-code').innerText = "4040-000000";
+    function renderMyPassport(my) {
+        if (!my) return;
+        document.getElementById('p-number').innerText = "СЕРИЯ: " + my.passport_code;
+        document.getElementById('p-name').innerText = my.rp_name;
+        document.getElementById('p-faction').innerText = my.faction;
+        document.getElementById('p-wanted').innerText = my.wanted;
+        document.getElementById('p-wanted').style.color = my.wanted.includes("розыск") ? "var(--danger-red)" : "var(--accent-green)";
+        document.getElementById('p-licenses').innerText = my.licenses;
+        document.getElementById('p-fines').innerText = my.fines + " $";
+        document.getElementById('v-model').innerText = my.v_model;
+        document.getElementById('v-plate').innerText = my.v_plate;
     }
 
-    // Переключение вкладок
-    function switchTab(tabName) {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    function populateAdminSelect() {
+        const select = document.getElementById('admin-user-select');
+        select.innerHTML = '';
+        for (let id in allCitizensData) {
+            let u = allCitizensData[id];
+            let opt = document.createElement('option');
+            opt.value = id;
+            opt.innerText = `${u.rp_name} (ID: ${id})`;
+            select.appendChild(opt);
+        }
+        loadUserToAdminForm();
+    }
 
-        document.getElementById(`tab-${tabName}`).classList.add('active');
+    function loadUserToAdminForm() {
+        const selectedId = document.getElementById('admin-user-select').value;
+        const u = allCitizensData[selectedId];
+        if (!u) return;
+
+        document.getElementById('adm-faction').value = u.faction;
+        document.getElementById('adm-wanted').value = u.wanted;
+        document.getElementById('adm-licenses').value = u.licenses;
+        document.getElementById('adm-fines').value = u.fines;
+        document.getElementById('adm-vmodel').value = u.v_model;
+        document.getElementById('adm-vplate').value = u.v_plate;
+    }
+
+    // Сохранение администратором
+    async function saveCitizenData() {
+        const targetId = document.getElementById('admin-user-select').value;
+        const payload = {
+            admin_id: currentUser.id,
+            target_id: targetId,
+            faction: document.getElementById('adm-faction').value,
+            wanted: document.getElementById('adm-wanted').value,
+            licenses: document.getElementById('adm-licenses').value,
+            fines: document.getElementById('adm-fines').value,
+            v_model: document.getElementById('adm-vmodel').value,
+            v_plate: document.getElementById('adm-vplate').value
+        };
+
+        const res = await fetch('/api/update_citizen', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            showSuccessModal();
+            loadData();
+        }
+    }
+
+    function showSuccessModal() {
+        const modal = document.getElementById('success-modal');
+        modal.style.display = 'flex';
+        setTimeout(() => { modal.style.display = 'none'; }, 1500);
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`tab-${tab}`).classList.add('active');
         event.currentTarget.classList.add('active');
     }
-</script>
 
+    loadData();
+</script>
 </body>
 </html>
