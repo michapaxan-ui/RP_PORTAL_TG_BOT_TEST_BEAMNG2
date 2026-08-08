@@ -3,131 +3,368 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>КПК BeamNG RP</title>
+    <title>BeamNG RP — Портал КПК</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --bg-color: #121820;
+            --card-bg: #1c2531;
+            --accent-color: #2f80ed;
+            --text-color: #ffffff;
+            --text-muted: #8c9ba5;
+            --border-color: #2c3a4e;
+            --danger-color: #eb5757;
+            --success-color: #27ae60;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-theme-bg-color, #18222d);
-            color: var(--tg-theme-text-color, #ffffff);
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        .card {
-            background-color: var(--tg-theme-secondary-bg-color, #212d3b);
-            border-radius: 12px;
-            padding: 20px;
+        /* Шапка и навигация вкладок */
+        .app-container {
             width: 100%;
-            max-width: 400px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            box-sizing: border-box;
+            max-width: 420px;
         }
 
-        h2 {
-            margin-top: 0;
-            color: var(--tg-theme-link-color, #64b5ef);
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        .nav-tabs {
+            display: flex;
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 4px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--accent-color);
+            color: #ffffff;
+        }
+
+        /* Карточка профиля / Паспорта */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            margin-bottom: 12px;
+        }
+
+        .passport-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px dashed var(--border-color);
             padding-bottom: 10px;
+            margin-bottom: 12px;
         }
 
-        .info-group {
-            margin-bottom: 15px;
+        .passport-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .passport-serial {
+            font-family: monospace;
+            font-size: 12px;
+            background: #10141b;
+            padding: 4px 8px;
+            border-radius: 6px;
+            color: #f2c94c;
+            border: 1px solid #333;
+        }
+
+        .profile-body {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+
+        .avatar-box {
+            width: 80px;
+            height: 95px;
+            background: #10141b;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            flex-shrink: 0;
+        }
+
+        .info-grid {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
         }
 
         .label {
-            font-size: 12px;
-            color: #8e8e93;
+            font-size: 10px;
+            color: var(--text-muted);
             text-transform: uppercase;
-            margin-bottom: 4px;
+            letter-spacing: 0.5px;
         }
 
         .value {
-            font-size: 16px;
-            font-weight: 500;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         .badge {
             display: inline-block;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 14px;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 11px;
             font-weight: bold;
+            width: fit-content;
+            margin-top: 2px;
         }
 
-        .status-clear {
-            background-color: #2e7d32;
-            color: #ffffff;
+        .badge-clear { background: rgba(39, 174, 96, 0.2); color: var(--success-color); border: 1px solid var(--success-color); }
+        .badge-wanted { background: rgba(235, 87, 87, 0.2); color: var(--danger-color); border: 1px solid var(--danger-color); }
+
+        /* Таблица лицензий и транспорта */
+        .licenses-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
         }
 
-        .status-wanted {
-            background-color: #c62828;
-            color: #ffffff;
+        .lic-box {
+            background: #10141b;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        button {
+        /* Список в базе данных */
+        .db-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .db-item {
+            background: #10141b;
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .db-item.wanted {
+            border-left-color: var(--danger-color);
+        }
+
+        .close-btn {
             width: 100%;
-            background-color: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #ffffff);
+            background: var(--accent-color);
+            color: white;
             border: none;
             padding: 12px;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 15px;
-        }
-
-        button:active {
-            opacity: 0.8;
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>📱 КПК / Удостоверение</h2>
-        
-        <div class="info-group">
-            <div class="label">Имя и Фамилия (RP):</div>
-            <div class="value" id="rp-name">Загрузка...</div>
-        </div>
-
-        <div class="info-group">
-            <div class="label">Звание / Организация:</div>
-            <div class="value" id="faction-rank">Загрузка...</div>
-        </div>
-
-        <div class="info-group">
-            <div class="label">Статус розыска:</div>
-            <div class="value"><span id="wanted-status" class="badge status-clear">Загрузка...</span></div>
-        </div>
-
-        <button onclick="Telegram.WebApp.close()">Закрыть КПК</button>
+<div class="app-container">
+    <!-- Переключение вкладок -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('profile')">🪪 Паспорт</button>
+        <button class="tab-btn" onclick="switchTab('database')">🚔 КПК МВД</button>
+        <button class="tab-btn" onclick="switchTab('garage')">🚗 Гараж</button>
     </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+    <!-- Вкладка 1: Уникальный Паспорт -->
+    <div id="tab-profile" class="tab-content active">
+        <div class="card">
+            <div class="passport-header">
+                <div class="passport-title">🪪 ПАСПОРТ ГРАЖДАНИНА</div>
+                <div class="passport-serial" id="pass-code">4520-890123</div>
+            </div>
 
-        const user = tg.initDataUnsafe?.user;
+            <div class="profile-body">
+                <div class="avatar-box" id="avatar-icon">👤</div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="label">ФИО / RP ИМЯ</div>
+                        <div class="value" id="rp-name">Загрузка...</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="label">Организация / Должность</div>
+                        <div class="value" id="rp-faction" style="color: #64b5ef;">Гражданский</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="label">Статус в базе</div>
+                        <span id="rp-status" class="badge badge-clear">Не разыскивается</span>
+                    </div>
+                </div>
+            </div>
 
-        if (user) {
-            document.getElementById('rp-name').innerText = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-            document.getElementById('faction-rank').innerText = "Гражданский";
-            
-            const wantedBadge = document.getElementById('wanted-status');
-            wantedBadge.innerText = "Не разыскивается";
-            wantedBadge.className = "badge status-clear";
-        } else {
-            document.getElementById('rp-name').innerText = "Тестовый Посетитель";
-            document.getElementById('faction-rank').innerText = "Гость";
-            document.getElementById('wanted-status').innerText = "Нет данных";
-        }
-    </script>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="label">Группа крови / Дата выдачи</div>
+                    <div class="value" id="rp-details">A(II) Rh+ | 12.04.2024</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 12px;">
+                <div class="label" style="margin-bottom: 6px;">Лицензии и Разрешения:</div>
+                <div class="licenses-grid">
+                    <div class="lic-box"><span>🚗 Кат. B</span> <b style="color: #27ae60;">АКТИВНА</b></div>
+                    <div class="lic-box"><span>🚛 Кат. C</span> <b style="color: #27ae60;">АКТИВНА</b></div>
+                    <div class="lic-box"><span>🔫 Оружие</span> <b style="color: #eb5757;">НЕТ</b></div>
+                    <div class="lic-box"><span>🚁 Авиация</span> <b style="color: #eb5757;">НЕТ</b></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Вкладка 2: База данных RP -->
+    <div id="tab-database" class="tab-content">
+        <div class="card">
+            <div class="passport-header">
+                <div class="passport-title">🚔 БОРТОВОЙ КОМПЬЮТЕР МВД</div>
+            </div>
+            <div class="db-list">
+                <div class="db-item wanted">
+                    <div>
+                        <div style="font-weight: bold;">Алексей Громов</div>
+                        <div style="font-size: 11px; color: #8c9ba5;">Статья: 2.1 УК (Уход от погони)</div>
+                    </div>
+                    <span class="badge badge-wanted">2 УР. РОЗЫСКА</span>
+                </div>
+                <div class="db-item">
+                    <div>
+                        <div style="font-weight: bold;">Михаил Паханич</div>
+                        <div style="font-size: 11px; color: #8c9ba5;">Шериф Департамента</div>
+                    </div>
+                    <span class="badge badge-clear">СОТРУДНИК</span>
+                </div>
+                <div class="db-item">
+                    <div>
+                        <div style="font-weight: bold;" id="db-user-name">Текущий Пользователь</div>
+                        <div style="font-size: 11px; color: #8c9ba5;">Гражданин BeamNG</div>
+                    </div>
+                    <span class="badge badge-clear">ЧИСТ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Вкладка 3: Гараж / Транспорт -->
+    <div id="tab-garage" class="tab-content">
+        <div class="card">
+            <div class="passport-header">
+                <div class="passport-title">🚗 ЗАРЕГИСТРИРОВАННЫЙ ТРАНСПОРТ</div>
+            </div>
+            <div class="db-list">
+                <div class="db-item">
+                    <div>
+                        <div style="font-weight: bold;">Gavril Grand Marshal</div>
+                        <div style="font-size: 11px; color: #8c9ba5;">Гос. номер: <span style="color: #f2c94c;">A777AA | 77</span></div>
+                    </div>
+                    <span class="badge badge-clear">СТРАХОВКА</span>
+                </div>
+                <div class="db-item">
+                    <div>
+                        <div style="font-weight: bold;">Bruckell LeGran</div>
+                        <div style="font-size: 11px; color: #8c9ba5;">Гос. номер: <span style="color: #f2c94c;">B451OP | 77</span></div>
+                    </div>
+                    <span class="badge badge-clear">СТРАХОВКА</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="close-btn" onclick="Telegram.WebApp.close()">Закрыть КПК</button>
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    // Генерация уникального номера паспорта на основе Telegram ID
+    function generatePassportCode(userId) {
+        const series = 4000 + (userId % 900);
+        const number = 100000 + ((userId * 173) % 899999);
+        return `${series}-${number}`;
+    }
+
+    // Заполнение данных пользователя
+    const user = tg.initDataUnsafe?.user;
+
+    if (user) {
+        const userId = user.id;
+        const fullName = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+        
+        document.getElementById('rp-name').innerText = fullName;
+        document.getElementById('db-user-name').innerText = fullName;
+        document.getElementById('pass-code').innerText = generatePassportCode(userId);
+    } else {
+        document.getElementById('rp-name').innerText = "Гость RP Сервера";
+        document.getElementById('pass-code').innerText = "4040-000000";
+    }
+
+    // Переключение вкладок
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+        document.getElementById(`tab-${tabName}`).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+</script>
+
 </body>
 </html>
