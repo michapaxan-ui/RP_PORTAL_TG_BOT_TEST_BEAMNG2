@@ -10,10 +10,11 @@
             --bg-wallpaper: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop');
             --sber-green: #21a038;
             --sber-glow: rgba(33, 160, 56, 0.4);
-            --card-bg: rgba(22, 22, 24, 0.85);
+            --card-bg: rgba(22, 22, 24, 0.9);
             --text-main: #ffffff;
             --text-sub: #a1a1a6;
-            --border: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.12);
+            --danger-red: #ff3b30;
         }
 
         * { box-sizing: border-box; user-select: none; }
@@ -22,228 +23,148 @@
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Roboto, sans-serif;
             background: #000;
             color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin: 0; padding: 0;
+            display: flex; justify-content: center; align-items: center;
             min-height: 100vh;
         }
 
-        /* Корпус Планшета */
         .tablet-frame {
-            width: 100%;
-            max-width: 412px;
-            height: 100vh;
-            max-height: 870px;
+            width: 100%; max-width: 412px;
+            height: 100vh; max-height: 870px;
             background-image: var(--bg-wallpaper);
-            background-size: cover;
-            background-position: center;
-            border-radius: 28px;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            border: 2px solid #222;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            background-size: cover; background-position: center;
+            border-radius: 28px; position: relative;
+            overflow: hidden; display: flex; flex-direction: column;
+            border: 2px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
 
-        /* Верхняя статус-строка */
         .status-bar {
-            padding: 10px 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-            font-weight: 600;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+            padding: 10px 18px; display: flex;
+            justify-content: space-between; align-items: center;
+            font-size: 13px; font-weight: 600;
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px);
             z-index: 10;
         }
 
-        /* Главный экран с иконками */
         .home-screen {
-            flex: 1;
-            padding: 30px 20px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px 15px;
-            align-content: start;
+            flex: 1; padding: 25px 15px;
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 20px 10px; align-content: start;
         }
 
         .app-icon {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
+            display: flex; flex-direction: column;
+            align-items: center; gap: 6px; cursor: pointer;
             transition: transform 0.15s ease;
         }
-
         .app-icon:active { transform: scale(0.88); }
 
         .icon-box {
-            width: 62px;
-            height: 62px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            width: 58px; height: 58px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px; box-shadow: 0 8px 20px rgba(0,0,0,0.5);
             backdrop-filter: blur(10px);
         }
 
-        .icon-title {
-            font-size: 11px;
-            font-weight: 500;
-            text-align: center;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        }
+        .icon-title { font-size: 11px; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
-        /* Стиль окон приложений */
         .app-window {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: #0d0d0f;
-            z-index: 100;
-            display: none;
-            flex-direction: column;
-            animation: appOpen 0.25s cubic-bezier(0.1, 0.9, 0.2, 1);
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: #0b0b0d; z-index: 100;
+            display: none; flex-direction: column;
+            animation: appOpen 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
         }
-
         .app-window.active { display: flex; }
 
         @keyframes appOpen {
-            from { transform: scale(0.85); opacity: 0; }
+            from { transform: scale(0.9); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
 
         .app-header {
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #141416;
-            border-bottom: 1px solid var(--border);
+            padding: 14px 16px; display: flex;
+            align-items: center; justify-content: space-between;
+            background: #141416; border-bottom: 1px solid var(--border);
         }
 
         .back-btn {
-            background: #222226;
-            border: none;
-            color: #fff;
-            padding: 8px 14px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
+            background: #222226; border: none; color: #fff;
+            padding: 6px 12px; border-radius: 8px;
+            font-size: 12px; font-weight: 600; cursor: pointer;
         }
 
-        .app-body {
-            flex: 1;
-            padding: 16px;
-            overflow-y: auto;
-        }
+        .app-body { flex: 1; padding: 16px; overflow-y: auto; }
 
-        /* Элементы Сбера и Госуслуг */
         .card-box {
-            background: var(--card-bg);
-            border-radius: 18px;
-            padding: 16px;
-            border: 1px solid var(--border);
-            margin-bottom: 14px;
+            background: var(--card-bg); border-radius: 16px;
+            padding: 16px; border: 1px solid var(--border);
+            margin-bottom: 12px;
         }
 
         .btn-green {
-            width: 100%;
-            background: linear-gradient(135deg, #21a038, #147225);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 15px var(--sber-glow);
-            margin-top: 8px;
+            width: 100%; background: linear-gradient(135deg, #21a038, #147225);
+            color: white; border: none; padding: 12px;
+            border-radius: 10px; font-size: 14px; font-weight: 700;
+            cursor: pointer; box-shadow: 0 4px 15px var(--sber-glow); margin-top: 6px;
         }
 
         input, select {
-            width: 100%;
-            background: #1a1a1e;
-            border: 1px solid var(--border);
-            color: #fff;
-            padding: 12px;
-            border-radius: 10px;
-            margin: 6px 0 12px 0;
-            font-size: 14px;
+            width: 100%; background: #161618; border: 1px solid var(--border);
+            color: #fff; padding: 10px; border-radius: 8px;
+            margin: 4px 0 10px 0; font-size: 13px; box-sizing: border-box;
         }
 
-        /* Модальное окно успеха с галочкой */
-        .success-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(8px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+        /* Документ / Паспорт в стиле 2-го скриншота */
+        .id-card-doc {
+            background: #ffffff; color: #111;
+            border-radius: 14px; padding: 16px;
+            border: 3px solid #1a365d; position: relative;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
         }
-
-        .success-card {
-            background: #1c1c1e;
-            padding: 25px;
-            border-radius: 24px;
-            text-align: center;
-            border: 1px solid #333;
-            animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .id-card-title {
+            text-align: center; font-size: 14px; font-weight: 900;
+            color: #1a365d; border-bottom: 2px solid #1a365d;
+            padding-bottom: 6px; margin-bottom: 12px; letter-spacing: 0.5px;
         }
+        .id-card-grid { display: flex; gap: 12px; }
+        .id-photo-box {
+            width: 80px; height: 105px; background: #d0d5dd;
+            border-radius: 6px; display: flex; align-items: center;
+            justify-content: center; color: #667085; font-weight: bold; font-size: 11px;
+            flex-shrink: 0;
+        }
+        .id-info { flex: 1; font-size: 11px; color: #333; }
+        .id-field { margin-bottom: 6px; }
+        .id-field-label { font-size: 9px; color: #666; text-transform: uppercase; }
+        .id-field-val { font-size: 12px; font-weight: 700; color: #000; }
+        .id-serial-sign { margin-top: 10px; font-family: 'Courier New', monospace; font-weight: bold; color: #d92d20; }
 
-        @keyframes pop { from { transform: scale(0.6); } to { transform: scale(1); } }
-
+        /* Модалка уведомления */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-box {
+            background: #1c1c1e; padding: 22px; border-radius: 20px;
+            text-align: center; border: 1px solid #333; max-width: 280px;
+        }
         .checkmark {
-            width: 65px; height: 65px;
-            background: var(--sber-green);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 36px; margin: 0 auto 12px auto;
-            box-shadow: 0 0 20px var(--sber-glow);
-        }
-
-        /* 5RP Паспорт */
-        .passport-real {
-            background: linear-gradient(135deg, #1f2128, #111216);
-            border: 2px solid #3a3f4d;
-            border-radius: 16px;
-            padding: 16px;
-            position: relative;
-        }
-
-        .stamp-5rp {
-            position: absolute;
-            right: 15px; bottom: 15px;
-            width: 75px; height: 75px;
-            border: 2px double #d32f2f;
-            border-radius: 50%;
-            color: #d32f2f;
-            font-size: 7px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transform: rotate(-15deg);
-            text-align: center; font-weight: bold;
+            width: 55px; height: 55px; background: var(--sber-green);
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 30px; margin: 0 auto 10px auto;
         }
     </style>
 </head>
 <body>
 
 <div class="tablet-frame">
-    <!-- Статус бар -->
     <div class="status-bar">
         <span id="clock">12:00</span>
-        <span>BeamNG 5G 🔋100%</span>
+        <span>BeamNG OS 🔋100%</span>
     </div>
 
-    <!-- Главный экран -->
+    <!-- Главный рабочий стол -->
     <div class="home-screen">
         <div class="app-icon" onclick="openApp('app-gos')">
             <div class="icon-box" style="background: linear-gradient(135deg, #0052cc, #002b80);">🏛️</div>
@@ -253,12 +174,20 @@
             <div class="icon-box" style="background: linear-gradient(135deg, #21a038, #0f521b);">🟢</div>
             <div class="icon-title">Сбербанк</div>
         </div>
+        <div class="app-icon" onclick="openApp('app-docs')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #ff9500, #b36b00);">📁</div>
+            <div class="icon-title">Документы</div>
+        </div>
+        <div class="app-icon" onclick="openApp('app-lic')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #af52de, #5856d6);">📜</div>
+            <div class="icon-title">Лицензии</div>
+        </div>
         <div class="app-icon" onclick="openApp('app-settings')">
             <div class="icon-box" style="background: linear-gradient(135deg, #555, #222);">⚙️</div>
             <div class="icon-title">Настройки</div>
         </div>
         <div class="app-icon" id="owner-app-icon" style="display:none;" onclick="openApp('app-owner')">
-            <div class="icon-box" style="background: linear-gradient(135deg, #ff9500, #b36b00);">👑</div>
+            <div class="icon-box" style="background: linear-gradient(135deg, #ff2d55, #87001c);">👑</div>
             <div class="icon-title">Владелец</div>
         </div>
     </div>
@@ -271,27 +200,26 @@
             <div></div>
         </div>
         <div class="app-body">
-            <!-- Цифровая копия паспорта -->
-            <div class="card-box passport-real">
-                <div class="stamp-5rp">ПРАВИТЕЛЬСТВО<br>BEAMNG STATE<br>УДОСТОВЕРЕНО</div>
-                <div style="color:#f2c94c; font-family:monospace; font-size:12px;" id="gos-pass-num">СЕРИЯ: ----</div>
-                <h3 style="margin:8px 0 4px 0;" id="gos-name">Загрузка...</h3>
-                <div style="font-size:13px; color:var(--text-sub);" id="gos-faction">Фракция: Гражданский</div>
+            <!-- Редактируемый документ -->
+            <div class="card-box">
+                <div style="font-weight:600; margin-bottom:8px;">✏️ Настройка персональных данных</div>
+                <label style="font-size:10px; color:var(--text-sub);">Имя:</label>
+                <input type="text" id="edit-fname" placeholder="Миша">
+                <label style="font-size:10px; color:var(--text-sub);">Фамилия:</label>
+                <input type="text" id="edit-lname" placeholder="Персоньян">
+                <label style="font-size:10px; color:var(--text-sub);">Дата рождения:</label>
+                <input type="text" id="edit-bday" placeholder="22.11.2006">
+                <button class="btn-green" onclick="savePersonalData()">Сохранить данные</button>
             </div>
 
             <!-- Штрафы и Налоги -->
             <div class="card-box">
-                <div style="font-weight:600; margin-bottom:8px;">Задолженности и Налоги</div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <span>Штрафы ГИБДД:</span>
-                    <b id="gos-fines-val" style="color:#ff3b30;">0 $</b>
+                <div style="font-weight:600; margin-bottom:8px;">Оплата Услуг и Налогов</div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <span>Штрафы:</span>
+                    <b id="gos-fines-val" style="color:var(--danger-red);">0 €</b>
                 </div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
-                    <span>Налог на имущество:</span>
-                    <b id="gos-tax-val" style="color:#ff9500;">150 $</b>
-                </div>
-                <button class="btn-green" onclick="payService('fines')">Оплатить штрафы</button>
-                <button class="btn-green" style="background:#222; margin-top:8px;" onclick="payService('taxes')">Оплатить налоги</button>
+                <button class="btn-green" onclick="payFines()">Оплатить штрафы</button>
             </div>
         </div>
     </div>
@@ -304,27 +232,114 @@
             <div></div>
         </div>
         <div class="app-body">
-            <!-- Карта -->
             <div class="card-box" style="background: linear-gradient(135deg, #1e3c23, #0b170e); border:1px solid #21a038;">
-                <div style="font-size:12px; color:var(--text-sub);">Баланс счета</div>
-                <h2 style="margin:4px 0 12px 0;" id="sber-balance">0 $</h2>
-                <div style="font-size:11px; font-family:monospace;" id="sber-card-num">CARD: **** **** **** 0000</div>
+                <div style="font-size:11px; color:var(--text-sub);">Баланс счета</div>
+                <h2 style="margin:4px 0 10px 0;" id="sber-balance">0 €</h2>
+                <div style="font-size:11px; font-family:monospace;" id="sber-card">CARD: **** **** **** 0000</div>
                 <div style="font-size:10px; color:var(--text-sub); margin-top:2px;" id="sber-iban">IBAN: RU00BEAM000000000000</div>
             </div>
 
-            <!-- Переводы -->
             <div class="card-box">
-                <div style="font-weight:600; margin-bottom:8px;">Перевод по серии паспорта</div>
-                <input type="text" id="transfer-pass" placeholder="Серия паспорта (напр. 4500-A18B)">
-                <input type="number" id="transfer-sum" placeholder="Сумма ($)">
-                <button class="btn-green" onclick="makeTransfer()">Перевести</button>
+                <div style="font-weight:600; margin-bottom:8px;">Перевод по IBAN</div>
+                <input type="text" id="transfer-iban" placeholder="Введитe IBAN получателя">
+                <input type="number" id="transfer-sum" placeholder="Сумма (€)">
+                <button class="btn-green" onclick="makeTransfer()">Отправить перевод</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Приложение: ДОКУМЕНТЫ -->
+    <div id="app-docs" class="app-window">
+        <div class="app-header">
+            <button class="back-btn" onclick="closeApp('app-docs')">❮ Назад</button>
+            <div style="font-weight:700;">ДОКУМЕНТЫ</div>
+            <div></div>
+        </div>
+        <div class="app-body">
+            <!-- Отображение Паспорта -->
+            <div class="id-card-doc">
+                <div class="id-card-title">ДОКУМЕНТ УДОСТОВЕРЯЮЩИЙ ЛИЧНОСТЬ</div>
+                <div class="id-card-grid">
+                    <div class="id-photo-box">ФОТО</div>
+                    <div class="id-info">
+                        <div class="id-field">
+                            <div class="id-field-label">1. Фамилия</div>
+                            <div class="id-field-val" id="doc-lname">ПЕРСОНЬЯН</div>
+                        </div>
+                        <div class="id-field">
+                            <div class="id-field-label">2. Имя</div>
+                            <div class="id-field-val" id="doc-fname">МИША</div>
+                        </div>
+                        <div class="id-field">
+                            <div class="id-field-label">3. Дата рождения</div>
+                            <div class="id-field-val" id="doc-bday">22.11.2006</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="id-serial-sign">
+                    СЕРИЯ: <span id="doc-serial">RP 77-89 452110</span>
+                </div>
             </div>
 
-            <!-- Заявка на кредит -->
+            <div style="margin-top:14px;">
+                <div class="card-box" id="doc-drive-lic">
+                    <div style="font-weight:600; color:#21a038;">🚗 Водительское удостоверение</div>
+                    <div style="font-size:12px; color:var(--text-sub);" id="doc-drive-val">Статус: Нет лицензии</div>
+                </div>
+                <div class="card-box" id="doc-gun-lic">
+                    <div style="font-weight:600; color:#af52de;">🔫 Лицензия на оружие</div>
+                    <div style="font-size:12px; color:var(--text-sub);" id="doc-gun-val">Статус: Нет лицензии</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Приложение: ЛИЦЕНЗИИ -->
+    <div id="app-lic" class="app-window">
+        <div class="app-header">
+            <button class="back-btn" onclick="closeApp('app-lic')">❮ Назад</button>
+            <div style="font-weight:700;">ЛИЦЕНЗИИ</div>
+            <div></div>
+        </div>
+        <div class="app-body">
             <div class="card-box">
-                <div style="font-weight:600; margin-bottom:8px;">Кредитование</div>
-                <input type="number" id="credit-sum" placeholder="Запрашиваемая сумма ($)">
-                <button class="btn-green" style="background:#333;" onclick="applyCredit()">Запросить кредит</button>
+                <div style="font-weight:600; margin-bottom:6px;">🚗 Водительское удостоверение</div>
+                <div style="font-size:11px; color:var(--text-sub); margin-bottom:8px;">Стоимость: от 1000 € до 2000 €</div>
+                <button class="btn-green" onclick="openLicModal('drive')">Подать заявку</button>
+            </div>
+
+            <div class="card-box">
+                <div style="font-weight:600; margin-bottom:6px;">🔫 Лицензия на оружие</div>
+                <div style="font-size:11px; color:var(--text-sub); margin-bottom:8px;">Стоимость: от 1000 € до 5000 €</div>
+                <button class="btn-green" style="background:linear-gradient(135deg, #af52de, #5856d6);" onclick="openLicModal('gun')">Подать заявку</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Форма подачи на лицензии -->
+    <div id="app-lic-form" class="app-window">
+        <div class="app-header">
+            <button class="back-btn" onclick="closeApp('app-lic-form')">❮ Отмена</button>
+            <div style="font-weight:700;" id="lic-form-title">Заявка</div>
+            <div></div>
+        </div>
+        <div class="app-body">
+            <div class="card-box">
+                <label style="font-size:10px; color:var(--text-sub);">Тип / Категория:</label>
+                <select id="lic-cat-select"></select>
+
+                <label style="font-size:10px; color:var(--text-sub);">Готовность пройти тест / обучение:</label>
+                <select id="lic-ready-test">
+                    <option value="Да">Да, готов</option>
+                    <option value="Нет">Нет</option>
+                </select>
+
+                <label style="font-size:10px; color:var(--text-sub);">Подтверждение оплаты:</label>
+                <select id="lic-ready-pay">
+                    <option value="Да">Да, оплата списана со счета</option>
+                </select>
+
+                <button class="btn-green" onclick="submitLicRequest()">Оплатить и получить</button>
             </div>
         </div>
     </div>
@@ -338,57 +353,46 @@
         </div>
         <div class="app-body">
             <div class="card-box">
-                <div style="font-weight:600; margin-bottom:8px;">🖼️ Смена Обоев Рабочего Стола</div>
+                <div style="font-weight:600; margin-bottom:8px;">🖼️ Смена Обоев</div>
                 <button class="btn-green" style="background:#222; margin-bottom:6px;" onclick="setWallpaper(1)">Абстракция Neon</button>
                 <button class="btn-green" style="background:#222; margin-bottom:6px;" onclick="setWallpaper(2)">Тёмный Космос</button>
                 <button class="btn-green" style="background:#222;" onclick="setWallpaper(3)">Спорткар BeamNG</button>
-            </div>
-            <div class="card-box">
-                <div style="font-weight:600; margin-bottom:4px;">⏱️ Часовой Пояс</div>
-                <div style="font-size:12px; color:var(--text-sub);">Автоматическая синхронизация с сервером штата</div>
             </div>
         </div>
     </div>
 
     <!-- Приложение: ВЛАДЕЛЕЦ -->
     <div id="app-owner" class="app-window">
-        <div class="app-header" style="background:#2a1b00;">
+        <div class="app-header" style="background:#2a080c;">
             <button class="back-btn" onclick="closeApp('app-owner')">❮ Назад</button>
-            <div style="font-weight:700; color:#ff9500;">👑 ПАНЕЛЬ ВЛАДЕЛЬЦА</div>
+            <div style="font-weight:700; color:#ff2d55;">👑 ПАНЕЛЬ ВЛАДЕЛЬЦА</div>
             <div></div>
         </div>
         <div class="app-body">
             <div class="card-box">
-                <div style="font-weight:600; color:#ff9500; margin-bottom:8px;">Управление Гражданами</div>
+                <div style="font-weight:600; color:#ff2d55; margin-bottom:8px;">Управление Гражданами</div>
                 <select id="owner-user-select" onchange="loadOwnerForm()"></select>
 
-                <label style="font-size:11px; color:var(--text-sub);">Принять во фракцию / Звание:</label>
-                <input type="text" id="ow-faction" placeholder="Фракция">
+                <label style="font-size:10px; color:var(--text-sub);">Фракция:</label>
+                <input type="text" id="ow-faction">
 
-                <label style="font-size:11px; color:var(--text-sub);">Изменить Баланс ($):</label>
-                <input type="number" id="ow-balance" placeholder="Баланс">
+                <label style="font-size:10px; color:var(--text-sub);">Выдать / Изменить Баланс (€):</label>
+                <input type="number" id="ow-balance">
 
-                <label style="font-size:11px; color:var(--text-sub);">Штрафы ($):</label>
-                <input type="number" id="ow-fines" placeholder="Штрафы">
+                <label style="font-size:10px; color:var(--text-sub);">Штрафы (€):</label>
+                <input type="number" id="ow-fines">
 
-                <button class="btn-green" onclick="saveOwnerChanges()">Сохранить изменения</button>
-            </div>
-
-            <div class="card-box">
-                <div style="font-weight:600; color:#ff9500; margin-bottom:8px;">Заявки на Кредиты</div>
-                <div id="credits-list" style="font-size:12px; color:var(--text-sub);">Заявок нет</div>
+                <button class="btn-green" style="background:linear-gradient(135deg, #ff2d55, #87001c);" onclick="saveOwnerChanges()">Сохранить изменения</button>
             </div>
         </div>
     </div>
-
 </div>
 
-<!-- Анимированный экран Успеха -->
-<div class="success-overlay" id="success-modal">
-    <div class="success-card">
-        <div class="checkmark">✓</div>
-        <div style="font-size:18px; font-weight:700; margin-bottom:4px;">Операция выпонена</div>
-        <div style="font-size:12px; color:var(--text-sub);" id="success-text">Успешно!</div>
+<div class="modal-overlay" id="success-modal">
+    <div class="modal-box">
+        <div class="checkmark" id="modal-icon">✓</div>
+        <div style="font-size:16px; font-weight:700; margin-bottom:4px;" id="modal-title">Операция выполнена</div>
+        <div style="font-size:12px; color:var(--text-sub);" id="modal-text">Успешно!</div>
     </div>
 </div>
 
@@ -396,17 +400,18 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    const currentUser = tg.initDataUnsafe?.user || { id: 12345678, first_name: "Тестовый", last_name: "Игрок" };
-    let dbData = {};
+    // ⚠️ УКАЖИТЕ ВАШ TELEGRAM ID ДЛЯ ДОСТУПА К ПРИЛОЖЕНИЮ ВЛАДЕЛЬЦА
+    const OWNER_ID = 7914481551; 
 
-    // Часы
+    const currentUser = tg.initDataUnsafe?.user || { id: OWNER_ID, first_name: "Миша", last_name: "Персоньян" };
+    let dbData = {};
+    let currentLicType = '';
+
     function updateClock() {
-        const d = new Date();
-        document.getElementById('clock').innerText = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     }
     setInterval(updateClock, 1000); updateClock();
 
-    // Загрузка данных с сервера
     async function loadAll() {
         try {
             const res = await fetch(`/api/get_tablet_data?user_id=${currentUser.id}`);
@@ -415,30 +420,101 @@
 
             const me = data.citizens[currentUser.id];
             if (me) {
-                document.getElementById('gos-pass-num').innerText = "СЕРИЯ: " + me.passport_code;
-                document.getElementById('gos-name').innerText = me.rp_name;
-                document.getElementById('gos-faction').innerText = "Фракция: " + me.faction;
-                document.getElementById('gos-fines-val').innerText = me.fines + " $";
-                
-                document.getElementById('sber-balance').innerText = me.balance + " $";
-                document.getElementById('sber-card-num').innerText = me.card_num;
+                document.getElementById('edit-fname').value = me.fname;
+                document.getElementById('edit-lname').value = me.lname;
+                document.getElementById('edit-bday').value = me.bday;
+
+                document.getElementById('doc-fname').innerText = me.fname.toUpperCase();
+                document.getElementById('doc-lname').innerText = me.lname.toUpperCase();
+                document.getElementById('doc-bday').innerText = me.bday;
+                document.getElementById('doc-serial').innerText = me.passport_code;
+
+                document.getElementById('gos-fines-val').innerText = me.fines + " €";
+                document.getElementById('sber-balance').innerText = me.balance + " €";
+                document.getElementById('sber-card').innerText = me.card_num;
                 document.getElementById('sber-iban').innerText = me.iban;
+
+                document.getElementById('doc-drive-val').innerText = me.drive_lic ? `Категории: ${me.drive_lic}` : "Статус: Нет";
+                document.getElementById('doc-gun-val').innerText = me.gun_lic ? `Тип: ${me.gun_lic}` : "Статус: Нет";
             }
 
-            if (data.is_owner) {
+            if (data.is_owner || currentUser.id === OWNER_ID) {
                 document.getElementById('owner-app-icon').style.display = 'flex';
                 populateOwnerSelect();
             }
         } catch(e) {}
     }
 
+    async function savePersonalData() {
+        const payload = {
+            user_id: currentUser.id,
+            fname: document.getElementById('edit-fname').value,
+            lname: document.getElementById('edit-lname').value,
+            bday: document.getElementById('edit-bday').value
+        };
+        await fetch('/api/update_profile', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        showModal("Успешно", "Персональные данные обновлены!", true);
+        loadAll();
+    }
+
+    async function makeTransfer() {
+        const iban = document.getElementById('transfer-iban').value;
+        const sum = parseInt(document.getElementById('transfer-sum').value);
+        const res = await fetch('/api/transfer', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ from_id: currentUser.id, to_iban: iban, sum: sum })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showModal("Успешно", "Перевод выполнен!", true);
+            loadAll();
+        } else {
+            showModal("Отказано", data.message || "Недостаточно средств", false);
+        }
+    }
+
+    function openLicModal(type) {
+        currentLicType = type;
+        const sel = document.getElementById('lic-cat-select');
+        sel.innerHTML = '';
+        if (type === 'drive') {
+            document.getElementById('lic-form-title').innerText = "Водительские права (1500 €)";
+            sel.innerHTML = '<option value="B, B1, M">Категории B, B1, M (1500 €)</option><option value="C, C1">Категории C, C1 (2000 €)</option>';
+        } else {
+            document.getElementById('lic-form-title').innerText = "Лицензия на оружие (3000 €)";
+            sel.innerHTML = '<option value="Пистолеты">Пистолеты (1000 €)</option><option value="Автоматы / Дробовики">Автоматы / Дробовики (3000 €)</option>';
+        }
+        openApp('app-lic-form');
+    }
+
+    async function submitLicRequest() {
+        const cat = document.getElementById('lic-cat-select').value;
+        const price = currentLicType === 'drive' ? 1500 : 3000;
+        const res = await fetch('/api/buy_lic', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ user_id: currentUser.id, lic_type: currentLicType, cat: cat, price: price })
+        });
+        if(res.ok) {
+            closeApp('app-lic-form');
+            showModal("Получено!", "Лицензия добавлена в Документы", true);
+            loadAll();
+        } else {
+            showModal("Отказано", "Недостаточно средств на счете", false);
+        }
+    }
+
     function populateOwnerSelect() {
         const select = document.getElementById('owner-user-select');
         select.innerHTML = '';
         for (let id in dbData) {
-            let opt = document.createElement('option');
-            opt.value = id;
-            opt.innerText = `${dbData[id].rp_name} (${dbData[id].passport_code})`;
+            let opt = document.createElement('option'); opt.value = id;
+            opt.innerText = `${dbData[id].fname} ${dbData[id].lname} (${dbData[id].passport_code})`;
             select.appendChild(opt);
         }
         loadOwnerForm();
@@ -446,8 +522,7 @@
 
     function loadOwnerForm() {
         const id = document.getElementById('owner-user-select').value;
-        const u = dbData[id];
-        if(!u) return;
+        const u = dbData[id]; if(!u) return;
         document.getElementById('ow-faction').value = u.faction;
         document.getElementById('ow-balance').value = u.balance;
         document.getElementById('ow-fines').value = u.fines;
@@ -455,52 +530,38 @@
 
     async function saveOwnerChanges() {
         const targetId = document.getElementById('owner-user-select').value;
-        const payload = {
-            admin_id: currentUser.id,
-            target_id: targetId,
-            faction: document.getElementById('ow-faction').value,
-            balance: document.getElementById('ow-balance').value,
-            fines: document.getElementById('ow-fines').value
-        };
         await fetch('/api/owner_update', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(payload)
+            body: JSON.stringify({
+                admin_id: currentUser.id, target_id: targetId,
+                faction: document.getElementById('ow-faction').value,
+                balance: parseInt(document.getElementById('ow-balance').value),
+                fines: parseInt(document.getElementById('ow-fines').value)
+            })
         });
-        showSuccess("Данные гражданина обновлены!");
+        showModal("Сохранено", "Данные гражданина обновлены", true);
         loadAll();
     }
 
-    async function makeTransfer() {
-        const pass = document.getElementById('transfer-pass').value;
-        const sum = document.getElementById('transfer-sum').value;
-        const res = await fetch('/api/transfer', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ from_id: currentUser.id, to_pass: pass, sum: parseInt(sum) })
-        });
-        if (res.ok) {
-            showSuccess("Перевод выполнен!");
-            loadAll();
-        }
-    }
-
-    function showSuccess(msg) {
-        document.getElementById('success-text').innerText = msg;
+    function showModal(title, text, success) {
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-text').innerText = text;
+        const icon = document.getElementById('modal-icon');
+        icon.innerText = success ? "✓" : "✕";
+        icon.style.background = success ? "var(--sber-green)" : "var(--danger-red)";
         const m = document.getElementById('success-modal');
         m.style.display = 'flex';
-        setTimeout(() => m.style.display = 'none', 1600);
+        setTimeout(() => m.style.display = 'none', 1800);
     }
 
     function openApp(id) { document.getElementById(id).classList.add('active'); }
     function closeApp(id) { document.getElementById(id).classList.remove('active'); }
-
-    function setWallpaper(num) {
-        const frame = document.querySelector('.tablet-frame');
-        if (num === 1) frame.style.backgroundImage = "url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000')";
-        if (num === 2) frame.style.backgroundImage = "url('https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=1000')";
-        if (num === 3) frame.style.backgroundImage = "url('https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?q=80&w=1000')";
-        showSuccess("Обои изменены!");
+    function setWallpaper(n) {
+        const f = document.querySelector('.tablet-frame');
+        if(n===1) f.style.backgroundImage = "url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000')";
+        if(n===2) f.style.backgroundImage = "url('https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=1000')";
+        if(n===3) f.style.backgroundImage = "url('https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?q=80&w=1000')";
     }
 
     loadAll();
