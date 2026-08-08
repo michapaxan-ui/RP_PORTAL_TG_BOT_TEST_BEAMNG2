@@ -3,196 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BeamNG RP — Госуслуги / КПК</title>
+    <title>BeamNG RP Tablet OS</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-main: #000000;
-            --card-bg: #121212;
-            --accent-green: #21a038;
-            --accent-green-glow: rgba(33, 160, 56, 0.4);
-            --danger-red: #ff3b30;
-            --text-primary: #ffffff;
-            --text-secondary: #8e8e93;
-            --border-color: #262626;
+            --bg-wallpaper: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop');
+            --sber-green: #21a038;
+            --sber-glow: rgba(33, 160, 56, 0.4);
+            --card-bg: rgba(22, 22, 24, 0.85);
+            --text-main: #ffffff;
+            --text-sub: #a1a1a6;
+            --border: rgba(255, 255, 255, 0.1);
         }
+
+        * { box-sizing: border-box; user-select: none; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Roboto, sans-serif;
+            background: #000;
+            color: var(--text-main);
             margin: 0;
-            padding: 16px;
-            box-sizing: border-box;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Корпус Планшета */
+        .tablet-frame {
+            width: 100%;
+            max-width: 412px;
+            height: 100vh;
+            max-height: 870px;
+            background-image: var(--bg-wallpaper);
+            background-size: cover;
+            background-position: center;
+            border-radius: 28px;
+            position: relative;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            border: 2px solid #222;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
 
-        .app-container {
-            width: 100%;
-            max-width: 420px;
-        }
-
-        /* Шапка Сбер UI */
-        .app-header {
+        /* Верхняя статус-строка */
+        .status-bar {
+            padding: 10px 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            z-index: 10;
         }
 
-        .brand-logo {
+        /* Главный экран с иконками */
+        .home-screen {
+            flex: 1;
+            padding: 30px 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px 15px;
+            align-content: start;
+        }
+
+        .app-icon {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 10px;
-            font-weight: 800;
-            font-size: 18px;
-            letter-spacing: -0.5px;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.15s ease;
         }
 
-        .sber-circle {
-            width: 28px;
-            height: 28px;
-            background: linear-gradient(135deg, #21a038, #00d26a);
-            border-radius: 50%;
+        .app-icon:active { transform: scale(0.88); }
+
+        .icon-box {
+            width: 62px;
+            height: 62px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 12px var(--accent-green-glow);
-            font-size: 14px;
+            font-size: 28px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
         }
 
-        /* Навигационные табы */
-        .nav-tabs {
+        .icon-title {
+            font-size: 11px;
+            font-weight: 500;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        /* Стиль окон приложений */
+        .app-window {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #0d0d0f;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            animation: appOpen 0.25s cubic-bezier(0.1, 0.9, 0.2, 1);
+        }
+
+        .app-window.active { display: flex; }
+
+        @keyframes appOpen {
+            from { transform: scale(0.85); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .app-header {
+            padding: 16px;
             display: flex;
-            background: #1a1a1a;
-            border-radius: 14px;
-            padding: 4px;
-            margin-bottom: 16px;
-            border: 1px solid var(--border-color);
+            align-items: center;
+            justify-content: space-between;
+            background: #141416;
+            border-bottom: 1px solid var(--border);
         }
 
-        .tab-btn {
-            flex: 1;
-            background: transparent;
+        .back-btn {
+            background: #222226;
             border: none;
-            color: var(--text-secondary);
-            padding: 12px 6px;
+            color: #fff;
+            padding: 8px 14px;
             border-radius: 10px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.25s ease;
         }
 
-        .tab-btn.active {
-            background: linear-gradient(135deg, #21a038, #157326);
-            color: #ffffff;
-            box-shadow: 0 4px 12px var(--accent-green-glow);
+        .app-body {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
         }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        /* Карточки в стиле Sber Dark */
-        .card {
+        /* Элементы Сбера и Госуслуг */
+        .card-box {
             background: var(--card-bg);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 16px;
-            position: relative;
-            overflow: hidden;
+            border-radius: 18px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            margin-bottom: 14px;
         }
 
-        /* 5RP Реалистичный Паспорт */
-        .passport-card {
-            background: linear-gradient(145deg, #18191c, #0d0e10);
-            border: 2px solid #333842;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            position: relative;
-        }
-
-        .passport-watermark {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 60px;
-            font-weight: 900;
-            color: rgba(255, 255, 255, 0.02);
-            pointer-events: none;
-            white-space: nowrap;
-        }
-
-        .passport-stamp {
-            position: absolute;
-            bottom: 25px;
-            right: 20px;
-            width: 85px;
-            height: 85px;
-            border: 3px double #d32f2f;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #d32f2f;
-            font-size: 8px;
-            font-weight: bold;
-            transform: rotate(-12deg);
-            opacity: 0.85;
-            text-transform: uppercase;
-            text-align: center;
-            pointer-events: none;
-            box-shadow: inset 0 0 4px rgba(211, 47, 47, 0.3);
-        }
-
-        .passport-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: 8px;
-        }
-
-        .field-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
-        .field-value { font-size: 15px; font-weight: 600; color: #ffffff; }
-
-        /* Элементы управления (Inputs & Buttons) */
-        input, select {
+        .btn-green {
             width: 100%;
-            background: #1a1a1a;
-            border: 1px solid var(--border-color);
-            color: #fff;
-            padding: 12px;
-            border-radius: 10px;
-            margin-top: 6px;
-            margin-bottom: 12px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-
-        .btn-primary {
-            width: 100%;
-            background: linear-gradient(135deg, #21a038, #157326);
-            color: #fff;
+            background: linear-gradient(135deg, #21a038, #147225);
+            color: white;
             border: none;
             padding: 14px;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
-            transition: transform 0.1s, box-shadow 0.2s;
-            box-shadow: 0 4px 15px var(--accent-green-glow);
+            box-shadow: 0 4px 15px var(--sber-glow);
+            margin-top: 8px;
         }
 
-        .btn-primary:active { transform: scale(0.98); }
+        input, select {
+            width: 100%;
+            background: #1a1a1e;
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 6px 0 12px 0;
+            font-size: 14px;
+        }
 
-        /* Модальное окно «Успешно» с анимированной зелёной галочкой */
-        .modal-overlay {
+        /* Модальное окно успеха с галочкой */
+        .success-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.85);
@@ -203,163 +191,204 @@
             z-index: 1000;
         }
 
-        .success-box {
-            background: #181818;
-            padding: 30px;
+        .success-card {
+            background: #1c1c1e;
+            padding: 25px;
             border-radius: 24px;
             text-align: center;
             border: 1px solid #333;
-            max-width: 280px;
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes pop { from { transform: scale(0.6); } to { transform: scale(1); } }
 
-        .checkmark-circle {
-            width: 70px;
-            height: 70px;
-            background: var(--accent-green);
+        .checkmark {
+            width: 65px; height: 65px;
+            background: var(--sber-green);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 16px auto;
-            box-shadow: 0 0 25px var(--accent-green-glow);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 36px; margin: 0 auto 12px auto;
+            box-shadow: 0 0 20px var(--sber-glow);
         }
 
-        .checkmark-icon { font-size: 38px; color: #fff; }
+        /* 5RP Паспорт */
+        .passport-real {
+            background: linear-gradient(135deg, #1f2128, #111216);
+            border: 2px solid #3a3f4d;
+            border-radius: 16px;
+            padding: 16px;
+            position: relative;
+        }
+
+        .stamp-5rp {
+            position: absolute;
+            right: 15px; bottom: 15px;
+            width: 75px; height: 75px;
+            border: 2px double #d32f2f;
+            border-radius: 50%;
+            color: #d32f2f;
+            font-size: 7px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transform: rotate(-15deg);
+            text-align: center; font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <!-- Шапка Сбер UI -->
-    <div class="app-header">
-        <div class="brand-logo">
-            <div class="sber-circle">✓</div>
-            <span>ГОСУСЛУГИ RP</span>
+<div class="tablet-frame">
+    <!-- Статус бар -->
+    <div class="status-bar">
+        <span id="clock">12:00</span>
+        <span>BeamNG 5G 🔋100%</span>
+    </div>
+
+    <!-- Главный экран -->
+    <div class="home-screen">
+        <div class="app-icon" onclick="openApp('app-gos')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #0052cc, #002b80);">🏛️</div>
+            <div class="icon-title">Госуслуги</div>
         </div>
-        <div style="font-size: 12px; color: var(--text-secondary);" id="user-role-badge">Гражданин</div>
+        <div class="app-icon" onclick="openApp('app-sber')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #21a038, #0f521b);">🟢</div>
+            <div class="icon-title">Сбербанк</div>
+        </div>
+        <div class="app-icon" onclick="openApp('app-settings')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #555, #222);">⚙️</div>
+            <div class="icon-title">Настройки</div>
+        </div>
+        <div class="app-icon" id="owner-app-icon" style="display:none;" onclick="openApp('app-owner')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #ff9500, #b36b00);">👑</div>
+            <div class="icon-title">Владелец</div>
+        </div>
     </div>
 
-    <!-- Табы -->
-    <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('passport')">🪪 Паспорт</button>
-        <button class="tab-btn" onclick="switchTab('vehicle')">🚗 Транспорт</button>
-        <button class="tab-btn" id="admin-tab-btn" style="display:none; color: #ff9500;" onclick="switchTab('admin')">⚙️ Управление</button>
-    </div>
-
-    <!-- Вкладка 1: Паспорт 5RP Style -->
-    <div id="tab-passport" class="tab-content active">
-        <div class="card passport-card">
-            <div class="passport-watermark">STATE OF BEAMNG</div>
-            <div class="passport-stamp">
-                ПРАВИТЕЛЬСТВО<br>ПЕЧАТЬ<br>УДОСТОВЕРЕНО
+    <!-- Приложение: ГОСУСЛУГИ -->
+    <div id="app-gos" class="app-window">
+        <div class="app-header">
+            <button class="back-btn" onclick="closeApp('app-gos')">❮ Назад</button>
+            <div style="font-weight:700;">ГОСУСЛУГИ</div>
+            <div></div>
+        </div>
+        <div class="app-body">
+            <!-- Цифровая копия паспорта -->
+            <div class="card-box passport-real">
+                <div class="stamp-5rp">ПРАВИТЕЛЬСТВО<br>BEAMNG STATE<br>УДОСТОВЕРЕНО</div>
+                <div style="color:#f2c94c; font-family:monospace; font-size:12px;" id="gos-pass-num">СЕРИЯ: ----</div>
+                <h3 style="margin:8px 0 4px 0;" id="gos-name">Загрузка...</h3>
+                <div style="font-size:13px; color:var(--text-sub);" id="gos-faction">Фракция: Гражданский</div>
             </div>
 
-            <div style="font-size: 12px; color: #f2c94c; font-family: monospace; margin-bottom: 14px;" id="p-number">СЕРИЯ: 4500-000000</div>
-
-            <div class="passport-row">
-                <div>
-                    <div class="field-label">Имя и Фамилия</div>
-                    <div class="field-value" id="p-name">Загрузка...</div>
+            <!-- Штрафы и Налоги -->
+            <div class="card-box">
+                <div style="font-weight:600; margin-bottom:8px;">Задолженности и Налоги</div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <span>Штрафы ГИБДД:</span>
+                    <b id="gos-fines-val" style="color:#ff3b30;">0 $</b>
                 </div>
-            </div>
-
-            <div class="passport-row">
-                <div>
-                    <div class="field-label">Фракция / Должность</div>
-                    <div class="field-value" id="p-faction">Гражданский</div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                    <span>Налог на имущество:</span>
+                    <b id="gos-tax-val" style="color:#ff9500;">150 $</b>
                 </div>
-            </div>
-
-            <div class="passport-row">
-                <div>
-                    <div class="field-label">Статус Розыска</div>
-                    <div class="field-value" id="p-wanted" style="color: var(--accent-green);">Не разыскивается</div>
-                </div>
-            </div>
-
-            <div class="passport-row">
-                <div>
-                    <div class="field-label">Лицензии</div>
-                    <div class="field-value" id="p-licenses">Авто (B)</div>
-                </div>
-            </div>
-
-            <div class="passport-row" style="border:none;">
-                <div>
-                    <div class="field-label">Неуплаченные Штрафы</div>
-                    <div class="field-value" id="p-fines" style="color: #fff;">0 $</div>
-                </div>
+                <button class="btn-green" onclick="payService('fines')">Оплатить штрафы</button>
+                <button class="btn-green" style="background:#222; margin-top:8px;" onclick="payService('taxes')">Оплатить налоги</button>
             </div>
         </div>
     </div>
 
-    <!-- Вкладка 2: Транспорт -->
-    <div id="tab-vehicle" class="tab-content">
-        <div class="card">
-            <div style="font-weight: 700; margin-bottom: 12px;">Зарегистрированный Автомобиль</div>
-            <div class="passport-row">
-                <div>
-                    <div class="field-label">Модель ТС</div>
-                    <div class="field-value" id="v-model">Нет авто</div>
-                </div>
+    <!-- Приложение: СБЕРБАНК -->
+    <div id="app-sber" class="app-window">
+        <div class="app-header" style="background:#0f2012;">
+            <button class="back-btn" onclick="closeApp('app-sber')">❮ Назад</button>
+            <div style="font-weight:700; color:#21a038;">СБЕРБАНК</div>
+            <div></div>
+        </div>
+        <div class="app-body">
+            <!-- Карта -->
+            <div class="card-box" style="background: linear-gradient(135deg, #1e3c23, #0b170e); border:1px solid #21a038;">
+                <div style="font-size:12px; color:var(--text-sub);">Баланс счета</div>
+                <h2 style="margin:4px 0 12px 0;" id="sber-balance">0 $</h2>
+                <div style="font-size:11px; font-family:monospace;" id="sber-card-num">CARD: **** **** **** 0000</div>
+                <div style="font-size:10px; color:var(--text-sub); margin-top:2px;" id="sber-iban">IBAN: RU00BEAM000000000000</div>
             </div>
-            <div class="passport-row" style="border:none;">
-                <div>
-                    <div class="field-label">Государственный номер</div>
-                    <div class="field-value" id="v-plate" style="color: #f2c94c;">---</div>
-                </div>
+
+            <!-- Переводы -->
+            <div class="card-box">
+                <div style="font-weight:600; margin-bottom:8px;">Перевод по серии паспорта</div>
+                <input type="text" id="transfer-pass" placeholder="Серия паспорта (напр. 4500-A18B)">
+                <input type="number" id="transfer-sum" placeholder="Сумма ($)">
+                <button class="btn-green" onclick="makeTransfer()">Перевести</button>
+            </div>
+
+            <!-- Заявка на кредит -->
+            <div class="card-box">
+                <div style="font-weight:600; margin-bottom:8px;">Кредитование</div>
+                <input type="number" id="credit-sum" placeholder="Запрашиваемая сумма ($)">
+                <button class="btn-green" style="background:#333;" onclick="applyCredit()">Запросить кредит</button>
             </div>
         </div>
     </div>
 
-    <!-- Вкладка 3: Админ-Панель (Только для Владельца) -->
-    <div id="tab-admin" class="tab-content">
-        <div class="card">
-            <div style="font-weight: 700; color: #ff9500; margin-bottom: 12px;">⚙️ Панель Управления Гражданами</div>
-            
-            <label class="field-label">Выберите гражданина:</label>
-            <select id="admin-user-select" onchange="loadUserToAdminForm()"></select>
-
-            <label class="field-label">Фракция / Должность:</label>
-            <input type="text" id="adm-faction" placeholder="Например: Шериф LSPD">
-
-            <label class="field-label">Статус Розыска:</label>
-            <select id="adm-wanted">
-                <option value="Не разыскивается">Не разыскивается</option>
-                <option value="В розыске (1 ст.)">В розыске (1 ст.)</option>
-                <option value="ОПАСЕН (ОСОБЫЙ РОЗЫСК)">ОПАСЕН (ОСОБЫЙ РОЗЫСК)</option>
-            </select>
-
-            <label class="field-label">Лицензии:</label>
-            <input type="text" id="adm-licenses" placeholder="Авто (B), Оружие, Авиация">
-
-            <label class="field-label">Штрафы ($):</label>
-            <input type="number" id="adm-fines" placeholder="0">
-
-            <label class="field-label">Модель Автомобиля BeamNG:</label>
-            <input type="text" id="adm-vmodel" placeholder="Gavril Grand Marshal">
-
-            <label class="field-label">Гос. Номер Авто:</label>
-            <input type="text" id="adm-vplate" placeholder="A777AA 77">
-
-            <button class="btn-primary" onclick="saveCitizenData()">Сохранить изменения</button>
+    <!-- Приложение: НАСТРОЙКИ -->
+    <div id="app-settings" class="app-window">
+        <div class="app-header">
+            <button class="back-btn" onclick="closeApp('app-settings')">❮ Назад</button>
+            <div style="font-weight:700;">Настройки</div>
+            <div></div>
+        </div>
+        <div class="app-body">
+            <div class="card-box">
+                <div style="font-weight:600; margin-bottom:8px;">🖼️ Смена Обоев Рабочего Стола</div>
+                <button class="btn-green" style="background:#222; margin-bottom:6px;" onclick="setWallpaper(1)">Абстракция Neon</button>
+                <button class="btn-green" style="background:#222; margin-bottom:6px;" onclick="setWallpaper(2)">Тёмный Космос</button>
+                <button class="btn-green" style="background:#222;" onclick="setWallpaper(3)">Спорткар BeamNG</button>
+            </div>
+            <div class="card-box">
+                <div style="font-weight:600; margin-bottom:4px;">⏱️ Часовой Пояс</div>
+                <div style="font-size:12px; color:var(--text-sub);">Автоматическая синхронизация с сервером штата</div>
+            </div>
         </div>
     </div>
 
-    <button class="btn-primary" style="background: #1a1a1a; margin-top: 10px; box-shadow:none;" onclick="Telegram.WebApp.close()">Закрыть</button>
+    <!-- Приложение: ВЛАДЕЛЕЦ -->
+    <div id="app-owner" class="app-window">
+        <div class="app-header" style="background:#2a1b00;">
+            <button class="back-btn" onclick="closeApp('app-owner')">❮ Назад</button>
+            <div style="font-weight:700; color:#ff9500;">👑 ПАНЕЛЬ ВЛАДЕЛЬЦА</div>
+            <div></div>
+        </div>
+        <div class="app-body">
+            <div class="card-box">
+                <div style="font-weight:600; color:#ff9500; margin-bottom:8px;">Управление Гражданами</div>
+                <select id="owner-user-select" onchange="loadOwnerForm()"></select>
+
+                <label style="font-size:11px; color:var(--text-sub);">Принять во фракцию / Звание:</label>
+                <input type="text" id="ow-faction" placeholder="Фракция">
+
+                <label style="font-size:11px; color:var(--text-sub);">Изменить Баланс ($):</label>
+                <input type="number" id="ow-balance" placeholder="Баланс">
+
+                <label style="font-size:11px; color:var(--text-sub);">Штрафы ($):</label>
+                <input type="number" id="ow-fines" placeholder="Штрафы">
+
+                <button class="btn-green" onclick="saveOwnerChanges()">Сохранить изменения</button>
+            </div>
+
+            <div class="card-box">
+                <div style="font-weight:600; color:#ff9500; margin-bottom:8px;">Заявки на Кредиты</div>
+                <div id="credits-list" style="font-size:12px; color:var(--text-sub);">Заявок нет</div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
-<!-- Модальное окно Успеха с зелёной галочкой -->
-<div class="modal-overlay" id="success-modal">
-    <div class="success-box">
-        <div class="checkmark-circle">
-            <span class="checkmark-icon">✓</span>
-        </div>
-        <div style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">Успешно!</div>
-        <div style="font-size: 13px; color: var(--text-secondary);">Данные обновлены в базе.</div>
+<!-- Анимированный экран Успеха -->
+<div class="success-overlay" id="success-modal">
+    <div class="success-card">
+        <div class="checkmark">✓</div>
+        <div style="font-size:18px; font-weight:700; margin-bottom:4px;">Операция выпонена</div>
+        <div style="font-size:12px; color:var(--text-sub);" id="success-text">Успешно!</div>
     </div>
 </div>
 
@@ -368,111 +397,113 @@
     tg.expand();
 
     const currentUser = tg.initDataUnsafe?.user || { id: 12345678, first_name: "Тестовый", last_name: "Игрок" };
-    let allCitizensData = {};
+    let dbData = {};
 
-    // ⚠️ ВАШ TELEGRAM ID ВЛАДЕЛЬЦА СЕРВЕРА (Заменится автоматически с Python)
-    const OWNER_ID = 0; 
+    // Часы
+    function updateClock() {
+        const d = new Date();
+        document.getElementById('clock').innerText = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    }
+    setInterval(updateClock, 1000); updateClock();
 
-    // Загрузка данных при старте
-    async function loadData() {
+    // Загрузка данных с сервера
+    async function loadAll() {
         try {
-            const res = await fetch(`/api/get_all_data?user_id=${currentUser.id}`);
+            const res = await fetch(`/api/get_tablet_data?user_id=${currentUser.id}`);
             const data = await res.json();
-            
-            allCitizensData = data.citizens;
-            renderMyPassport(data.citizens[currentUser.id]);
+            dbData = data.citizens;
 
-            // Если зашел владелец — открываем панель админа
-            if (data.is_owner) {
-                document.getElementById('admin-tab-btn').style.display = 'block';
-                document.getElementById('user-role-badge').innerText = "Владелец / Admin";
-                document.getElementById('user-role-badge').style.color = "#ff9500";
-                populateAdminSelect();
+            const me = data.citizens[currentUser.id];
+            if (me) {
+                document.getElementById('gos-pass-num').innerText = "СЕРИЯ: " + me.passport_code;
+                document.getElementById('gos-name').innerText = me.rp_name;
+                document.getElementById('gos-faction').innerText = "Фракция: " + me.faction;
+                document.getElementById('gos-fines-val').innerText = me.fines + " $";
+                
+                document.getElementById('sber-balance').innerText = me.balance + " $";
+                document.getElementById('sber-card-num').innerText = me.card_num;
+                document.getElementById('sber-iban').innerText = me.iban;
             }
-        } catch (e) {
-            console.log("Ошибка подключения к серверу API");
-        }
+
+            if (data.is_owner) {
+                document.getElementById('owner-app-icon').style.display = 'flex';
+                populateOwnerSelect();
+            }
+        } catch(e) {}
     }
 
-    function renderMyPassport(my) {
-        if (!my) return;
-        document.getElementById('p-number').innerText = "СЕРИЯ: " + my.passport_code;
-        document.getElementById('p-name').innerText = my.rp_name;
-        document.getElementById('p-faction').innerText = my.faction;
-        document.getElementById('p-wanted').innerText = my.wanted;
-        document.getElementById('p-wanted').style.color = my.wanted.includes("розыск") ? "var(--danger-red)" : "var(--accent-green)";
-        document.getElementById('p-licenses').innerText = my.licenses;
-        document.getElementById('p-fines').innerText = my.fines + " $";
-        document.getElementById('v-model').innerText = my.v_model;
-        document.getElementById('v-plate').innerText = my.v_plate;
-    }
-
-    function populateAdminSelect() {
-        const select = document.getElementById('admin-user-select');
+    function populateOwnerSelect() {
+        const select = document.getElementById('owner-user-select');
         select.innerHTML = '';
-        for (let id in allCitizensData) {
-            let u = allCitizensData[id];
+        for (let id in dbData) {
             let opt = document.createElement('option');
             opt.value = id;
-            opt.innerText = `${u.rp_name} (ID: ${id})`;
+            opt.innerText = `${dbData[id].rp_name} (${dbData[id].passport_code})`;
             select.appendChild(opt);
         }
-        loadUserToAdminForm();
+        loadOwnerForm();
     }
 
-    function loadUserToAdminForm() {
-        const selectedId = document.getElementById('admin-user-select').value;
-        const u = allCitizensData[selectedId];
-        if (!u) return;
-
-        document.getElementById('adm-faction').value = u.faction;
-        document.getElementById('adm-wanted').value = u.wanted;
-        document.getElementById('adm-licenses').value = u.licenses;
-        document.getElementById('adm-fines').value = u.fines;
-        document.getElementById('adm-vmodel').value = u.v_model;
-        document.getElementById('adm-vplate').value = u.v_plate;
+    function loadOwnerForm() {
+        const id = document.getElementById('owner-user-select').value;
+        const u = dbData[id];
+        if(!u) return;
+        document.getElementById('ow-faction').value = u.faction;
+        document.getElementById('ow-balance').value = u.balance;
+        document.getElementById('ow-fines').value = u.fines;
     }
 
-    // Сохранение администратором
-    async function saveCitizenData() {
-        const targetId = document.getElementById('admin-user-select').value;
+    async function saveOwnerChanges() {
+        const targetId = document.getElementById('owner-user-select').value;
         const payload = {
             admin_id: currentUser.id,
             target_id: targetId,
-            faction: document.getElementById('adm-faction').value,
-            wanted: document.getElementById('adm-wanted').value,
-            licenses: document.getElementById('adm-licenses').value,
-            fines: document.getElementById('adm-fines').value,
-            v_model: document.getElementById('adm-vmodel').value,
-            v_plate: document.getElementById('adm-vplate').value
+            faction: document.getElementById('ow-faction').value,
+            balance: document.getElementById('ow-balance').value,
+            fines: document.getElementById('ow-fines').value
         };
-
-        const res = await fetch('/api/update_citizen', {
+        await fetch('/api/owner_update', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(payload)
         });
+        showSuccess("Данные гражданина обновлены!");
+        loadAll();
+    }
 
+    async function makeTransfer() {
+        const pass = document.getElementById('transfer-pass').value;
+        const sum = document.getElementById('transfer-sum').value;
+        const res = await fetch('/api/transfer', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ from_id: currentUser.id, to_pass: pass, sum: parseInt(sum) })
+        });
         if (res.ok) {
-            showSuccessModal();
-            loadData();
+            showSuccess("Перевод выполнен!");
+            loadAll();
         }
     }
 
-    function showSuccessModal() {
-        const modal = document.getElementById('success-modal');
-        modal.style.display = 'flex';
-        setTimeout(() => { modal.style.display = 'none'; }, 1500);
+    function showSuccess(msg) {
+        document.getElementById('success-text').innerText = msg;
+        const m = document.getElementById('success-modal');
+        m.style.display = 'flex';
+        setTimeout(() => m.style.display = 'none', 1600);
     }
 
-    function switchTab(tab) {
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(`tab-${tab}`).classList.add('active');
-        event.currentTarget.classList.add('active');
+    function openApp(id) { document.getElementById(id).classList.add('active'); }
+    function closeApp(id) { document.getElementById(id).classList.remove('active'); }
+
+    function setWallpaper(num) {
+        const frame = document.querySelector('.tablet-frame');
+        if (num === 1) frame.style.backgroundImage = "url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000')";
+        if (num === 2) frame.style.backgroundImage = "url('https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=1000')";
+        if (num === 3) frame.style.backgroundImage = "url('https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?q=80&w=1000')";
+        showSuccess("Обои изменены!");
     }
 
-    loadData();
+    loadAll();
 </script>
 </body>
 </html>
