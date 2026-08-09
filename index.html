@@ -7,252 +7,69 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-glass: rgba(18, 18, 20, 0.92);
+            --bg-glass: rgba(18, 18, 20, 0.95);
             --border-glass: rgba(255, 255, 255, 0.12);
             --accent-green: #2ecc71;
             --accent-blue: #3498db;
-            --accent-purple: #9b59b6;
             --accent-red: #e74c3c;
         }
 
-        * {
-            box-sizing: border-box;
-            user-select: none;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background: #000;
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-        }
+        * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background: #000; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
 
         .phone-frame {
-            width: 100%;
-            max-width: 360px;
-            height: 100vh;
-            max-height: 740px;
+            width: 100%; max-width: 360px; height: 100vh; max-height: 740px;
             background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
-            border-radius: 40px;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            border: 4px solid #2d2d2d;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+            border-radius: 40px; position: relative; overflow: hidden; display: flex; flex-direction: column;
+            border: 4px solid #2d2d2d; box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
         }
 
-        .notch {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 140px;
-            height: 24px;
-            background: #000;
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px;
-            z-index: 1000;
-        }
-
-        .header-bar {
-            padding: 28px 20px 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
-            z-index: 10;
-        }
-
+        .notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 140px; height: 24px; background: #000; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; z-index: 1000; }
+        .header-bar { padding: 28px 20px 10px 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%); z-index: 10; }
         .header-time { font-size: 13px; font-weight: 700; }
+        .header-money { background: rgba(46, 204, 113, 0.2); border: 1px solid rgba(46, 204, 113, 0.4); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 800; color: #2ecc71; }
 
-        .header-money {
-            background: rgba(46, 204, 113, 0.2);
-            border: 1px solid rgba(46, 204, 113, 0.4);
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 800;
-            color: #2ecc71;
-        }
-
-        .home-screen {
-            flex: 1;
-            padding: 30px 20px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px 15px;
-            align-content: start;
-        }
-
-        .app-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
+        .home-screen { flex: 1; padding: 30px 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 15px; align-content: start; }
+        .app-item { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
         .app-item:active { transform: scale(0.92); }
 
-        .app-box {
-            width: 60px;
-            height: 60px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.15);
-            backdrop-filter: blur(10px);
-        }
+        /* Иконка Владельца скрыта по умолчанию */
+        #owner-app-icon { display: none; }
 
-        .app-name {
-            font-size: 11px;
-            font-weight: 600;
-            text-align: center;
-            color: #ffffff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        }
+        .app-box { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 8px 20px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(10px); }
+        .app-name { font-size: 11px; font-weight: 600; text-align: center; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
-        .dock-bar {
-            margin: 0 16px 20px 16px;
-            padding: 10px 15px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            border-radius: 28px;
-            display: flex;
-            justify-content: space-around;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
+        .dock-bar { margin: 0 16px 20px 16px; padding: 10px 15px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 28px; display: flex; justify-content: space-around; border: 1px solid rgba(255,255,255,0.2); }
         .dock-bar .app-box { width: 50px; height: 50px; font-size: 24px; border-radius: 14px; }
 
-        .app-window {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg-glass);
-            backdrop-filter: blur(25px);
-            z-index: 100;
-            display: none;
-            flex-direction: column;
-            animation: slideUp 0.25s cubic-bezier(0.1, 0.9, 0.2, 1);
-        }
+        .app-window { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-glass); backdrop-filter: blur(25px); z-index: 100; display: none; flex-direction: column; animation: slideUp 0.25s cubic-bezier(0.1, 0.9, 0.2, 1); }
         .app-window.active { display: flex; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-
-        .window-header {
-            padding: 35px 16px 14px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(0, 0, 0, 0.4);
-            border-bottom: 1px solid var(--border-glass);
-        }
-
-        .back-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--border-glass);
-            color: #fff;
-            padding: 6px 12px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
+        .window-header { padding: 35px 16px 14px 16px; display: flex; align-items: center; justify-content: space-between; background: rgba(0, 0, 0, 0.4); border-bottom: 1px solid var(--border-glass); }
+        .back-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--border-glass); color: #fff; padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
         .window-body { flex: 1; padding: 16px; overflow-y: auto; }
 
-        .card-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 14px;
-            border: 1px solid var(--border-glass);
-            margin-bottom: 12px;
-        }
-
-        .btn-action {
-            width: 100%;
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 6px;
-        }
-
+        .card-item { background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); margin-bottom: 12px; }
+        .btn-action { width: 100%; background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border: none; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 6px; }
         .btn-action.red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
         .btn-action.blue { background: linear-gradient(135deg, #3498db, #2980b9); }
 
-        input, select {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--border-glass);
-            color: #fff;
-            padding: 10px;
-            border-radius: 10px;
-            margin: 4px 0 8px 0;
-            font-size: 12px;
-            outline: none;
-        }
+        input, select { width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--border-glass); color: #fff; padding: 10px; border-radius: 10px; margin: 4px 0 8px 0; font-size: 12px; outline: none; }
 
-        .id-card-doc {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            color: #fff;
-            border-radius: 16px;
-            padding: 14px;
-            border: 1px solid var(--border-glass);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
-        }
+        /* Экран Регистрации */
+        #auth-screen { position: absolute; top:0; left:0; right:0; bottom:0; background: #0c0d12; z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 24px; text-align: center; }
 
-        .id-card-title {
-            text-align: center;
-            font-size: 11px;
-            font-weight: 800;
-            color: var(--accent-blue);
-            border-bottom: 1px solid var(--border-glass);
-            padding-bottom: 4px;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
-
+        .id-card-doc { background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); }
+        .id-card-title { text-align: center; font-size: 11px; font-weight: 800; color: var(--accent-blue); border-bottom: 1px solid var(--border-glass); padding-bottom: 4px; margin-bottom: 8px; }
         .id-card-grid { display: flex; gap: 10px; }
-        .id-photo-box {
-            width: 65px; height: 80px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            color: #64748b; font-size: 9px;
-            border: 1px solid var(--border-glass);
-        }
-
-        .id-info { flex: 1; font-size: 10px; }
+        .id-photo-box { width: 65px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 9px; border: 1px solid var(--border-glass); }
+        .id-info { flex: 1; font-size: 10px; text-align: left; }
         .id-field-label { font-size: 8px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
         .id-field-val { font-size: 11px; font-weight: 700; color: #fff; margin-bottom: 3px; }
 
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-            display: none; justify-content: center; align-items: center; z-index: 1000;
-        }
-
-        .modal-box {
-            background: #1e1e24; padding: 20px; border-radius: 20px;
-            text-align: center; border: 1px solid var(--border-glass); max-width: 240px;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 3000; }
+        .modal-box { background: #1e1e24; padding: 20px; border-radius: 20px; text-align: center; border: 1px solid var(--border-glass); max-width: 240px; }
     </style>
 </head>
 <body>
@@ -260,6 +77,20 @@
 <div class="phone-frame">
     <div class="notch"></div>
 
+    <!-- ЭКРАН РЕГИСТРАЦИИ (Если нет в базе) -->
+    <div id="auth-screen" style="display: none;">
+        <div style="font-size: 32px; margin-bottom: 8px;">🆔</div>
+        <div style="font-size: 18px; font-weight: 800; margin-bottom: 4px;">Регистрация Гражданина</div>
+        <div style="font-size: 11px; color: #aaa; margin-bottom: 20px;">Введите ваши RP данные для создания паспорта</div>
+        
+        <input type="text" id="reg-fname" placeholder="Имя (напр. Миша)">
+        <input type="text" id="reg-lname" placeholder="Фамилия (напр. Персоньян)">
+        <input type="text" id="reg-bday" placeholder="Дата рождения (напр. 22.11.2006)">
+        
+        <button class="btn-action" onclick="registerUser()">Зарегистрироваться</button>
+    </div>
+
+    <!-- Верхний статус-бар -->
     <div class="header-bar">
         <div class="header-time" id="clock">12:00</div>
         <div class="header-money" id="top-balance">0 €</div>
@@ -292,7 +123,7 @@
             <div class="app-name">Настройки</div>
         </div>
 
-        <!-- Кнопка Владельца (Всегда доступна для OWNER_ID) -->
+        <!-- Кнопка Владельца (ТОЛЬКО ДЛЯ ВАС) -->
         <div class="app-item" id="owner-app-icon" onclick="openApp('app-owner')">
             <div class="app-box" style="background: linear-gradient(135deg, #c0392b, #e74c3c);">👑</div>
             <div class="app-name">Владелец</div>
@@ -412,19 +243,19 @@
     <div id="app-owner" class="app-window">
         <div class="window-header">
             <button class="back-btn" onclick="closeApp('app-owner')">‹ Назад</button>
-            <div style="font-weight:700; color:#e74c3c; font-size:13px;">👑 ПАНЕЛЬ ВЛАДЕЛЬЦА</div>
+            <div style="font-weight:700; color:#e74c3c; font-size:13px;">👑 АДМИН-ПАНЕЛЬ</div>
             <div></div>
         </div>
         <div class="window-body">
             <div class="card-item">
-                <div style="font-weight:700; font-size:12px; margin-bottom:6px; color:#e74c3c;">Выберите игрока из базы:</div>
+                <div style="font-weight:700; font-size:12px; margin-bottom:6px; color:#e74c3c;">Игроки в базе:</div>
                 <select id="owner-user-select" onchange="loadOwnerForm()"></select>
 
                 <label style="font-size:9px; color:#aaa;">Статус анкеты:</label>
                 <div style="font-size:11px; font-weight:bold; color:#2ecc71; margin-bottom:8px;" id="ow-app-status">Одобрена</div>
 
                 <div style="display:flex; gap:6px; margin-bottom:10px;">
-                    <button class="btn-action" style="margin:0;" onclick="reviewApplication('approved')">Принять анкету</button>
+                    <button class="btn-action" style="margin:0;" onclick="reviewApplication('approved')">Принять</button>
                     <button class="btn-action red" style="margin:0;" onclick="reviewApplication('rejected')">Отклонить</button>
                 </div>
 
@@ -434,7 +265,7 @@
                     <button class="btn-action blue" style="margin:0;" onclick="quickAddMoney(10000)">+ 10 000 €</button>
                 </div>
 
-                <label style="font-size:9px; color:#aaa;">Фракция / Огранизация:</label>
+                <label style="font-size:9px; color:#aaa;">Фракция:</label>
                 <input type="text" id="ow-faction">
 
                 <label style="font-size:9px; color:#aaa;">Точный баланс (€):</label>
@@ -459,7 +290,8 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    let currentUser = { id: OWNER_ID, first_name: "Миша", last_name: "Персоньян" };
+    // Захватываем ID реального зашедшего пользователя
+    let currentUser = { id: 0, first_name: "", last_name: "" };
     if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
         currentUser = tg.initDataUnsafe.user;
     }
@@ -480,37 +312,47 @@
                 <div class="id-photo-box">PHOTO</div>
                 <div class="id-info">
                     <div class="id-field-label">1. Фамилия</div>
-                    <div class="id-field-val">${(data.lname || "Персоньян").toUpperCase()}</div>
+                    <div class="id-field-val">${(data.lname || "").toUpperCase()}</div>
                     <div class="id-field-label">2. Имя</div>
-                    <div class="id-field-val">${(data.fname || "Миша").toUpperCase()}</div>
+                    <div class="id-field-val">${(data.fname || "").toUpperCase()}</div>
                     <div class="id-field-label">3. Дата рождения</div>
-                    <div class="id-field-val">${data.bday || "22.11.2006"}</div>
+                    <div class="id-field-val">${data.bday || ""}</div>
                 </div>
             </div>
         </div>`;
     }
 
     async function loadAll() {
+        if (!currentUser.id) return;
         try {
             const res = await fetch(`/api/get_tablet_data?user_id=${currentUser.id}`);
             const data = await res.json();
             dbData = data.citizens || {};
 
-            // Если текущий юзер — Владелец, показываем иконку Владельца
-            if (data.is_owner || String(currentUser.id) === String(OWNER_ID)) {
-                document.getElementById('owner-app-icon').style.display = 'flex';
+            // Проверка на регистрацию
+            if (!dbData[currentUser.id]) {
+                document.getElementById('auth-screen').style.display = 'flex';
+                return;
+            } else {
+                document.getElementById('auth-screen').style.display = 'none';
             }
 
-            let me = dbData[currentUser.id] || { fname: currentUser.first_name, lname: currentUser.last_name || "", bday: "22.11.2006", balance: 0 };
+            // Показываем кнопку Владельца ТОЛЬКО если это вы (по строгому Telegram ID)
+            if (String(currentUser.id) === String(OWNER_ID)) {
+                document.getElementById('owner-app-icon').style.display = 'flex';
+            } else {
+                document.getElementById('owner-app-icon').style.display = 'none';
+            }
 
-            // Рендерим актуальный паспорт
+            let me = dbData[currentUser.id];
+
             const passHTML = createPassportHTML(me);
             document.getElementById('gos-pass-box').innerHTML = passHTML;
             document.getElementById('docs-pass-box').innerHTML = passHTML;
 
             document.getElementById('edit-fname').value = me.fname || "";
             document.getElementById('edit-lname').value = me.lname || "";
-            document.getElementById('edit-bday').value = me.bday || "22.11.2006";
+            document.getElementById('edit-bday').value = me.bday || "";
 
             document.getElementById('sber-balance').innerText = (me.balance || 0) + " €";
             document.getElementById('top-balance').innerText = (me.balance || 0) + " €";
@@ -521,6 +363,31 @@
 
             populateOwnerSelect();
         } catch(e) {}
+    }
+
+    async function registerUser() {
+        const fname = document.getElementById('reg-fname').value;
+        const lname = document.getElementById('reg-lname').value;
+        const bday = document.getElementById('reg-bday').value;
+
+        if (!fname || !lname || !bday) {
+            showModal("Ошибка", "Заполните все поля!", false);
+            return;
+        }
+
+        await fetch('/api/register', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                user_id: currentUser.id,
+                fname: fname,
+                lname: lname,
+                bday: bday
+            })
+        });
+
+        showModal("Успешно", "Аккаунт создан!", true);
+        await loadAll();
     }
 
     async function savePersonalData() {
@@ -537,8 +404,8 @@
             body: JSON.stringify(payload)
         });
 
-        showModal("Сохранено", "Паспорт успешно обновлен!", true);
-        await loadAll(); // Перезагружаем интерфейс для мгновенного обновления паспорта
+        showModal("Сохранено", "Паспорт обновлен!", true);
+        await loadAll();
     }
 
     async function makeTransfer() {
@@ -625,7 +492,7 @@
                 status: status
             })
         });
-        showModal("Готово", status === 'approved' ? "Анкета принята!" : "Анкета отклонена!", true);
+        showModal("Готово", status === 'approved' ? "Принято!" : "Отклонено!", true);
         await loadAll();
     }
 
