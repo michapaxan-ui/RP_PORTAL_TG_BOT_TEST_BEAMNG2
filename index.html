@@ -454,11 +454,9 @@
             }
         }
         
-        // Подгружаем данные семейного счета при старте
         loadFamilyData();
     }
 
-    // Загрузка семейного счёта и истории транзакций
     async function loadFamilyData() {
         try {
             const res = await fetch(`${BACKEND_URL}/api/get_family_data`);
@@ -493,7 +491,6 @@
         }
     }
 
-    // Проведение операции с семейным счётом
     async function submitFamilyAction() {
         const type = document.getElementById('fam-action-type').value;
         const amount = parseInt(document.getElementById('fam-amount').value);
@@ -640,7 +637,6 @@
         showModal("Куплено!", "Лицензия получена", true);
     }
 
-    // Калькулятор логика
     function calcInput(val) {
         const scr = document.getElementById('calc-screen');
         if (val === 'C') {
