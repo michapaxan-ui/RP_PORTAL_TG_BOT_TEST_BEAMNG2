@@ -313,6 +313,7 @@
     setInterval(updateClock, 1000); updateClock();
 
     function createPassportHTML(data) {
+        if (!data) return '';
         return `
         <div class="id-card-doc">
             <div class="id-card-title">STATE OF SAN ANDREAS</div>
@@ -331,9 +332,13 @@
     }
 
     function renderUI(me) {
+        if (!me) return;
         const passHTML = createPassportHTML(me);
-        document.getElementById('gos-pass-box').innerHTML = passHTML;
-        document.getElementById('docs-pass-box').innerHTML = passHTML;
+        
+        const gosBox = document.getElementById('gos-pass-box');
+        const docsBox = document.getElementById('docs-pass-box');
+        if (gosBox) gosBox.innerHTML = passHTML;
+        if (docsBox) docsBox.innerHTML = passHTML;
 
         document.getElementById('edit-fname').value = me.fname || "";
         document.getElementById('edit-lname').value = me.lname || "";
@@ -376,6 +381,9 @@
 
     function populateOwnerSelect() {
         const select = document.getElementById('owner-user-select');
+        if (!select) return;
+        
+        const currentSelected = select.value;
         select.innerHTML = '';
         
         let count = 0;
@@ -392,13 +400,17 @@
             opt.value = "";
             opt.innerText = "Игроков не найдено";
             select.appendChild(opt);
+        } else if (currentSelected && dbData[currentSelected]) {
+            select.value = currentSelected;
         }
 
         loadOwnerForm();
     }
 
     function loadOwnerForm() {
-        const id = document.getElementById('owner-user-select').value;
+        const select = document.getElementById('owner-user-select');
+        if (!select) return;
+        const id = select.value;
         if (!id || !dbData[id]) return;
         const u = dbData[id]; 
         document.getElementById('ow-faction').value = u.faction || "Гражданский";
@@ -490,7 +502,8 @@
     }
 
     async function saveOwnerChanges() {
-        const targetId = document.getElementById('owner-user-select').value;
+        const select = document.getElementById('owner-user-select');
+        const targetId = select ? select.value : null;
         const balanceVal = document.getElementById('ow-balance').value;
         const factionVal = document.getElementById('ow-faction').value;
 
@@ -515,7 +528,7 @@
             const data = await res.json();
             if (res.ok && data.status === 'ok') {
                 showModal("Сохранено", "Данные игрока обновлены!", true);
-                loadAll();
+                await loadAll();
             } else {
                 showModal("Ошибка", data.message || "Игрок не найден", false);
             }
