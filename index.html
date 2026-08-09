@@ -2,687 +2,78 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GTA V RP iFruit Phone</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RP Tablet</title>
     <style>
-        :root {
-            --bg-glass: rgba(18, 18, 20, 0.95);
-            --border-glass: rgba(255, 255, 255, 0.12);
-            --accent-green: #2ecc71;
-            --accent-blue: #3498db;
-            --accent-red: #e74c3c;
-            --card-bg: rgba(255, 255, 255, 0.05);
-        }
-
-        * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background: #000; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
-
-        .phone-frame {
-            width: 100%; max-width: 360px; height: 100vh; max-height: 740px;
-            background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
-            border-radius: 40px; position: relative; overflow: hidden; display: flex; flex-direction: column;
-            border: 4px solid #2d2d2d; box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
-        }
-
-        .notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 140px; height: 24px; background: #000; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; z-index: 1000; }
-        .header-bar { padding: 28px 20px 10px 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%); z-index: 10; }
-        .header-time { font-size: 13px; font-weight: 700; }
-        .header-money { background: rgba(46, 204, 113, 0.2); border: 1px solid rgba(46, 204, 113, 0.4); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 800; color: #2ecc71; }
-
-        .home-screen { flex: 1; padding: 30px 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 15px; align-content: start; }
-        .app-item { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
-        .app-item:active { transform: scale(0.92); }
-
-        #owner-app-icon { display: none; }
-
-        .app-box { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 8px 20px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(10px); }
-        .app-name { font-size: 11px; font-weight: 600; text-align: center; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-
-        .dock-bar { margin: 0 16px 20px 16px; padding: 10px 15px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 28px; display: flex; justify-content: space-around; border: 1px solid rgba(255,255,255,0.2); }
-        .dock-bar .app-box { width: 50px; height: 50px; font-size: 24px; border-radius: 14px; }
-
-        .app-window { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-glass); backdrop-filter: blur(25px); z-index: 100; display: none; flex-direction: column; animation: slideUp 0.25s cubic-bezier(0.1, 0.9, 0.2, 1); }
-        .app-window.active { display: flex; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
-        .window-header { padding: 35px 16px 14px 16px; display: flex; align-items: center; justify-content: space-between; background: rgba(0, 0, 0, 0.4); border-bottom: 1px solid var(--border-glass); }
-        .back-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--border-glass); color: #fff; padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
-        .window-body { flex: 1; padding: 16px; overflow-y: auto; }
-
-        .card-item { background: var(--card-bg); border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); margin-bottom: 12px; }
-        .btn-action { width: 100%; background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border: none; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 6px; }
-        .btn-action.red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-        .btn-action.blue { background: linear-gradient(135deg, #3498db, #2980b9); }
-
-        input, select { width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--border-glass); color: #fff; padding: 10px; border-radius: 10px; margin: 4px 0 8px 0; font-size: 12px; outline: none; }
-
-        #auth-screen { position: absolute; top:0; left:0; right:0; bottom:0; background: #0c0d12; z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 24px; text-align: center; }
-
-        .id-card-doc { background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); }
-        .id-card-title { text-align: center; font-size: 11px; font-weight: 800; color: var(--accent-blue); border-bottom: 1px solid var(--border-glass); padding-bottom: 4px; margin-bottom: 8px; }
-        .id-card-grid { display: flex; gap: 10px; }
-        .id-photo-box { width: 65px; height: 85px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 9px; border: 1px solid var(--border-glass); }
-        .id-info { flex: 1; font-size: 10px; text-align: left; }
-        .id-field-label { font-size: 8px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
-        .id-field-val { font-size: 11px; font-weight: 700; color: #fff; margin-bottom: 3px; }
-
-        .tx-item { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 11px; }
-        .tx-item:last-child { border-bottom: none; }
-        .tx-user { font-weight: 700; color: #fff; }
-        .tx-desc { color: #aaa; font-size: 10px; margin-top: 2px; }
-
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 3000; }
-        .modal-box { background: #1e1e24; padding: 20px; border-radius: 20px; text-align: center; border: 1px solid var(--border-glass); max-width: 240px; }
+        body { background: #1a1a1a; color: white; font-family: sans-serif; margin: 0; padding: 20px; }
+        .app-window { display: none; background: #2c3e50; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        button { padding: 10px; cursor: pointer; border: none; border-radius: 5px; }
+        .btn-action { background: #3498db; color: white; }
     </style>
 </head>
 <body>
 
-<div class="phone-frame">
-    <div class="notch"></div>
-
-    <!-- ЭКРАН РЕГИСТРАЦИИ -->
-    <div id="auth-screen" style="display: none;">
-        <div style="font-size: 32px; margin-bottom: 8px;">🆔</div>
-        <div style="font-size: 18px; font-weight: 800; margin-bottom: 4px;">Регистрация Гражданина</div>
-        <div style="font-size: 11px; color: #aaa; margin-bottom: 20px;">Введите ваши RP данные для создания паспорта</div>
-        
-        <input type="text" id="reg-fname" placeholder="Имя (напр. Миша)">
-        <input type="text" id="reg-lname" placeholder="Фамилия (напр. Персоньян)">
-        <input type="text" id="reg-bday" placeholder="Дата рождения (напр. 22.11.2006)">
-        
-        <button class="btn-action" onclick="registerUser()">Зарегистрироваться</button>
+    <div id="main-menu">
+        <button onclick="showApp('app-passport')">👤 Паспорт</button>
+        <button onclick="showApp('app-family')">💰 Семья</button>
+        <button onclick="showApp('app-calc')">🧮 Калькулятор</button>
     </div>
 
-    <div class="header-bar">
-        <div class="header-time" id="clock">12:00</div>
-        <div class="header-money" id="top-balance">0 €</div>
+    <!-- Паспорт -->
+    <div id="app-passport" class="app-window">
+        <h3>Мой паспорт</h3>
+        <div id="passport-data">Загрузка...</div>
+        <button onclick="hideAll()">Закрыть</button>
     </div>
 
-    <!-- Главный экран -->
-    <div class="home-screen">
-        <div class="app-item" onclick="openApp('app-gos')">
-            <div class="app-box" style="background: linear-gradient(135deg, #2980b9, #3498db);">🏛️</div>
-            <div class="app-name">Госуслуги</div>
-        </div>
-
-        <div class="app-item" onclick="openApp('app-sber')">
-            <div class="app-box" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">🟢</div>
-            <div class="app-name">Сбербанк</div>
-        </div>
-
-        <div class="app-item" onclick="openApp('app-family')">
-            <div class="app-box" style="background: linear-gradient(135deg, #f39c12, #e67e22);">👨‍👩‍👧‍👦</div>
-            <div class="app-name">Семья</div>
-        </div>
-
-        <div class="app-item" onclick="openApp('app-docs')">
-            <div class="app-box" style="background: linear-gradient(135deg, #d35400, #e67e22);">📁</div>
-            <div class="app-name">Документы</div>
-        </div>
-
-        <div class="app-item" onclick="openApp('app-lic')">
-            <div class="app-box" style="background: linear-gradient(135deg, #8e44ad, #9b59b6);">📜</div>
-            <div class="app-name">Лицензии</div>
-        </div>
-
-        <div class="app-item" onclick="openApp('app-settings')">
-            <div class="app-box" style="background: linear-gradient(135deg, #7f8c8d, #95a5a6);">⚙️</div>
-            <div class="app-name">Настройки</div>
-        </div>
-
-        <div class="app-item" id="owner-app-icon" onclick="openApp('app-owner')">
-            <div class="app-box" style="background: linear-gradient(135deg, #c0392b, #e74c3c);">👑</div>
-            <div class="app-name">Владелец</div>
-        </div>
-    </div>
-
-    <div class="dock-bar">
-        <div class="app-item" onclick="openApp('app-gos')">
-            <div class="app-box" style="background: linear-gradient(135deg, #2980b9, #3498db);">📖</div>
-        </div>
-        <div class="app-item" onclick="openApp('app-sber')">
-            <div class="app-box" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">💳</div>
-        </div>
-        <div class="app-item" onclick="openApp('app-family')">
-            <div class="app-box" style="background: linear-gradient(135deg, #f39c12, #e67e22);">🏠</div>
-        </div>
-    </div>
-
-    <!-- ОКНО: ГОСУСЛУГИ -->
-    <div id="app-gos" class="app-window">
-        <div class="window-header">
-            <button class="back-btn" onclick="closeApp('app-gos')">‹ Назад</button>
-            <div style="font-weight:700; font-size:13px;">ГОСУСЛУГИ</div>
-            <div></div>
-        </div>
-        <div class="window-body">
-            <div style="margin-bottom: 12px;" id="gos-pass-box"></div>
-            <div class="card-item">
-                <div style="font-weight:600; margin-bottom:8px; font-size:12px;">✏️ Изменить данные паспорта</div>
-                <input type="text" id="edit-fname" placeholder="Имя">
-                <input type="text" id="edit-lname" placeholder="Фамилия">
-                <input type="text" id="edit-bday" placeholder="Дата рождения">
-                <button class="btn-action" onclick="savePersonalData()">Сохранить насовсем</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ОКНО: СБЕРБАНК -->
-    <div id="app-sber" class="app-window">
-        <div class="window-header">
-            <button class="back-btn" onclick="closeApp('app-sber')">‹ Назад</button>
-            <div style="font-weight:700; color:#2ecc71; font-size:13px;">СБЕРБАНК</div>
-            <div></div>
-        </div>
-        <div class="window-body">
-            <div class="card-item" style="background: linear-gradient(135deg, rgba(39,174,96,0.2), rgba(0,0,0,0.4)); border-color:#2ecc71;">
-                <div style="font-size:10px; color:#aaa;">Личный баланс</div>
-                <h2 style="margin:4px 0 8px 0; color:#2ecc71;" id="sber-balance">0 €</h2>
-                <div style="font-size:11px; font-family:monospace; color:#fff; font-weight:bold;" id="sber-card">CARD: Загрузка...</div>
-                <div style="font-size:10px; font-family:monospace; color:#3498db; margin-top:4px; font-weight:bold;" id="sber-iban">IBAN: Загрузка...</div>
-            </div>
-            <div class="card-item">
-                <div style="font-weight:600; margin-bottom:8px; font-size:12px;">Перевод по IBAN</div>
-                <input type="text" id="transfer-iban" placeholder="IBAN получателя">
-                <input type="number" id="transfer-sum" placeholder="Сумма (€)">
-                <button class="btn-action" onclick="makeTransfer()">Отправить</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ОКНО: СЕМЕЙНЫЙ СЧЁТ -->
+    <!-- Семья -->
     <div id="app-family" class="app-window">
-        <div class="window-header">
-            <button class="back-btn" onclick="closeApp('app-family')">‹ Назад</button>
-            <div style="font-weight:700; color:#f39c12; font-size:13px;">👨‍👩‍👧‍👦 СЕМЕЙНЫЙ СЧЁТ</div>
-            <div></div>
-        </div>
-        <div class="window-body">
-            <div class="card-item" style="background: linear-gradient(135deg, rgba(243,156,18,0.2), rgba(0,0,0,0.4)); border-color:#f39c12;">
-                <div style="font-size:10px; color:#aaa;">Общий баланс семьи</div>
-                <h2 style="margin:4px 0 4px 0; color:#f39c12;" id="fam-balance">0 €</h2>
-                <div style="font-size:9px; color:#ddd;">Все члены семьи видят этот счёт</div>
-            </div>
-
-            <div class="card-item">
-                <div style="font-weight:600; margin-bottom:8px; font-size:12px;">Изменить семейную казну</div>
-                
-                <select id="fam-action-type">
-                    <option value="deposit">➕ Пополнить счёт (Заработали)</option>
-                    <option value="withdraw">➖ Потратить со счёта (Покупка)</option>
-                </select>
-
-                <input type="number" id="fam-amount" placeholder="Сумма (€)">
-                <input type="text" id="fam-desc" placeholder="На что потратили / Откуда получили?">
-
-                <button class="btn-action" style="background:linear-gradient(135deg, #f39c12, #d35400);" onclick="submitFamilyAction()">Провести операцию</button>
-            </div>
-
-            <div class="card-item">
-                <div style="font-weight:700; font-size:12px; margin-bottom:8px; color:#f39c12;">📜 Транзакции семейного счёта:</div>
-                <div id="fam-tx-list">Загрузка истории...</div>
-            </div>
-        </div>
+        <h3>Казна: <span id="fam-bal">0</span>€</h3>
+        <input type="number" id="amt" placeholder="Сумма">
+        <button onclick="famAction('deposit')">Внести</button>
+        <div id="tx-list"></div>
+        <button onclick="hideAll()">Закрыть</button>
     </div>
 
-    <!-- ОКНО: ДОКУМЕНТЫ -->
-    <div id="app-docs" class="app-window">
-        <div class="window-header">
-            <button class="back-btn" onclick="closeApp('app-docs')">‹ Назад</button>
-            <div style="font-weight:700; font-size:13px;">ДОКУМЕНТЫ</div>
-            <div></div>
+    <!-- Калькулятор -->
+    <div id="app-calc" class="app-window">
+        <input type="text" id="calc-scr" readonly style="width: 100%; height: 40px; margin-bottom: 10px;">
+        <div class="grid">
+            <button onclick="c('1')">1</button><button onclick="c('2')">2</button>
+            <button onclick="c('+')">+</button><button onclick="res()">=</button>
+            <button onclick="document.getElementById('calc-scr').value=''">C</button>
         </div>
-        <div class="window-body">
-            <div style="margin-bottom: 12px;" id="docs-pass-box"></div>
-            <div class="card-item">
-                <div style="font-weight:600; color:#2ecc71; font-size:12px;">🚗 Водительские права</div>
-                <div style="font-size:11px; color:#aaa; margin-top:4px;" id="doc-drive-val">Статус: Нет лицензии</div>
-            </div>
-            <div class="card-item">
-                <div style="font-weight:600; color:#9b59b6; font-size:12px;">🔫 Оружие</div>
-                <div style="font-size:11px; color:#aaa; margin-top:4px;" id="doc-gun-val">Статус: Нет лицензии</div>
-            </div>
-        </div>
+        <button onclick="hideAll()">Закрыть</button>
     </div>
 
-    <!-- ОКНО: ЛИЦЕНЗИИ -->
-    <div id="app-lic" class="app-window">
-        <div class="window-header">
-            <button class="back-btn" onclick="closeApp('app-lic')">‹ Назад</button>
-            <div style="font-weight:700; font-size:13px;">ЛИЦЕНЗИИ</div>
-            <div></div>
-        </div>
-        <div class="window-body">
-            <div class="card-item">
-                <div style="font-weight:600; font-size:12px; margin-bottom:4px;">🚗 Водительские права (1500 €)</div>
-                <button class="btn-action" onclick="buyLicense('drive', 1500, 'B, B1, M')">Купить</button>
-            </div>
-            <div class="card-item">
-                <div style="font-weight:600; font-size:12px; margin-bottom:4px;">🔫 Лицензия на оружие (3000 €)</div>
-                <button class="btn-action" style="background:linear-gradient(135deg, #8e44ad, #9b59b6);" onclick="buyLicense('gun', 3000, 'Пистолеты, Автоматы')">Купить</button>
-            </div>
-        </div>
-    </div>
+    <script>
+        const API = "http://127.0.0.1:8000";
+        const uid = 7914481551; // Ваш ID
 
-    <!-- ОКНО: НАСТРОЙКИ -->
-    <div id="app-settings" class="app-window">
-        <div class="window-header">
-            <button class="back-btn" onclick="closeApp('app-settings')">‹ Назад</button>
-            <div style="font-weight:700; font-size:13px;">НАСТРОЙКИ</div>
-            <div></div>
-        </div>
-        <div class="window-body">
-            <div class="card-item">
-                <div style="font-weight:600; font-size:12px; margin-bottom:8px;">🖼️ Обои iFruit</div>
-                <button class="btn-action" style="background:rgba(255,255,255,0.1); margin-bottom:6px;" onclick="setTheme(1)">Тёмный Астрал</button>
-                <button class="btn-action" style="background:rgba(255,255,255,0.1);" onclick="setTheme(2)">Кибер Неон</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ОКНО: ВЛАДЕЛЕЦ -->
-    <div id="app-owner" class="app-window">
-        <div class="window-header">
-            <button class="back-btn" onclick="closeApp('app-owner')">‹ Назад</button>
-            <div style="font-weight:700; color:#e74c3c; font-size:13px;">👑 ПАНЕЛЬ ВЛАДЕЛЬЦА</div>
-            <div></div>
-        </div>
-        <div class="window-body">
-            <div class="card-item">
-                <div style="font-weight:700; font-size:12px; margin-bottom:6px; color:#e74c3c;">Все игроки в базе:</div>
-                <select id="owner-user-select" onchange="loadOwnerForm()"></select>
-
-                <label style="font-size:9px; color:#aaa;">Статус анкеты:</label>
-                <div style="font-size:11px; font-weight:bold; color:#2ecc71; margin-bottom:8px;" id="ow-app-status">Одобрена</div>
-
-                <div style="display:flex; gap:6px; margin-bottom:10px;">
-                    <button class="btn-action" style="margin:0;" onclick="reviewApplication('approved')">Принять</button>
-                    <button class="btn-action red" style="margin:0;" onclick="reviewApplication('rejected')">Отклонить</button>
-                </div>
-
-                <label style="font-size:9px; color:#aaa;">Быстрая выдача валюты:</label>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px;">
-                    <button class="btn-action blue" style="margin:0;" onclick="quickAddMoney(1000)">+ 1 000 €</button>
-                    <button class="btn-action blue" style="margin:0;" onclick="quickAddMoney(10000)">+ 10 000 €</button>
-                </div>
-
-                <label style="font-size:9px; color:#aaa;">Фракция:</label>
-                <input type="text" id="ow-faction">
-
-                <label style="font-size:9px; color:#aaa;">Точный баланс (€):</label>
-                <input type="number" id="ow-balance">
-
-                <button class="btn-action red" onclick="saveOwnerChanges()">Сохранить изменения</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="success-modal">
-    <div class="modal-box">
-        <div style="font-size:28px; color:#2ecc71; margin-bottom:6px;" id="modal-icon">✓</div>
-        <div style="font-size:14px; font-weight:700; margin-bottom:4px;" id="modal-title">Операция выполнена</div>
-        <div style="font-size:11px; color:#aaa;" id="modal-text">Успешно!</div>
-    </div>
-</div>
-
-<script>
-    const BACKEND_URL = "https://spooky-unhealthy-esquire.ngrok-free.dev";
-    const OWNER_ID = 7914481551;
-
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-
-    let currentUser = { id: OWNER_ID, first_name: "Миша", last_name: "Персоньян" };
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-        currentUser = tg.initDataUnsafe.user;
-    }
-
-    let dbData = {};
-
-    function updateClock() {
-        const now = new Date();
-        document.getElementById('clock').innerText = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-    }
-    setInterval(updateClock, 1000); updateClock();
-
-    function createPassportHTML(u) {
-        if (!u) return '';
-        const fname = (u.fname || "НЕ УКАЗАНО").toUpperCase();
-        const lname = (u.lname || "НЕ УКАЗАНО").toUpperCase();
-        const bday = u.bday || "НЕ УКАЗАНО";
-        const code = u.passport_code || "RP 00-00 000000";
-
-        return `
-        <div class="id-card-doc">
-            <div class="id-card-title">STATE OF SAN ANDREAS — PASSPORT</div>
-            <div class="id-card-grid">
-                <div class="id-photo-box">PHOTO</div>
-                <div class="id-info">
-                    <div class="id-field-label">1. Фамилия</div>
-                    <div class="id-field-val">${lname}</div>
-                    <div class="id-field-label">2. Имя</div>
-                    <div class="id-field-val">${fname}</div>
-                    <div class="id-field-label">3. Дата рождения</div>
-                    <div class="id-field-val">${bday}</div>
-                    <div class="id-field-label">4. Номер паспорта</div>
-                    <div class="id-field-val" style="color:#38bdf8;">${code}</div>
-                </div>
-            </div>
-        </div>`;
-    }
-
-    function renderUI(me) {
-        if (!me) return;
-
-        const passHTML = createPassportHTML(me);
-        document.getElementById('gos-pass-box').innerHTML = passHTML;
-        document.getElementById('docs-pass-box').innerHTML = passHTML;
-
-        document.getElementById('edit-fname').value = me.fname || "";
-        document.getElementById('edit-lname').value = me.lname || "";
-        document.getElementById('edit-bday').value = me.bday || "";
-
-        document.getElementById('sber-balance').innerText = (me.balance || 0) + " €";
-        document.getElementById('top-balance').innerText = (me.balance || 0) + " €";
-        document.getElementById('sber-card').innerText = me.card_num ? `CARD: ${me.card_num}` : "CARD: Не создана";
-        document.getElementById('sber-iban').innerText = me.iban ? `IBAN: ${me.iban}` : "IBAN: Не создан";
+        function showApp(id) { document.querySelectorAll('.app-window').forEach(el => el.style.display='none'); document.getElementById(id).style.display='block'; }
+        function hideAll() { document.querySelectorAll('.app-window').forEach(el => el.style.display='none'); }
         
-        document.getElementById('doc-drive-val').innerText = me.drive_lic ? `Категории: ${me.drive_lic}` : "Статус: Нет лицензии";
-        document.getElementById('doc-gun-val').innerText = me.gun_lic ? `Тип: ${me.gun_lic}` : "Статус: Нет лицензии";
-    }
+        function c(v) { document.getElementById('calc-scr').value += v; }
+        function res() { document.getElementById('calc-scr').value = eval(document.getElementById('calc-scr').value); }
 
-    async function loadAll() {
-        if (String(currentUser.id) === String(OWNER_ID)) {
-            document.getElementById('owner-app-icon').style.display = 'flex';
-        } else {
-            document.getElementById('owner-app-icon').style.display = 'none';
-        }
-
-        try {
-            const res = await fetch(`${BACKEND_URL}/api/get_tablet_data?user_id=${currentUser.id}`);
-            const data = await res.json();
-            dbData = data.citizens || {};
-
-            if (!dbData[currentUser.id]) {
-                document.getElementById('auth-screen').style.display = 'flex';
-                return;
-            } else {
-                document.getElementById('auth-screen').style.display = 'none';
-            }
-
-            let me = dbData[currentUser.id];
-            renderUI(me);
-            populateOwnerSelect();
-            loadFamilyData();
-        } catch(e) {
-            console.log("Ошибка подключения к бэкенду:", e);
-        }
-    }
-
-    async function loadFamilyData() {
-        try {
-            const res = await fetch(`${BACKEND_URL}/api/get_family_data`);
-            const data = await res.json();
-            
-            document.getElementById('fam-balance').innerText = (data.balance || 0) + " €";
-            
-            const list = document.getElementById('fam-tx-list');
-            if (!data.transactions || data.transactions.length === 0) {
-                list.innerHTML = '<div style="color:#aaa; font-size:11px;">История пока пуста</div>';
-                return;
-            }
-
-            let html = '';
-            data.transactions.forEach(tx => {
-                const isDeposit = tx.action_type === 'deposit';
-                const sign = isDeposit ? '+' : '-';
-                const color = isDeposit ? '#2ecc71' : '#e74c3c';
-                const timeStr = tx.created_at ? tx.created_at.split(' ')[1] || '' : '';
-
-                html += `
-                <div class="tx-item">
-                    <div style="display:flex; justify-content:space-between;">
-                        <span class="tx-user">${tx.user_name}</span>
-                        <span style="font-weight:800; color:${color};">${sign} ${tx.amount} €</span>
-                    </div>
-                    <div class="tx-desc">${tx.description || 'Без описания'} <span style="float:right; opacity:0.5;">${timeStr}</span></div>
-                </div>`;
-            });
-            list.innerHTML = html;
-        } catch(e) {
-            console.log("Ошибка загрузки семейных данных:", e);
-        }
-    }
-
-    async function submitFamilyAction() {
-        const type = document.getElementById('fam-action-type').value;
-        const amount = parseInt(document.getElementById('fam-amount').value);
-        const desc = document.getElementById('fam-desc').value.trim();
-
-        if (!amount || amount <= 0) {
-            showModal("Ошибка", "Укажите верную сумму!", false);
-            return;
-        }
-        if (!desc) {
-            showModal("Ошибка", "Укажите причину/источник!", false);
-            return;
-        }
-
-        try {
-            const res = await fetch(`${BACKEND_URL}/api/family_action`, {
+        async function famAction(type) {
+            let val = document.getElementById('amt').value;
+            await fetch(`${API}/api/family_action`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    user_id: currentUser.id,
-                    action_type: type,
-                    amount: amount,
-                    description: desc
-                })
+                body: JSON.stringify({user_id: uid, amount: parseInt(val), action_type: type, description: "Взнос"})
             });
-
-            if (res.ok) {
-                showModal("Успешно", "Семейная казна обновлена!", true);
-                document.getElementById('fam-amount').value = '';
-                document.getElementById('fam-desc').value = '';
-                loadFamilyData();
-            } else {
-                const err = await res.json();
-                showModal("Ошибка", err.message || "Не удалось провести операцию", false);
-            }
-        } catch(e) {
-            showModal("Ошибка", "Нет связи с сервером!", false);
-        }
-    }
-
-    function populateOwnerSelect() {
-        const select = document.getElementById('owner-user-select');
-        if (!select) return;
-        
-        const currentSelected = select.value;
-        select.innerHTML = '';
-        
-        for (let id in dbData) {
-            let opt = document.createElement('option'); 
-            opt.value = id;
-            opt.innerText = `${dbData[id].fname} ${dbData[id].lname} (ID: ${id})`;
-            select.appendChild(opt);
+            loadData();
         }
 
-        if (currentSelected && dbData[currentSelected]) {
-            select.value = currentSelected;
+        async function loadData() {
+            let res = await fetch(`${API}/api/get_data?user_id=${uid}`);
+            let d = await res.json();
+            document.getElementById('passport-data').innerHTML = d.user ? `${d.user[1]} ${d.user[2]}<br>Код: ${d.user[4]}` : "Нет данных";
+            document.getElementById('fam-bal').innerText = d.fam_balance;
         }
-
-        loadOwnerForm();
-    }
-
-    function loadOwnerForm() {
-        const select = document.getElementById('owner-user-select');
-        if (!select) return;
-        const id = select.value;
-        if (!id || !dbData[id]) return;
-        const u = dbData[id]; 
-        document.getElementById('ow-faction').value = u.faction || "Гражданский";
-        document.getElementById('ow-balance').value = u.balance || 0;
-        document.getElementById('ow-app-status').innerText = u.status === 'rejected' ? 'Отклонена' : 'Одобрена';
-        document.getElementById('ow-app-status').style.color = u.status === 'rejected' ? '#e74c3c' : '#2ecc71';
-    }
-
-    async function registerUser() {
-        const fname = document.getElementById('reg-fname').value;
-        const lname = document.getElementById('reg-lname').value;
-        const bday = document.getElementById('reg-bday').value;
-
-        if (!fname || !lname || !bday) {
-            showModal("Ошибка", "Заполните все поля!", false);
-            return;
-        }
-
-        try {
-            const res = await fetch(`${BACKEND_URL}/api/register`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ user_id: currentUser.id, fname: fname, lname: lname, bday: bday })
-            });
-            
-            if (res.ok) {
-                showModal("Успешно", "Регистрация завершена!", true);
-                document.getElementById('auth-screen').style.display = 'none';
-                loadAll();
-            }
-        } catch(e) {
-            showModal("Ошибка", "Нет связи с сервером!", false);
-        }
-    }
-
-    async function savePersonalData() {
-        const fname = document.getElementById('edit-fname').value;
-        const lname = document.getElementById('edit-lname').value;
-        const bday = document.getElementById('edit-bday').value;
-
-        try {
-            await fetch(`${BACKEND_URL}/api/update_profile`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ user_id: currentUser.id, fname: fname, lname: lname, bday: bday })
-            });
-            showModal("Сохранено", "Паспорт обновлён!", true);
-            loadAll();
-        } catch(e) {
-            showModal("Ошибка", "Нет связи с сервером!", false);
-        }
-    }
-
-    async function makeTransfer() {
-        const iban = document.getElementById('transfer-iban').value.trim();
-        const sum = parseInt(document.getElementById('transfer-sum').value);
-
-        try {
-            const res = await fetch(`${BACKEND_URL}/api/transfer`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ from_id: currentUser.id, to_iban: iban, sum: sum })
-            });
-            if (res.ok) {
-                showModal("Успешно", "Перевод выполнен!", true);
-                loadAll();
-            } else {
-                showModal("Ошибка", "Ошибка перевода", false);
-            }
-        } catch(e) {
-            showModal("Ошибка", "Нет связи с сервером!", false);
-        }
-    }
-
-    async function buyLicense(type, price, cat) {
-        try {
-            const res = await fetch(`${BACKEND_URL}/api/buy_lic`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ user_id: currentUser.id, lic_type: type, cat: cat, price: price })
-            });
-            if (res.ok) {
-                showModal("Куплено!", "Лицензия получена", true);
-                loadAll();
-            } else {
-                showModal("Отказано", "Недостаточно средств", false);
-            }
-        } catch(e) {
-            showModal("Ошибка", "Нет связи с сервером!", false);
-        }
-    }
-
-    async function quickAddMoney(amount) {
-        const currentBal = parseInt(document.getElementById('ow-balance').value) || 0;
-        document.getElementById('ow-balance').value = currentBal + amount;
-        await saveOwnerChanges();
-    }
-
-    async function reviewApplication(status) {
-        const targetId = document.getElementById('owner-user-select').value;
-        try {
-            await fetch(`${BACKEND_URL}/api/review_application`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ admin_id: currentUser.id, target_id: parseInt(targetId), status: status })
-            });
-            showModal("Готово", status === 'approved' ? "Принято!" : "Отклонено!", true);
-            loadAll();
-        } catch(e) {
-            showModal("Ошибка", "Нет связи с сервером!", false);
-        }
-    }
-
-    async function saveOwnerChanges() {
-        const targetId = document.getElementById('owner-user-select').value;
-        if (!targetId) return;
-
-        try {
-            await fetch(`${BACKEND_URL}/api/owner_update`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    admin_id: currentUser.id, 
-                    target_id: parseInt(targetId),
-                    faction: document.getElementById('ow-faction').value,
-                    balance: parseInt(document.getElementById('ow-balance').value) || 0,
-                    fines: 0
-                })
-            });
-            showModal("Сохранено", "Данные игрока обновлены!", true);
-            loadAll();
-        } catch(e) {
-            showModal("Ошибка", "Не удалось связаться с сервером", false);
-        }
-    }
-
-    function setTheme(num) {
-        const frame = document.querySelector('.phone-frame');
-        if (num === 1) frame.style.backgroundImage = "url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop')";
-        if (num === 2) frame.style.backgroundImage = "url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1000&auto=format&fit=crop')";
-        showModal("Готово", "Тема сменена!", true);
-    }
-
-    function showModal(title, text, success) {
-        document.getElementById('modal-title').innerText = title;
-        document.getElementById('modal-text').innerText = text;
-        const icon = document.getElementById('modal-icon');
-        icon.innerText = success ? "✓" : "✕";
-        icon.style.color = success ? "#2ecc71" : "#e74c3c";
-        const m = document.getElementById('success-modal');
-        m.style.display = 'flex';
-        setTimeout(() => m.style.display = 'none', 1800);
-    }
-
-    function openApp(id) { 
-        if (id === 'app-owner') loadAll();
-        if (id === 'app-family') loadFamilyData();
-        document.getElementById(id).classList.add('active'); 
-    }
-    function closeApp(id) { document.getElementById(id).classList.remove('active'); }
-
-    loadAll();
-</script>
+        loadData();
+    </script>
 </body>
 </html>
