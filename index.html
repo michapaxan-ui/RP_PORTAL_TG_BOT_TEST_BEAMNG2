@@ -1,428 +1,688 @@
-import asyncio
-import random
-import sqlite3
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GTA V RP iFruit Phone</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-glass: rgba(18, 18, 20, 0.95);
+            --border-glass: rgba(255, 255, 255, 0.12);
+            --accent-green: #2ecc71;
+            --accent-blue: #3498db;
+            --accent-red: #e74c3c;
+            --card-bg: rgba(255, 255, 255, 0.05);
+        }
 
-from aiogram import Bot, Dispatcher, types
-from aiogram.filters import Command
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-import uvicorn
+        * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background: #000; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
 
-BOT_TOKEN = "8924069385:AAG7-v5iiH7BI_cTdpprct2WauWHLIZHpP0"
-SERVER_URL = "https://michapaxan-ui.github.io/RP_PORTAL_TG_BOT_TEST_BEAMNG2/"
-OWNER_TELEGRAM_ID = 7914481551
+        .phone-frame {
+            width: 100%; max-width: 360px; height: 100vh; max-height: 740px;
+            background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
+            border-radius: 40px; position: relative; overflow: hidden; display: flex; flex-direction: column;
+            border: 4px solid #2d2d2d; box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+        }
 
+        .notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 140px; height: 24px; background: #000; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; z-index: 1000; }
+        .header-bar { padding: 28px 20px 10px 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%); z-index: 10; }
+        .header-time { font-size: 13px; font-weight: 700; }
+        .header-money { background: rgba(46, 204, 113, 0.2); border: 1px solid rgba(46, 204, 113, 0.4); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 800; color: #2ecc71; }
 
-def init_db():
-  conn = sqlite3.connect("tablet_v5.db")
-  cursor = conn.cursor()
+        .home-screen { flex: 1; padding: 30px 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 15px; align-content: start; }
+        .app-item { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+        .app-item:active { transform: scale(0.92); }
 
-  # Таблица граждан
-  cursor.execute("""
-        CREATE TABLE IF NOT EXISTS citizens (
-            telegram_id BIGINT PRIMARY KEY,
-            fname TEXT,
-            lname TEXT,
-            bday TEXT,
-            passport_code TEXT UNIQUE,
-            card_num TEXT,
-            iban TEXT UNIQUE,
-            faction TEXT DEFAULT 'Гражданский',
-            balance INT DEFAULT 0,
-            fines INT DEFAULT 0,
-            drive_lic TEXT DEFAULT '',
-            gun_lic TEXT DEFAULT '',
-            status TEXT DEFAULT 'approved'
-        )
-    """)
+        #owner-app-icon { display: none; }
 
-  # Таблица общего семейного счета
-  cursor.execute("""
-        CREATE TABLE IF NOT EXISTS family_account (
-            id INT PRIMARY KEY,
-            balance INT DEFAULT 0
-        )
-    """)
+        .app-box { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 8px 20px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(10px); }
+        .app-name { font-size: 11px; font-weight: 600; text-align: center; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
-  cursor.execute(
-      "INSERT OR IGNORE INTO family_account (id, balance) VALUES (1, 0)"
-  )
+        .dock-bar { margin: 0 16px 20px 16px; padding: 10px 15px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 28px; display: flex; justify-content: space-around; border: 1px solid rgba(255,255,255,0.2); }
+        .dock-bar .app-box { width: 50px; height: 50px; font-size: 24px; border-radius: 14px; }
 
-  # Таблица истории семейных транзакций
-  cursor.execute("""
-        CREATE TABLE IF NOT EXISTS family_transactions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id BIGINT,
-            user_name TEXT,
-            amount INT,
-            action_type TEXT,
-            description TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
+        .app-window { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-glass); backdrop-filter: blur(25px); z-index: 100; display: none; flex-direction: column; animation: slideUp 0.25s cubic-bezier(0.1, 0.9, 0.2, 1); }
+        .app-window.active { display: flex; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-  conn.commit()
-  conn.close()
+        .window-header { padding: 35px 16px 14px 16px; display: flex; align-items: center; justify-content: space-between; background: rgba(0, 0, 0, 0.4); border-bottom: 1px solid var(--border-glass); }
+        .back-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--border-glass); color: #fff; padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .window-body { flex: 1; padding: 16px; overflow-y: auto; }
 
+        .card-item { background: var(--card-bg); border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); margin-bottom: 12px; }
+        .btn-action { width: 100%; background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border: none; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 6px; }
+        .btn-action.red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .btn-action.blue { background: linear-gradient(135deg, #3498db, #2980b9); }
 
-init_db()
+        input, select { width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--border-glass); color: #fff; padding: 10px; border-radius: 10px; margin: 4px 0 8px 0; font-size: 12px; outline: none; }
 
-app = FastAPI()
+        #auth-screen { position: absolute; top:0; left:0; right:0; bottom:0; background: #0c0d12; z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 24px; text-align: center; }
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+        .id-card-doc { background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); }
+        .id-card-title { text-align: center; font-size: 11px; font-weight: 800; color: var(--accent-blue); border-bottom: 1px solid var(--border-glass); padding-bottom: 4px; margin-bottom: 8px; }
+        .id-card-grid { display: flex; gap: 10px; }
+        .id-photo-box { width: 65px; height: 85px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 9px; border: 1px solid var(--border-glass); }
+        .id-info { flex: 1; font-size: 10px; text-align: left; }
+        .id-field-label { font-size: 8px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
+        .id-field-val { font-size: 11px; font-weight: 700; color: #fff; margin-bottom: 3px; }
 
+        .tx-item { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 11px; }
+        .tx-item:last-child { border-bottom: none; }
+        .tx-user { font-weight: 700; color: #fff; }
+        .tx-desc { color: #aaa; font-size: 10px; margin-top: 2px; }
 
-class RegisterModel(BaseModel):
-  user_id: int
-  fname: str
-  lname: str
-  bday: str
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 3000; }
+        .modal-box { background: #1e1e24; padding: 20px; border-radius: 20px; text-align: center; border: 1px solid var(--border-glass); max-width: 240px; }
+    </style>
+</head>
+<body>
 
+<div class="phone-frame">
+    <div class="notch"></div>
 
-class ProfileModel(BaseModel):
-  user_id: int
-  fname: str
-  lname: str
-  bday: str
+    <!-- ЭКРАН РЕГИСТРАЦИИ -->
+    <div id="auth-screen" style="display: none;">
+        <div style="font-size: 32px; margin-bottom: 8px;">🆔</div>
+        <div style="font-size: 18px; font-weight: 800; margin-bottom: 4px;">Регистрация Гражданина</div>
+        <div style="font-size: 11px; color: #aaa; margin-bottom: 20px;">Введите ваши RP данные для создания паспорта</div>
+        
+        <input type="text" id="reg-fname" placeholder="Имя (напр. Миша)">
+        <input type="text" id="reg-lname" placeholder="Фамилия (напр. Персоньян)">
+        <input type="text" id="reg-bday" placeholder="Дата рождения (напр. 22.11.2006)">
+        
+        <button class="btn-action" onclick="registerUser()">Зарегистрироваться</button>
+    </div>
 
+    <div class="header-bar">
+        <div class="header-time" id="clock">12:00</div>
+        <div class="header-money" id="top-balance">0 €</div>
+    </div>
 
-class TransferModel(BaseModel):
-  from_id: int
-  to_iban: str
-  sum: int
+    <!-- Главный экран -->
+    <div class="home-screen">
+        <div class="app-item" onclick="openApp('app-gos')">
+            <div class="app-box" style="background: linear-gradient(135deg, #2980b9, #3498db);">🏛️</div>
+            <div class="app-name">Госуслуги</div>
+        </div>
 
+        <div class="app-item" onclick="openApp('app-sber')">
+            <div class="app-box" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">🟢</div>
+            <div class="app-name">Сбербанк</div>
+        </div>
 
-class LicModel(BaseModel):
-  user_id: int
-  lic_type: str
-  cat: str
-  price: int
+        <div class="app-item" onclick="openApp('app-family')">
+            <div class="app-box" style="background: linear-gradient(135deg, #f39c12, #e67e22);">👨‍👩‍👧‍👦</div>
+            <div class="app-name">Семья</div>
+        </div>
 
+        <div class="app-item" onclick="openApp('app-docs')">
+            <div class="app-box" style="background: linear-gradient(135deg, #d35400, #e67e22);">📁</div>
+            <div class="app-name">Документы</div>
+        </div>
 
-class OwnerModel(BaseModel):
-  admin_id: int
-  target_id: int
-  faction: str
-  balance: int
-  fines: int
+        <div class="app-item" onclick="openApp('app-lic')">
+            <div class="app-box" style="background: linear-gradient(135deg, #8e44ad, #9b59b6);">📜</div>
+            <div class="app-name">Лицензии</div>
+        </div>
 
+        <div class="app-item" onclick="openApp('app-settings')">
+            <div class="app-box" style="background: linear-gradient(135deg, #7f8c8d, #95a5a6);">⚙️</div>
+            <div class="app-name">Настройки</div>
+        </div>
 
-class ApplicationModel(BaseModel):
-  admin_id: int
-  target_id: int
-  status: str
+        <div class="app-item" id="owner-app-icon" onclick="openApp('app-owner')">
+            <div class="app-box" style="background: linear-gradient(135deg, #c0392b, #e74c3c);">👑</div>
+            <div class="app-name">Владелец</div>
+        </div>
+    </div>
 
+    <div class="dock-bar">
+        <div class="app-item" onclick="openApp('app-gos')">
+            <div class="app-box" style="background: linear-gradient(135deg, #2980b9, #3498db);">📖</div>
+        </div>
+        <div class="app-item" onclick="openApp('app-sber')">
+            <div class="app-box" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">💳</div>
+        </div>
+        <div class="app-item" onclick="openApp('app-family')">
+            <div class="app-box" style="background: linear-gradient(135deg, #f39c12, #e67e22);">🏠</div>
+        </div>
+    </div>
 
-class FamilyActionModel(BaseModel):
-  user_id: int
-  action_type: str  # 'deposit' или 'withdraw'
-  amount: int
-  description: str
+    <!-- ОКНО: ГОСУСЛУГИ -->
+    <div id="app-gos" class="app-window">
+        <div class="window-header">
+            <button class="back-btn" onclick="closeApp('app-gos')">‹ Назад</button>
+            <div style="font-weight:700; font-size:13px;">ГОСУСЛУГИ</div>
+            <div></div>
+        </div>
+        <div class="window-body">
+            <div style="margin-bottom: 12px;" id="gos-pass-box"></div>
+            <div class="card-item">
+                <div style="font-weight:600; margin-bottom:8px; font-size:12px;">✏️ Изменить данные паспорта</div>
+                <input type="text" id="edit-fname" placeholder="Имя">
+                <input type="text" id="edit-lname" placeholder="Фамилия">
+                <input type="text" id="edit-bday" placeholder="Дата рождения">
+                <button class="btn-action" onclick="savePersonalData()">Сохранить насовсем</button>
+            </div>
+        </div>
+    </div>
 
+    <!-- ОКНО: СБЕРБАНК -->
+    <div id="app-sber" class="app-window">
+        <div class="window-header">
+            <button class="back-btn" onclick="closeApp('app-sber')">‹ Назад</button>
+            <div style="font-weight:700; color:#2ecc71; font-size:13px;">СБЕРБАНК</div>
+            <div></div>
+        </div>
+        <div class="window-body">
+            <div class="card-item" style="background: linear-gradient(135deg, rgba(39,174,96,0.2), rgba(0,0,0,0.4)); border-color:#2ecc71;">
+                <div style="font-size:10px; color:#aaa;">Личный баланс</div>
+                <h2 style="margin:4px 0 8px 0; color:#2ecc71;" id="sber-balance">0 €</h2>
+                <div style="font-size:11px; font-family:monospace; color:#fff; font-weight:bold;" id="sber-card">CARD: Загрузка...</div>
+                <div style="font-size:10px; font-family:monospace; color:#3498db; margin-top:4px; font-weight:bold;" id="sber-iban">IBAN: Загрузка...</div>
+            </div>
+            <div class="card-item">
+                <div style="font-weight:600; margin-bottom:8px; font-size:12px;">Перевод по IBAN</div>
+                <input type="text" id="transfer-iban" placeholder="IBAN получателя">
+                <input type="number" id="transfer-sum" placeholder="Сумма (€)">
+                <button class="btn-action" onclick="makeTransfer()">Отправить</button>
+            </div>
+        </div>
+    </div>
 
-@app.post("/api/register")
-async def register_user(data: RegisterModel):
-  conn = sqlite3.connect("tablet_v5.db")
-  cursor = conn.cursor()
+    <!-- ОКНО: СЕМЕЙНЫЙ СЧЁТ -->
+    <div id="app-family" class="app-window">
+        <div class="window-header">
+            <button class="back-btn" onclick="closeApp('app-family')">‹ Назад</button>
+            <div style="font-weight:700; color:#f39c12; font-size:13px;">👨‍👩‍👧‍👦 СЕМЕЙНЫЙ СЧЁТ</div>
+            <div></div>
+        </div>
+        <div class="window-body">
+            <div class="card-item" style="background: linear-gradient(135deg, rgba(243,156,18,0.2), rgba(0,0,0,0.4)); border-color:#f39c12;">
+                <div style="font-size:10px; color:#aaa;">Общий баланс семьи</div>
+                <h2 style="margin:4px 0 4px 0; color:#f39c12;" id="fam-balance">0 €</h2>
+                <div style="font-size:9px; color:#ddd;">Все члены семьи видят этот счёт</div>
+            </div>
 
-  cursor.execute(
-      "SELECT telegram_id FROM citizens WHERE telegram_id=?", (data.user_id,)
-  )
-  exists = cursor.fetchone()
+            <div class="card-item">
+                <div style="font-weight:600; margin-bottom:8px; font-size:12px;">Изменить семейную казну</div>
+                
+                <select id="fam-action-type">
+                    <option value="deposit">➕ Пополнить счёт (Заработали)</option>
+                    <option value="withdraw">➖ Потратить со счёта (Покупка)</option>
+                </select>
 
-  if not exists:
-    pass_code = f"RP {random.randint(10,99)}-{random.randint(10,99)} {random.randint(100000,999999)}"
-    card_num = f"2202 {random.randint(1000,9999)} {random.randint(1000,9999)} {random.randint(1000,9999)}"
-    iban = (
-        f"RU{random.randint(10,99)}BEAM{random.randint(1000000000,9999999999)}"
-    )
+                <input type="number" id="fam-amount" placeholder="Сумма (€)">
+                <input type="text" id="fam-desc" placeholder="На что потратили / Откуда получили?">
 
-    cursor.execute(
-        """
-            INSERT INTO citizens (telegram_id, fname, lname, bday, passport_code, card_num, iban, balance)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 0)
-        """,
-        (
-            data.user_id,
-            data.fname,
-            data.lname,
-            data.bday,
-            pass_code,
-            card_num,
-            iban,
-        ),
-    )
-  else:
-    cursor.execute(
-        "UPDATE citizens SET fname=?, lname=?, bday=? WHERE telegram_id=?",
-        (data.fname, data.lname, data.bday, data.user_id),
-    )
+                <button class="btn-action" style="background:linear-gradient(135deg, #f39c12, #d35400);" onclick="submitFamilyAction()">Провести операцию</button>
+            </div>
 
-  conn.commit()
-  conn.close()
-  return {"status": "ok"}
+            <div class="card-item">
+                <div style="font-weight:700; font-size:12px; margin-bottom:8px; color:#f39c12;">📜 Транзакции семейного счёта:</div>
+                <div id="fam-tx-list">Загрузка истории...</div>
+            </div>
+        </div>
+    </div>
 
+    <!-- ОКНО: ДОКУМЕНТЫ -->
+    <div id="app-docs" class="app-window">
+        <div class="window-header">
+            <button class="back-btn" onclick="closeApp('app-docs')">‹ Назад</button>
+            <div style="font-weight:700; font-size:13px;">ДОКУМЕНТЫ</div>
+            <div></div>
+        </div>
+        <div class="window-body">
+            <div style="margin-bottom: 12px;" id="docs-pass-box"></div>
+            <div class="card-item">
+                <div style="font-weight:600; color:#2ecc71; font-size:12px;">🚗 Водительские права</div>
+                <div style="font-size:11px; color:#aaa; margin-top:4px;" id="doc-drive-val">Статус: Нет лицензии</div>
+            </div>
+            <div class="card-item">
+                <div style="font-weight:600; color:#9b59b6; font-size:12px;">🔫 Оружие</div>
+                <div style="font-size:11px; color:#aaa; margin-top:4px;" id="doc-gun-val">Статус: Нет лицензии</div>
+            </div>
+        </div>
+    </div>
 
-@app.get("/api/get_tablet_data")
-async def get_tablet_data(user_id: int):
-  conn = sqlite3.connect("tablet_v5.db")
-  cursor = conn.cursor()
-  cursor.execute("SELECT * FROM citizens")
-  rows = cursor.fetchall()
-  conn.close()
+    <!-- ОКНО: ЛИЦЕНЗИИ -->
+    <div id="app-lic" class="app-window">
+        <div class="window-header">
+            <button class="back-btn" onclick="closeApp('app-lic')">‹ Назад</button>
+            <div style="font-weight:700; font-size:13px;">ЛИЦЕНЗИИ</div>
+            <div></div>
+        </div>
+        <div class="window-body">
+            <div class="card-item">
+                <div style="font-weight:600; font-size:12px; margin-bottom:4px;">🚗 Водительские права (1500 €)</div>
+                <button class="btn-action" onclick="buyLicense('drive', 1500, 'B, B1, M')">Купить</button>
+            </div>
+            <div class="card-item">
+                <div style="font-weight:600; font-size:12px; margin-bottom:4px;">🔫 Лицензия на оружие (3000 €)</div>
+                <button class="btn-action" style="background:linear-gradient(135deg, #8e44ad, #9b59b6);" onclick="buyLicense('gun', 3000, 'Пистолеты, Автоматы')">Купить</button>
+            </div>
+        </div>
+    </div>
 
-  citizens = {}
-  for r in rows:
-    citizens[r[0]] = {
-        "fname": r[1],
-        "lname": r[2],
-        "bday": r[3],
-        "passport_code": r[4],
-        "card_num": r[5],
-        "iban": r[6],
-        "faction": r[7],
-        "balance": r[8],
-        "fines": r[9],
-        "drive_lic": r[10],
-        "gun_lic": r[11],
-        "status": r[12] if len(r) > 12 else "approved",
+    <!-- ОКНО: НАСТРОЙКИ -->
+    <div id="app-settings" class="app-window">
+        <div class="window-header">
+            <button class="back-btn" onclick="closeApp('app-settings')">‹ Назад</button>
+            <div style="font-weight:700; font-size:13px;">НАСТРОЙКИ</div>
+            <div></div>
+        </div>
+        <div class="window-body">
+            <div class="card-item">
+                <div style="font-weight:600; font-size:12px; margin-bottom:8px;">🖼️ Обои iFruit</div>
+                <button class="btn-action" style="background:rgba(255,255,255,0.1); margin-bottom:6px;" onclick="setTheme(1)">Тёмный Астрал</button>
+                <button class="btn-action" style="background:rgba(255,255,255,0.1);" onclick="setTheme(2)">Кибер Неон</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ОКНО: ВЛАДЕЛЕЦ -->
+    <div id="app-owner" class="app-window">
+        <div class="window-header">
+            <button class="back-btn" onclick="closeApp('app-owner')">‹ Назад</button>
+            <div style="font-weight:700; color:#e74c3c; font-size:13px;">👑 ПАНЕЛЬ ВЛАДЕЛЬЦА</div>
+            <div></div>
+        </div>
+        <div class="window-body">
+            <div class="card-item">
+                <div style="font-weight:700; font-size:12px; margin-bottom:6px; color:#e74c3c;">Все игроки в базе:</div>
+                <select id="owner-user-select" onchange="loadOwnerForm()"></select>
+
+                <label style="font-size:9px; color:#aaa;">Статус анкеты:</label>
+                <div style="font-size:11px; font-weight:bold; color:#2ecc71; margin-bottom:8px;" id="ow-app-status">Одобрена</div>
+
+                <div style="display:flex; gap:6px; margin-bottom:10px;">
+                    <button class="btn-action" style="margin:0;" onclick="reviewApplication('approved')">Принять</button>
+                    <button class="btn-action red" style="margin:0;" onclick="reviewApplication('rejected')">Отклонить</button>
+                </div>
+
+                <label style="font-size:9px; color:#aaa;">Быстрая выдача валюты:</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px;">
+                    <button class="btn-action blue" style="margin:0;" onclick="quickAddMoney(1000)">+ 1 000 €</button>
+                    <button class="btn-action blue" style="margin:0;" onclick="quickAddMoney(10000)">+ 10 000 €</button>
+                </div>
+
+                <label style="font-size:9px; color:#aaa;">Фракция:</label>
+                <input type="text" id="ow-faction">
+
+                <label style="font-size:9px; color:#aaa;">Точный баланс (€):</label>
+                <input type="number" id="ow-balance">
+
+                <button class="btn-action red" onclick="saveOwnerChanges()">Сохранить изменения</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="success-modal">
+    <div class="modal-box">
+        <div style="font-size:28px; color:#2ecc71; margin-bottom:6px;" id="modal-icon">✓</div>
+        <div style="font-size:14px; font-weight:700; margin-bottom:4px;" id="modal-title">Операция выполнена</div>
+        <div style="font-size:11px; color:#aaa;" id="modal-text">Успешно!</div>
+    </div>
+</div>
+
+<script>
+    const BACKEND_URL = "https://spooky-unhealthy-esquire.ngrok-free.dev";
+    const OWNER_ID = 7914481551;
+
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    let currentUser = { id: OWNER_ID, first_name: "Миша", last_name: "Персоньян" };
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        currentUser = tg.initDataUnsafe.user;
     }
 
-  return {
-      "is_owner": (str(user_id) == str(OWNER_TELEGRAM_ID)),
-      "citizens": citizens,
-  }
+    let dbData = {};
 
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').innerText = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    }
+    setInterval(updateClock, 1000); updateClock();
 
-@app.post("/api/update_profile")
-async def update_profile(data: ProfileModel):
-  conn = sqlite3.connect("tablet_v5.db")
-  cursor = conn.cursor()
-  cursor.execute(
-      "UPDATE citizens SET fname=?, lname=?, bday=? WHERE telegram_id=?",
-      (data.fname, data.lname, data.bday, data.user_id),
-  )
-  conn.commit()
-  conn.close()
-  return {"status": "ok"}
+    function createPassportHTML(u) {
+        if (!u) return '';
+        const fname = (u.fname || "НЕ УКАЗАНО").toUpperCase();
+        const lname = (u.lname || "НЕ УКАЗАНО").toUpperCase();
+        const bday = u.bday || "НЕ УКАЗАНО";
+        const code = u.passport_code || "RP 00-00 000000";
 
+        return `
+        <div class="id-card-doc">
+            <div class="id-card-title">STATE OF SAN ANDREAS — PASSPORT</div>
+            <div class="id-card-grid">
+                <div class="id-photo-box">PHOTO</div>
+                <div class="id-info">
+                    <div class="id-field-label">1. Фамилия</div>
+                    <div class="id-field-val">${lname}</div>
+                    <div class="id-field-label">2. Имя</div>
+                    <div class="id-field-val">${fname}</div>
+                    <div class="id-field-label">3. Дата рождения</div>
+                    <div class="id-field-val">${bday}</div>
+                    <div class="id-field-label">4. Номер паспорта</div>
+                    <div class="id-field-val" style="color:#38bdf8;">${code}</div>
+                </div>
+            </div>
+        </div>`;
+    }
 
-@app.post("/api/transfer")
-async def make_transfer(data: TransferModel):
-  conn = sqlite3.connect("tablet_v5.db")
-  cursor = conn.cursor()
+    function renderUI(me) {
+        if (!me) return;
 
-  cursor.execute(
-      "SELECT balance FROM citizens WHERE telegram_id=?", (data.from_id,)
-  )
-  row = cursor.fetchone()
-  if not row or row[0] < data.sum or data.sum <= 0:
-    conn.close()
-    return JSONResponse(
-        {"status": "error", "message": "Недостаточно средств"}, status_code=400
-    )
+        const passHTML = createPassportHTML(me);
+        document.getElementById('gos-pass-box').innerHTML = passHTML;
+        document.getElementById('docs-pass-box').innerHTML = passHTML;
 
-  cursor.execute(
-      "UPDATE citizens SET balance = balance - ? WHERE telegram_id=?",
-      (data.sum, data.from_id),
-  )
-  cursor.execute(
-      "UPDATE citizens SET balance = balance + ? WHERE iban=?",
-      (data.sum, data.to_iban),
-  )
-  conn.commit()
-  conn.close()
-  return {"status": "ok"}
+        document.getElementById('edit-fname').value = me.fname || "";
+        document.getElementById('edit-lname').value = me.lname || "";
+        document.getElementById('edit-bday').value = me.bday || "";
 
+        document.getElementById('sber-balance').innerText = (me.balance || 0) + " €";
+        document.getElementById('top-balance').innerText = (me.balance || 0) + " €";
+        document.getElementById('sber-card').innerText = me.card_num ? `CARD: ${me.card_num}` : "CARD: Не создана";
+        document.getElementById('sber-iban').innerText = me.iban ? `IBAN: ${me.iban}` : "IBAN: Не создан";
+        
+        document.getElementById('doc-drive-val').innerText = me.drive_lic ? `Категории: ${me.drive_lic}` : "Статус: Нет лицензии";
+        document.getElementById('doc-gun-val').innerText = me.gun_lic ? `Тип: ${me.gun_lic}` : "Статус: Нет лицензии";
+    }
 
-@app.post("/api/buy_lic")
-async def buy_lic(data: LicModel):
-  conn = sqlite3.connect("tablet_v5.db")
-  cursor = conn.cursor()
-  cursor.execute(
-      "SELECT balance FROM citizens WHERE telegram_id=?", (data.user_id,)
-  )
-  row = cursor.fetchone()
-  if not row or row[0] < data.price:
-    conn.close()
-    return JSONResponse(
-        {"status": "error", "message": "Недостаточно средств"}, status_code=400
-    )
+    async function loadAll() {
+        if (String(currentUser.id) === String(OWNER_ID)) {
+            document.getElementById('owner-app-icon').style.display = 'flex';
+        } else {
+            document.getElementById('owner-app-icon').style.display = 'none';
+        }
 
-  cursor.execute(
-      "UPDATE citizens SET balance = balance - ? WHERE telegram_id=?",
-      (data.price, data.user_id),
-  )
-  if data.lic_type == "drive":
-    cursor.execute(
-        "UPDATE citizens SET drive_lic=? WHERE telegram_id=?",
-        (data.cat, data.user_id),
-    )
-  else:
-    cursor.execute(
-        "UPDATE citizens SET gun_lic=? WHERE telegram_id=?",
-        (data.cat, data.user_id),
-    )
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/get_tablet_data?user_id=${currentUser.id}`);
+            const data = await res.json();
+            dbData = data.citizens || {};
 
-  conn.commit()
-  conn.close()
-  return {"status": "ok"}
+            if (!dbData[currentUser.id]) {
+                document.getElementById('auth-screen').style.display = 'flex';
+                return;
+            } else {
+                document.getElementById('auth-screen').style.display = 'none';
+            }
 
+            let me = dbData[currentUser.id];
+            renderUI(me);
+            populateOwnerSelect();
+            loadFamilyData();
+        } catch(e) {
+            console.log("Ошибка подключения к бэкенду:", e);
+        }
+    }
 
-@app.post("/api/owner_update")
-async def owner_update(data: OwnerModel):
-  if str(data.admin_id) != str(OWNER_TELEGRAM_ID):
-    return JSONResponse({"status": "error"}, status_code=403)
+    async function loadFamilyData() {
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/get_family_data`);
+            const data = await res.json();
+            
+            document.getElementById('fam-balance').innerText = (data.balance || 0) + " €";
+            
+            const list = document.getElementById('fam-tx-list');
+            if (!data.transactions || data.transactions.length === 0) {
+                list.innerHTML = '<div style="color:#aaa; font-size:11px;">История пока пуста</div>';
+                return;
+            }
 
-  conn = sqlite3.connect("tablet_v5.db")
-  cursor = conn.cursor()
-  cursor.execute(
-      "UPDATE citizens SET faction=?, balance=? WHERE telegram_id=?",
-      (data.faction, data.balance, data.target_id),
-  )
-  conn.commit()
-  conn.close()
-  return {"status": "ok"}
+            let html = '';
+            data.transactions.forEach(tx => {
+                const isDeposit = tx.action_type === 'deposit';
+                const sign = isDeposit ? '+' : '-';
+                const color = isDeposit ? '#2ecc71' : '#e74c3c';
+                const timeStr = tx.created_at ? tx.created_at.split(' ')[1] || '' : '';
 
+                html += `
+                <div class="tx-item">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span class="tx-user">${tx.user_name}</span>
+                        <span style="font-weight:800; color:${color};">${sign} ${tx.amount} €</span>
+                    </div>
+                    <div class="tx-desc">${tx.description || 'Без описания'} <span style="float:right; opacity:0.5;">${timeStr}</span></div>
+                </div>`;
+            });
+            list.innerHTML = html;
+        } catch(e) {
+            console.log("Ошибка загрузки семейных данных:", e);
+        }
+    }
 
-@app.post("/api/review_application")
-async def review_application(data: ApplicationModel):
-  if str(data.admin_id) != str(OWNER_TELEGRAM_ID):
-    return JSONResponse({"status": "error"}, status_code=403)
+    async function submitFamilyAction() {
+        const type = document.getElementById('fam-action-type').value;
+        const amount = parseInt(document.getElementById('fam-amount').value);
+        const desc = document.getElementById('fam-desc').value.trim();
 
-  conn = sqlite3.connect("tablet_v5.db")
-  cursor = conn.cursor()
-  cursor.execute(
-      "UPDATE citizens SET status=? WHERE telegram_id=?",
-      (data.status, data.target_id),
-  )
-  conn.commit()
-  conn.close()
-  return {"status": "ok"}
+        if (!amount || amount <= 0) {
+            showModal("Ошибка", "Укажите верную сумму!", false);
+            return;
+        }
+        if (!desc) {
+            showModal("Ошибка", "Укажите причину/источник!", false);
+            return;
+        }
 
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/family_action`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: currentUser.id,
+                    action_type: type,
+                    amount: amount,
+                    description: desc
+                })
+            });
 
-# API ДЛЯ СЕМЕЙНОГО СЧЕТА И ТРАНЗАКЦИЙ
-@app.get("/api/get_family_data")
-async def get_family_data():
-  conn = sqlite3.connect("tablet_v5.db")
-  cursor = conn.cursor()
+            if (res.ok) {
+                showModal("Успешно", "Семейная казна обновлена!", true);
+                document.getElementById('fam-amount').value = '';
+                document.getElementById('fam-desc').value = '';
+                loadFamilyData();
+            } else {
+                const err = await res.json();
+                showModal("Ошибка", err.message || "Не удалось провести операцию", false);
+            }
+        } catch(e) {
+            showModal("Ошибка", "Нет связи с сервером!", false);
+        }
+    }
 
-  cursor.execute("SELECT balance FROM family_account WHERE id=1")
-  row = cursor.fetchone()
-  balance = row[0] if row else 0
+    function populateOwnerSelect() {
+        const select = document.getElementById('owner-user-select');
+        if (!select) return;
+        
+        const currentSelected = select.value;
+        select.innerHTML = '';
+        
+        for (let id in dbData) {
+            let opt = document.createElement('option'); 
+            opt.value = id;
+            opt.innerText = `${dbData[id].fname} ${dbData[id].lname} (ID: ${id})`;
+            select.appendChild(opt);
+        }
 
-  cursor.execute(
-      "SELECT user_id, user_name, amount, action_type, description, created_at"
-      " FROM family_transactions ORDER BY id DESC LIMIT 50"
-  )
-  rows = cursor.fetchall()
-  conn.close()
+        if (currentSelected && dbData[currentSelected]) {
+            select.value = currentSelected;
+        }
 
-  transactions = []
-  for r in rows:
-    transactions.append({
-        "user_id": r[0],
-        "user_name": r[1],
-        "amount": r[2],
-        "action_type": r[3],
-        "description": r[4],
-        "created_at": r[5],
-    })
+        loadOwnerForm();
+    }
 
-  return {"balance": balance, "transactions": transactions}
+    function loadOwnerForm() {
+        const select = document.getElementById('owner-user-select');
+        if (!select) return;
+        const id = select.value;
+        if (!id || !dbData[id]) return;
+        const u = dbData[id]; 
+        document.getElementById('ow-faction').value = u.faction || "Гражданский";
+        document.getElementById('ow-balance').value = u.balance || 0;
+        document.getElementById('ow-app-status').innerText = u.status === 'rejected' ? 'Отклонена' : 'Одобрена';
+        document.getElementById('ow-app-status').style.color = u.status === 'rejected' ? '#e74c3c' : '#2ecc71';
+    }
 
+    async function registerUser() {
+        const fname = document.getElementById('reg-fname').value;
+        const lname = document.getElementById('reg-lname').value;
+        const bday = document.getElementById('reg-bday').value;
 
-@app.post("/api/family_action")
-async def family_action(data: FamilyActionModel):
-  if data.amount <= 0:
-    return JSONResponse(
-        {"status": "error", "message": "Некорректная сумма"}, status_code=400
-    )
+        if (!fname || !lname || !bday) {
+            showModal("Ошибка", "Заполните все поля!", false);
+            return;
+        }
 
-  conn = sqlite3.connect("tablet_v5.db")
-  cursor = conn.cursor()
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/register`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ user_id: currentUser.id, fname: fname, lname: lname, bday: bday })
+            });
+            
+            if (res.ok) {
+                showModal("Успешно", "Регистрация завершена!", true);
+                document.getElementById('auth-screen').style.display = 'none';
+                loadAll();
+            }
+        } catch(e) {
+            showModal("Ошибка", "Нет связи с сервером!", false);
+        }
+    }
 
-  # Получаем имя пользователя
-  cursor.execute(
-      "SELECT fname, lname FROM citizens WHERE telegram_id=?", (data.user_id,)
-  )
-  user_row = cursor.fetchone()
-  user_name = (
-      f"{user_row[0]} {user_row[1]}"
-      if user_row
-      else f"Игрок ID:{data.user_id}"
-  )
+    async function savePersonalData() {
+        const fname = document.getElementById('edit-fname').value;
+        const lname = document.getElementById('edit-lname').value;
+        const bday = document.getElementById('edit-bday').value;
 
-  cursor.execute("SELECT balance FROM family_account WHERE id=1")
-  row = cursor.fetchone()
-  curr_balance = row[0] if row else 0
+        try {
+            await fetch(`${BACKEND_URL}/api/update_profile`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ user_id: currentUser.id, fname: fname, lname: lname, bday: bday })
+            });
+            showModal("Сохранено", "Паспорт обновлён!", true);
+            loadAll();
+        } catch(e) {
+            showModal("Ошибка", "Нет связи с сервером!", false);
+        }
+    }
 
-  if data.action_type == "withdraw" and curr_balance < data.amount:
-    conn.close()
-    return JSONResponse(
-        {"status": "error", "message": "На семейном счёте недостаточно средств"},
-        status_code=400,
-    )
+    async function makeTransfer() {
+        const iban = document.getElementById('transfer-iban').value.trim();
+        const sum = parseInt(document.getElementById('transfer-sum').value);
 
-  if data.action_type == "deposit":
-    new_balance = curr_balance + data.amount
-  else:
-    new_balance = curr_balance - data.amount
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/transfer`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ from_id: currentUser.id, to_iban: iban, sum: sum })
+            });
+            if (res.ok) {
+                showModal("Успешно", "Перевод выполнен!", true);
+                loadAll();
+            } else {
+                showModal("Ошибка", "Ошибка перевода", false);
+            }
+        } catch(e) {
+            showModal("Ошибка", "Нет связи с сервером!", false);
+        }
+    }
 
-  cursor.execute(
-      "UPDATE family_account SET balance=? WHERE id=1", (new_balance,)
-  )
+    async function buyLicense(type, price, cat) {
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/buy_lic`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ user_id: currentUser.id, lic_type: type, cat: cat, price: price })
+            });
+            if (res.ok) {
+                showModal("Куплено!", "Лицензия получена", true);
+                loadAll();
+            } else {
+                showModal("Отказано", "Недостаточно средств", false);
+            }
+        } catch(e) {
+            showModal("Ошибка", "Нет связи с сервером!", false);
+        }
+    }
 
-  cursor.execute(
-      """
-        INSERT INTO family_transactions (user_id, user_name, amount, action_type, description)
-        VALUES (?, ?, ?, ?, ?)
-    """,
-      (
-          data.user_id,
-          user_name,
-          data.amount,
-          data.action_type,
-          data.description,
-      ),
-  )
+    async function quickAddMoney(amount) {
+        const currentBal = parseInt(document.getElementById('ow-balance').value) || 0;
+        document.getElementById('ow-balance').value = currentBal + amount;
+        await saveOwnerChanges();
+    }
 
-  conn.commit()
-  conn.close()
+    async function reviewApplication(status) {
+        const targetId = document.getElementById('owner-user-select').value;
+        try {
+            await fetch(`${BACKEND_URL}/api/review_application`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ admin_id: currentUser.id, target_id: parseInt(targetId), status: status })
+            });
+            showModal("Готово", status === 'approved' ? "Принято!" : "Отклонено!", true);
+            loadAll();
+        } catch(e) {
+            showModal("Ошибка", "Нет связи с сервером!", false);
+        }
+    }
 
-  return {"status": "ok", "new_balance": new_balance}
+    async function saveOwnerChanges() {
+        const targetId = document.getElementById('owner-user-select').value;
+        if (!targetId) return;
 
+        try {
+            await fetch(`${BACKEND_URL}/api/owner_update`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    admin_id: currentUser.id, 
+                    target_id: parseInt(targetId),
+                    faction: document.getElementById('ow-faction').value,
+                    balance: parseInt(document.getElementById('ow-balance').value) || 0,
+                    fines: 0
+                })
+            });
+            showModal("Сохранено", "Данные игрока обновлены!", true);
+            loadAll();
+        } catch(e) {
+            showModal("Ошибка", "Не удалось связаться с сервером", false);
+        }
+    }
 
-bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher()
+    function setTheme(num) {
+        const frame = document.querySelector('.phone-frame');
+        if (num === 1) frame.style.backgroundImage = "url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop')";
+        if (num === 2) frame.style.backgroundImage = "url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1000&auto=format&fit=crop')";
+        showModal("Готово", "Тема сменена!", true);
+    }
 
+    function showModal(title, text, success) {
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-text').innerText = text;
+        const icon = document.getElementById('modal-icon');
+        icon.innerText = success ? "✓" : "✕";
+        icon.style.color = success ? "#2ecc71" : "#e74c3c";
+        const m = document.getElementById('success-modal');
+        m.style.display = 'flex';
+        setTimeout(() => m.style.display = 'none', 1800);
+    }
 
-@dp.message(Command("start"))
-async def cmd_start(message: types.Message):
-  kb = InlineKeyboardMarkup(
-      inline_keyboard=[[
-          InlineKeyboardButton(
-              text="📱 Открыть Телефон", web_app=WebAppInfo(url=SERVER_URL)
-          )
-      ]]
-  )
-  await message.answer("Телефон готов к работе!", reply_markup=kb)
+    function openApp(id) { 
+        if (id === 'app-owner') loadAll();
+        if (id === 'app-family') loadFamilyData();
+        document.getElementById(id).classList.add('active'); 
+    }
+    function closeApp(id) { document.getElementById(id).classList.remove('active'); }
 
-
-async def main():
-  config = uvicorn.Config(app=app, host="0.0.0.0", port=8000)
-  server = uvicorn.Server(config)
-  await asyncio.gather(server.serve(), dp.start_polling(bot))
-
-
-if __name__ == "__main__":
-  asyncio.run(main())
+    loadAll();
+</script>
+</body>
+</html>
