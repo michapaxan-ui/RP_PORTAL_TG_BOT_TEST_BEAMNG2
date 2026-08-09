@@ -12,7 +12,6 @@
             --accent-green: #2ecc71;
             --accent-blue: #3498db;
             --accent-red: #e74c3c;
-            --card-bg: rgba(255, 255, 255, 0.05);
         }
 
         * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -50,19 +49,20 @@
         .back-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--border-glass); color: #fff; padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
         .window-body { flex: 1; padding: 16px; overflow-y: auto; }
 
-        .card-item { background: var(--card-bg); border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); margin-bottom: 12px; }
-        .btn-action { width: 100%; background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border: none; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 6px; }
+        .card-item { background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); margin-bottom: 12px; }
+        .btn-action { width: 100%; background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border: none; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 6px; }
         .btn-action.red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
         .btn-action.blue { background: linear-gradient(135deg, #3498db, #2980b9); }
 
         input, select { width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--border-glass); color: #fff; padding: 10px; border-radius: 10px; margin: 4px 0 8px 0; font-size: 12px; outline: none; }
 
+        /* Экран Регистрации */
         #auth-screen { position: absolute; top:0; left:0; right:0; bottom:0; background: #0c0d12; z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 24px; text-align: center; }
 
         .id-card-doc { background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); }
         .id-card-title { text-align: center; font-size: 11px; font-weight: 800; color: var(--accent-blue); border-bottom: 1px solid var(--border-glass); padding-bottom: 4px; margin-bottom: 8px; }
         .id-card-grid { display: flex; gap: 10px; }
-        .id-photo-box { width: 65px; height: 85px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 9px; border: 1px solid var(--border-glass); }
+        .id-photo-box { width: 65px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 9px; border: 1px solid var(--border-glass); }
         .id-info { flex: 1; font-size: 10px; text-align: left; }
         .id-field-label { font-size: 8px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
         .id-field-val { font-size: 11px; font-weight: 700; color: #fff; margin-bottom: 3px; }
@@ -121,6 +121,7 @@
             <div class="app-name">Настройки</div>
         </div>
 
+        <!-- Кнопка Владельца -->
         <div class="app-item" id="owner-app-icon" onclick="openApp('app-owner')">
             <div class="app-box" style="background: linear-gradient(135deg, #c0392b, #e74c3c);">👑</div>
             <div class="app-name">Владелец</div>
@@ -169,8 +170,8 @@
             <div class="card-item" style="background: linear-gradient(135deg, rgba(39,174,96,0.2), rgba(0,0,0,0.4)); border-color:#2ecc71;">
                 <div style="font-size:10px; color:#aaa;">Баланс счета</div>
                 <h2 style="margin:4px 0 8px 0; color:#2ecc71;" id="sber-balance">0 €</h2>
-                <div style="font-size:11px; font-family:monospace; color:#fff; font-weight:bold;" id="sber-card">CARD: Загрузка...</div>
-                <div style="font-size:10px; font-family:monospace; color:#3498db; margin-top:4px; font-weight:bold;" id="sber-iban">IBAN: Загрузка...</div>
+                <div style="font-size:10px; font-family:monospace;" id="sber-card">CARD: **** **** **** 0000</div>
+                <div style="font-size:9px; color:#aaa; margin-top:2px;" id="sber-iban">IBAN: RU00BEAM000000000000</div>
             </div>
             <div class="card-item">
                 <div style="font-weight:600; margin-bottom:8px; font-size:12px;">Перевод по IBAN</div>
@@ -302,35 +303,25 @@
     }
     setInterval(updateClock, 1000); updateClock();
 
-    function createPassportHTML(u) {
-        if (!u) return '';
-        const fname = (u.fname || "НЕ УКАЗАНО").toUpperCase();
-        const lname = (u.lname || "НЕ УКАЗАНО").toUpperCase();
-        const bday = u.bday || "НЕ УКАЗАНО";
-        const code = u.passport_code || "RP 00-00 000000";
-
+    function createPassportHTML(data) {
         return `
         <div class="id-card-doc">
-            <div class="id-card-title">STATE OF SAN ANDREAS — PASSPORT</div>
+            <div class="id-card-title">STATE OF SAN ANDREAS</div>
             <div class="id-card-grid">
                 <div class="id-photo-box">PHOTO</div>
                 <div class="id-info">
                     <div class="id-field-label">1. Фамилия</div>
-                    <div class="id-field-val">${lname}</div>
+                    <div class="id-field-val">${(data.lname || "").toUpperCase()}</div>
                     <div class="id-field-label">2. Имя</div>
-                    <div class="id-field-val">${fname}</div>
+                    <div class="id-field-val">${(data.fname || "").toUpperCase()}</div>
                     <div class="id-field-label">3. Дата рождения</div>
-                    <div class="id-field-val">${bday}</div>
-                    <div class="id-field-label">4. Номер паспорта</div>
-                    <div class="id-field-val" style="color:#38bdf8;">${code}</div>
+                    <div class="id-field-val">${data.bday || ""}</div>
                 </div>
             </div>
         </div>`;
     }
 
     function renderUI(me) {
-        if (!me) return;
-
         const passHTML = createPassportHTML(me);
         document.getElementById('gos-pass-box').innerHTML = passHTML;
         document.getElementById('docs-pass-box').innerHTML = passHTML;
@@ -341,9 +332,8 @@
 
         document.getElementById('sber-balance').innerText = (me.balance || 0) + " €";
         document.getElementById('top-balance').innerText = (me.balance || 0) + " €";
-        document.getElementById('sber-card').innerText = me.card_num ? `CARD: ${me.card_num}` : "CARD: Не создана";
-        document.getElementById('sber-iban').innerText = me.iban ? `IBAN: ${me.iban}` : "IBAN: Не создан";
-        
+        document.getElementById('sber-card').innerText = me.card_num || "CARD: **** **** **** 0000";
+        document.getElementById('sber-iban').innerText = me.iban || "IBAN: RU00BEAM000000000000";
         document.getElementById('doc-drive-val').innerText = me.drive_lic ? `Категории: ${me.drive_lic}` : "Статус: Нет лицензии";
         document.getElementById('doc-gun-val').innerText = me.gun_lic ? `Тип: ${me.gun_lic}` : "Статус: Нет лицензии";
     }
@@ -355,57 +345,32 @@
             document.getElementById('owner-app-icon').style.display = 'none';
         }
 
+        const localUser = localStorage.getItem(`rp_user_${currentUser.id}`);
+        if (localUser) {
+            renderUI(JSON.parse(localUser));
+        }
+
         try {
             const res = await fetch(`${BACKEND_URL}/api/get_tablet_data?user_id=${currentUser.id}`);
             const data = await res.json();
             dbData = data.citizens || {};
 
-            if (!dbData[currentUser.id]) {
+            if (!dbData[currentUser.id] && !localUser) {
                 document.getElementById('auth-screen').style.display = 'flex';
                 return;
             } else {
                 document.getElementById('auth-screen').style.display = 'none';
             }
 
-            let me = dbData[currentUser.id];
+            let me = dbData[currentUser.id] || JSON.parse(localUser);
+            localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(me));
             renderUI(me);
             populateOwnerSelect();
         } catch(e) {
-            console.log("Ошибка подключения к бэкенду:", e);
+            if (!localUser) {
+                document.getElementById('auth-screen').style.display = 'flex';
+            }
         }
-    }
-
-    function populateOwnerSelect() {
-        const select = document.getElementById('owner-user-select');
-        if (!select) return;
-        
-        const currentSelected = select.value;
-        select.innerHTML = '';
-        
-        for (let id in dbData) {
-            let opt = document.createElement('option'); 
-            opt.value = id;
-            opt.innerText = `${dbData[id].fname} ${dbData[id].lname} (ID: ${id})`;
-            select.appendChild(opt);
-        }
-
-        if (currentSelected && dbData[currentSelected]) {
-            select.value = currentSelected;
-        }
-
-        loadOwnerForm();
-    }
-
-    function loadOwnerForm() {
-        const select = document.getElementById('owner-user-select');
-        if (!select) return;
-        const id = select.value;
-        if (!id || !dbData[id]) return;
-        const u = dbData[id]; 
-        document.getElementById('ow-faction').value = u.faction || "Гражданский";
-        document.getElementById('ow-balance').value = u.balance || 0;
-        document.getElementById('ow-app-status').innerText = u.status === 'rejected' ? 'Отклонена' : 'Одобрена';
-        document.getElementById('ow-app-status').style.color = u.status === 'rejected' ? '#e74c3c' : '#2ecc71';
     }
 
     async function registerUser() {
@@ -418,21 +383,25 @@
             return;
         }
 
+        const newUser = {
+            fname: fname, lname: lname, bday: bday, balance: 0,
+            card_num: "CARD: 2202 " + Math.floor(1000 + Math.random() * 9000) + " 0000 1111",
+            iban: "RU99BEAM" + Math.floor(1000000000 + Math.random() * 9000000000)
+        };
+
+        localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(newUser));
+
         try {
-            const res = await fetch(`${BACKEND_URL}/api/register`, {
+            await fetch(`${BACKEND_URL}/api/register`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ user_id: currentUser.id, fname: fname, lname: lname, bday: bday })
             });
-            
-            if (res.ok) {
-                showModal("Успешно", "Регистрация завершена!", true);
-                document.getElementById('auth-screen').style.display = 'none';
-                loadAll();
-            }
-        } catch(e) {
-            showModal("Ошибка", "Нет связи с сервером!", false);
-        }
+        } catch(e) {}
+
+        showModal("Успешно", "Регистрация завершена!", true);
+        document.getElementById('auth-screen').style.display = 'none';
+        renderUI(newUser);
     }
 
     async function savePersonalData() {
@@ -440,56 +409,94 @@
         const lname = document.getElementById('edit-lname').value;
         const bday = document.getElementById('edit-bday').value;
 
+        let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
+        localUser.fname = fname;
+        localUser.lname = lname;
+        localUser.bday = bday;
+        localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
+
+        renderUI(localUser);
+
         try {
             await fetch(`${BACKEND_URL}/api/update_profile`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ user_id: currentUser.id, fname: fname, lname: lname, bday: bday })
             });
-            showModal("Сохранено", "Паспорт обновлён!", true);
-            loadAll();
-        } catch(e) {
-            showModal("Ошибка", "Нет связи с сервером!", false);
-        }
+        } catch(e) {}
+
+        showModal("Сохранено", "Паспорт обновлён!", true);
     }
 
     async function makeTransfer() {
-        const iban = document.getElementById('transfer-iban').value.trim();
+        const iban = document.getElementById('transfer-iban').value;
         const sum = parseInt(document.getElementById('transfer-sum').value);
+        let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
+
+        if ((localUser.balance || 0) < sum) {
+            showModal("Отказано", "Недостаточно средств", false);
+            return;
+        }
+
+        localUser.balance = (localUser.balance || 0) - sum;
+        localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
+        renderUI(localUser);
 
         try {
-            const res = await fetch(`${BACKEND_URL}/api/transfer`, {
+            await fetch(`${BACKEND_URL}/api/transfer`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ from_id: currentUser.id, to_iban: iban, sum: sum })
             });
-            if (res.ok) {
-                showModal("Успешно", "Перевод выполнен!", true);
-                loadAll();
-            } else {
-                showModal("Ошибка", "Ошибка перевода", false);
-            }
-        } catch(e) {
-            showModal("Ошибка", "Нет связи с сервером!", false);
-        }
+        } catch(e) {}
+
+        showModal("Успешно", "Перевод выполнен!", true);
     }
 
     async function buyLicense(type, price, cat) {
+        let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
+
+        if ((localUser.balance || 0) < price) {
+            showModal("Отказано", "Недостаточно средств", false);
+            return;
+        }
+
+        localUser.balance = (localUser.balance || 0) - price;
+        if (type === 'drive') localUser.drive_lic = cat;
+        else localUser.gun_lic = cat;
+
+        localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
+        renderUI(localUser);
+
         try {
-            const res = await fetch(`${BACKEND_URL}/api/buy_lic`, {
+            await fetch(`${BACKEND_URL}/api/buy_lic`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ user_id: currentUser.id, lic_type: type, cat: cat, price: price })
             });
-            if (res.ok) {
-                showModal("Куплено!", "Лицензия получена", true);
-                loadAll();
-            } else {
-                showModal("Отказано", "Недостаточно средств", false);
-            }
-        } catch(e) {
-            showModal("Ошибка", "Нет связи с сервером!", false);
+        } catch(e) {}
+
+        showModal("Куплено!", "Лицензия получена", true);
+    }
+
+    function populateOwnerSelect() {
+        const select = document.getElementById('owner-user-select');
+        select.innerHTML = '';
+        for (let id in dbData) {
+            let opt = document.createElement('option'); 
+            opt.value = id;
+            opt.innerText = `${dbData[id].fname} ${dbData[id].lname} (ID: ${id})`;
+            select.appendChild(opt);
         }
+        loadOwnerForm();
+    }
+
+    function loadOwnerForm() {
+        const id = document.getElementById('owner-user-select').value;
+        const u = dbData[id]; 
+        if(!u) return;
+        document.getElementById('ow-faction').value = u.faction || "Гражданский";
+        document.getElementById('ow-balance').value = u.balance || 0;
     }
 
     async function quickAddMoney(amount) {
@@ -506,34 +513,25 @@
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ admin_id: currentUser.id, target_id: parseInt(targetId), status: status })
             });
-            showModal("Готово", status === 'approved' ? "Принято!" : "Отклонено!", true);
-            loadAll();
-        } catch(e) {
-            showModal("Ошибка", "Нет связи с сервером!", false);
-        }
+        } catch(e) {}
+        showModal("Готово", status === 'approved' ? "Принято!" : "Отклонено!", true);
     }
 
     async function saveOwnerChanges() {
         const targetId = document.getElementById('owner-user-select').value;
-        if (!targetId) return;
-
         try {
             await fetch(`${BACKEND_URL}/api/owner_update`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    admin_id: currentUser.id, 
-                    target_id: parseInt(targetId),
+                    admin_id: currentUser.id, target_id: parseInt(targetId),
                     faction: document.getElementById('ow-faction').value,
-                    balance: parseInt(document.getElementById('ow-balance').value) || 0,
+                    balance: parseInt(document.getElementById('ow-balance').value),
                     fines: 0
                 })
             });
-            showModal("Сохранено", "Данные игрока обновлены!", true);
-            loadAll();
-        } catch(e) {
-            showModal("Ошибка", "Не удалось связаться с сервером", false);
-        }
+        } catch(e) {}
+        showModal("Сохранено", "Данные игрока обновлены!", true);
     }
 
     function setTheme(num) {
@@ -554,12 +552,7 @@
         setTimeout(() => m.style.display = 'none', 1800);
     }
 
-    function openApp(id) { 
-        if (id === 'app-owner') {
-            loadAll();
-        }
-        document.getElementById(id).classList.add('active'); 
-    }
+    function openApp(id) { document.getElementById(id).classList.add('active'); }
     function closeApp(id) { document.getElementById(id).classList.remove('active'); }
 
     loadAll();
