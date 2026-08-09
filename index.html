@@ -369,6 +369,15 @@
     const BACKEND_URL = "https://spooky-unhealthy-esquire.ngrok-free.dev";
     const OWNER_ID = 7914481551;
 
+    // Вспомогательная функция для обхода предупреждения ngrok
+    async function apiFetch(url, options = {}) {
+        options.headers = {
+            ...options.headers,
+            'ngrok-skip-browser-warning': 'true'
+        };
+        return fetch(url, options);
+    }
+
     const tg = window.Telegram.WebApp;
     tg.expand();
 
@@ -433,7 +442,7 @@
         }
 
         try {
-            const res = await fetch(`${BACKEND_URL}/api/get_tablet_data?user_id=${currentUser.id}`);
+            const res = await apiFetch(`${BACKEND_URL}/api/get_tablet_data?user_id=${currentUser.id}`);
             const data = await res.json();
             dbData = data.citizens || {};
 
@@ -459,7 +468,7 @@
 
     async function loadFamilyData() {
         try {
-            const res = await fetch(`${BACKEND_URL}/api/get_family_data`);
+            const res = await apiFetch(`${BACKEND_URL}/api/get_family_data`);
             const data = await res.json();
             
             document.getElementById('fam-balance').innerText = (data.balance || 0) + " €";
@@ -506,7 +515,7 @@
         }
 
         try {
-            const res = await fetch(`${BACKEND_URL}/api/family_action`, {
+            const res = await apiFetch(`${BACKEND_URL}/api/family_action`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
@@ -550,7 +559,7 @@
         localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(newUser));
 
         try {
-            await fetch(`${BACKEND_URL}/api/register`, {
+            await apiFetch(`${BACKEND_URL}/api/register`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ user_id: currentUser.id, fname: fname, lname: lname, bday: bday })
@@ -576,7 +585,7 @@
         renderUI(localUser);
 
         try {
-            await fetch(`${BACKEND_URL}/api/update_profile`, {
+            await apiFetch(`${BACKEND_URL}/api/update_profile`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ user_id: currentUser.id, fname: fname, lname: lname, bday: bday })
@@ -601,7 +610,7 @@
         renderUI(localUser);
 
         try {
-            await fetch(`${BACKEND_URL}/api/transfer`, {
+            await apiFetch(`${BACKEND_URL}/api/transfer`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ from_id: currentUser.id, to_iban: iban, sum: sum })
@@ -627,7 +636,7 @@
         renderUI(localUser);
 
         try {
-            await fetch(`${BACKEND_URL}/api/buy_lic`, {
+            await apiFetch(`${BACKEND_URL}/api/buy_lic`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ user_id: currentUser.id, lic_type: type, cat: cat, price: price })
@@ -681,7 +690,7 @@
     async function reviewApplication(status) {
         const targetId = document.getElementById('owner-user-select').value;
         try {
-            await fetch(`${BACKEND_URL}/api/review_application`, {
+            await apiFetch(`${BACKEND_URL}/api/review_application`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ admin_id: currentUser.id, target_id: parseInt(targetId), status: status })
@@ -693,7 +702,7 @@
     async function saveOwnerChanges() {
         const targetId = document.getElementById('owner-user-select').value;
         try {
-            await fetch(`${BACKEND_URL}/api/owner_update`, {
+            await apiFetch(`${BACKEND_URL}/api/owner_update`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
