@@ -73,7 +73,7 @@
 
         #auth-screen { position: absolute; top:0; left:0; right:0; bottom:0; background: #0c0d12; z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 24px; text-align: center; }
 
-        .id-card-doc { background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); }
+        .id-card-doc { background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); margin-bottom: 12px; }
         .id-card-title { text-align: center; font-size: 11px; font-weight: 800; color: var(--accent-blue); border-bottom: 1px solid var(--border-glass); padding-bottom: 4px; margin-bottom: 8px; }
         .id-card-grid { display: flex; gap: 10px; }
         .id-photo-box { width: 65px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 9px; border: 1px solid var(--border-glass); }
@@ -161,7 +161,7 @@
             <div></div>
         </div>
         <div class="window-body">
-            <div style="margin-bottom: 12px;" id="gos-pass-box"></div>
+            <div id="gos-pass-box"></div>
             <div class="card-item">
                 <div style="font-weight:600; margin-bottom:8px; font-size:12px;">✏️ Изменить данные паспорта</div>
                 <input type="text" id="edit-fname" placeholder="Имя">
@@ -183,8 +183,8 @@
             <div class="card-item" style="background: linear-gradient(135deg, rgba(39,174,96,0.2), rgba(0,0,0,0.4)); border-color:#2ecc71;">
                 <div style="font-size:10px; color:#aaa;">Баланс счета</div>
                 <h2 style="margin:4px 0 8px 0; color:#2ecc71;" id="sber-balance">0 €</h2>
-                <div style="font-size:10px; font-family:monospace;" id="sber-card">CARD: **** **** **** 0000</div>
-                <div style="font-size:9px; color:#aaa; margin-top:2px;" id="sber-iban">IBAN: RU00BEAM000000000000</div>
+                <div style="font-size:11px; font-family:monospace; color:#fff; font-weight:bold;" id="sber-card">CARD: Загрузка...</div>
+                <div style="font-size:10px; font-family:monospace; color:#3498db; margin-top:4px; font-weight:bold;" id="sber-iban">IBAN: Загрузка...</div>
             </div>
             <div class="card-item">
                 <div style="font-weight:600; margin-bottom:8px; font-size:12px;">Перевод по IBAN</div>
@@ -203,7 +203,7 @@
             <div></div>
         </div>
         <div class="window-body">
-            <div style="margin-bottom: 12px;" id="docs-pass-box"></div>
+            <div id="docs-pass-box"></div>
             <div class="card-item">
                 <div style="font-weight:600; color:#2ecc71; font-size:12px;">🚗 Водительские права</div>
                 <div style="font-size:11px; color:#aaa; margin-top:4px;" id="doc-drive-val">Статус: Нет лицензии</div>
@@ -312,20 +312,27 @@
     }
     setInterval(updateClock, 1000); updateClock();
 
-    function createPassportHTML(data) {
-        if (!data) return '';
+    function buildPassportHTML(u) {
+        if (!u) return '';
+        const fname = (u.fname || "НЕ УКАЗАНО").toUpperCase();
+        const lname = (u.lname || "НЕ УКАЗАНО").toUpperCase();
+        const bday = u.bday || "НЕ УКАЗАНО";
+        const code = u.passport_code || "RP 00-00 000000";
+
         return `
         <div class="id-card-doc">
-            <div class="id-card-title">STATE OF SAN ANDREAS</div>
+            <div class="id-card-title">STATE OF SAN ANDREAS — PASSPORT</div>
             <div class="id-card-grid">
                 <div class="id-photo-box">PHOTO</div>
                 <div class="id-info">
                     <div class="id-field-label">1. Фамилия</div>
-                    <div class="id-field-val">${(data.lname || "").toUpperCase()}</div>
+                    <div class="id-field-val">${lname}</div>
                     <div class="id-field-label">2. Имя</div>
-                    <div class="id-field-val">${(data.fname || "").toUpperCase()}</div>
+                    <div class="id-field-val">${fname}</div>
                     <div class="id-field-label">3. Дата рождения</div>
-                    <div class="id-field-val">${data.bday || ""}</div>
+                    <div class="id-field-val">${bday}</div>
+                    <div class="id-field-label">4. Номер паспорта</div>
+                    <div class="id-field-val" style="color:#38bdf8;">${code}</div>
                 </div>
             </div>
         </div>`;
@@ -333,12 +340,10 @@
 
     function renderUI(me) {
         if (!me) return;
-        const passHTML = createPassportHTML(me);
-        
-        const gosBox = document.getElementById('gos-pass-box');
-        const docsBox = document.getElementById('docs-pass-box');
-        if (gosBox) gosBox.innerHTML = passHTML;
-        if (docsBox) docsBox.innerHTML = passHTML;
+
+        const passportHTML = buildPassportHTML(me);
+        document.getElementById('gos-pass-box').innerHTML = passportHTML;
+        document.getElementById('docs-pass-box').innerHTML = passportHTML;
 
         document.getElementById('edit-fname').value = me.fname || "";
         document.getElementById('edit-lname').value = me.lname || "";
@@ -346,8 +351,9 @@
 
         document.getElementById('sber-balance').innerText = (me.balance || 0) + " €";
         document.getElementById('top-balance').innerText = (me.balance || 0) + " €";
-        document.getElementById('sber-card').innerText = me.card_num || "CARD: **** **** **** 0000";
-        document.getElementById('sber-iban').innerText = me.iban || "IBAN: RU00BEAM000000000000";
+        document.getElementById('sber-card').innerText = me.card_num ? `CARD: ${me.card_num}` : "CARD: Не создана";
+        document.getElementById('sber-iban').innerText = me.iban ? `IBAN: ${me.iban}` : "IBAN: Не создан";
+        
         document.getElementById('doc-drive-val').innerText = me.drive_lic ? `Категории: ${me.drive_lic}` : "Статус: Нет лицензии";
         document.getElementById('doc-gun-val').innerText = me.gun_lic ? `Тип: ${me.gun_lic}` : "Статус: Нет лицензии";
     }
