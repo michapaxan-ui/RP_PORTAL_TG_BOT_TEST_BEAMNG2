@@ -12,6 +12,8 @@
             --accent-green: #2ecc71;
             --accent-blue: #3498db;
             --accent-red: #e74c3c;
+            --accent-gold: #f39c12;
+            --card-bg: rgba(255, 255, 255, 0.05);
         }
 
         * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -49,12 +51,26 @@
         .back-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--border-glass); color: #fff; padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
         .window-body { flex: 1; padding: 16px; overflow-y: auto; }
 
-        .card-item { background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); margin-bottom: 12px; }
-        .btn-action { width: 100%; background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border: none; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 6px; }
-        .btn-action.red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-        .btn-action.blue { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .card-item { background: var(--card-bg); border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); margin-bottom: 12px; }
+        .btn-action { width: 100%; background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border: none; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 6px; }
 
-        input, select { width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--border-glass); color: #fff; padding: 10px; border-radius: 10px; margin: 4px 0 8px 0; font-size: 12px; outline: none; }
+        input, select { width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--border-glass); color: #fff; padding: 12px; border-radius: 12px; margin: 6px 0 12px 0; font-size: 12px; outline: none; }
+
+        /* Modern Owner Panel Styling */
+        .owner-container { display: flex; flex-direction: column; gap: 14px; }
+        .owner-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 16px; backdrop-filter: blur(15px); }
+        .owner-section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #8e8e93; font-weight: 700; margin-bottom: 8px; }
+        
+        .user-selector-wrapper { position: relative; }
+        .modern-select { background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; font-weight: 600; font-size: 13px; border-radius: 14px; padding: 12px; appearance: none; }
+        
+        .input-group { margin-bottom: 12px; }
+        .input-label { font-size: 11px; color: #a1a1a6; font-weight: 600; margin-bottom: 4px; display: block; }
+        .modern-input { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); color: #2ecc71; font-weight: 800; font-size: 16px; border-radius: 12px; padding: 12px; margin: 0; }
+        .modern-input.text { color: #fff; font-size: 13px; font-weight: 600; }
+
+        .btn-save-modern { background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; border: none; padding: 14px; border-radius: 14px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); cursor: pointer; transition: 0.2s; }
+        .btn-save-modern:active { transform: scale(0.98); }
 
         /* Экран Регистрации */
         #auth-screen { position: absolute; top:0; left:0; right:0; bottom:0; background: #0c0d12; z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 24px; text-align: center; }
@@ -123,7 +139,7 @@
 
         <!-- Кнопка Владельца -->
         <div class="app-item" id="owner-app-icon" onclick="openApp('app-owner')">
-            <div class="app-box" style="background: linear-gradient(135deg, #c0392b, #e74c3c);">👑</div>
+            <div class="app-box" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">⚡</div>
             <div class="app-name">Владелец</div>
         </div>
     </div>
@@ -237,39 +253,37 @@
         </div>
     </div>
 
-    <!-- ОКНО: ВЛАДЕЛЕЦ -->
+    <!-- ОБНОВЛЕННОЕ ОКНО: ВЛАДЕЛЕЦ -->
     <div id="app-owner" class="app-window">
-        <div class="window-header">
+        <div class="window-header" style="border-bottom: 1px solid rgba(99, 102, 241, 0.3);">
             <button class="back-btn" onclick="closeApp('app-owner')">‹ Назад</button>
-            <div style="font-weight:700; color:#e74c3c; font-size:13px;">👑 ПАНЕЛЬ ВЛАДЕЛЬЦА</div>
+            <div style="font-weight:800; color:#818cf8; font-size:13px; letter-spacing:0.5px;">ADMIN CONTROL</div>
             <div></div>
         </div>
         <div class="window-body">
-            <div class="card-item">
-                <div style="font-weight:700; font-size:12px; margin-bottom:6px; color:#e74c3c;">Все игроки в базе:</div>
-                <select id="owner-user-select" onchange="loadOwnerForm()"></select>
-
-                <label style="font-size:9px; color:#aaa;">Статус анкеты:</label>
-                <div style="font-size:11px; font-weight:bold; color:#2ecc71; margin-bottom:8px;" id="ow-app-status">Одобрена</div>
-
-                <div style="display:flex; gap:6px; margin-bottom:10px;">
-                    <button class="btn-action" style="margin:0;" onclick="reviewApplication('approved')">Принять</button>
-                    <button class="btn-action red" style="margin:0;" onclick="reviewApplication('rejected')">Отклонить</button>
+            <div class="owner-container">
+                <div class="owner-card">
+                    <div class="owner-section-title">Выберите игрока</div>
+                    <div class="user-selector-wrapper">
+                        <select id="owner-user-select" class="modern-select" onchange="loadOwnerForm()"></select>
+                    </div>
                 </div>
 
-                <label style="font-size:9px; color:#aaa;">Быстрая выдача валюты:</label>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px;">
-                    <button class="btn-action blue" style="margin:0;" onclick="quickAddMoney(1000)">+ 1 000 €</button>
-                    <button class="btn-action blue" style="margin:0;" onclick="quickAddMoney(10000)">+ 10 000 €</button>
+                <div class="owner-card">
+                    <div class="owner-section-title">Управление данными</div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Точный баланс (€)</label>
+                        <input type="number" id="ow-balance" class="modern-input" placeholder="0">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Фракция / Должность</label>
+                        <input type="text" id="ow-faction" class="modern-input text" placeholder="Гражданский">
+                    </div>
+
+                    <button class="btn-save-modern" style="width: 100%; margin-top: 8px;" onclick="saveOwnerChanges()">Применить изменения</button>
                 </div>
-
-                <label style="font-size:9px; color:#aaa;">Фракция:</label>
-                <input type="text" id="ow-faction">
-
-                <label style="font-size:9px; color:#aaa;">Точный баланс (€):</label>
-                <input type="number" id="ow-balance">
-
-                <button class="btn-action red" onclick="saveOwnerChanges()">Сохранить изменения</button>
             </div>
         </div>
     </div>
@@ -402,6 +416,7 @@
         showModal("Успешно", "Регистрация завершена!", true);
         document.getElementById('auth-screen').style.display = 'none';
         renderUI(newUser);
+        loadAll();
     }
 
     async function savePersonalData() {
@@ -426,6 +441,7 @@
         } catch(e) {}
 
         showModal("Сохранено", "Паспорт обновлён!", true);
+        loadAll();
     }
 
     async function makeTransfer() {
@@ -482,56 +498,55 @@
     function populateOwnerSelect() {
         const select = document.getElementById('owner-user-select');
         select.innerHTML = '';
+        
+        let count = 0;
         for (let id in dbData) {
+            count++;
             let opt = document.createElement('option'); 
             opt.value = id;
             opt.innerText = `${dbData[id].fname} ${dbData[id].lname} (ID: ${id})`;
             select.appendChild(opt);
         }
+
+        if (count === 0) {
+            let opt = document.createElement('option');
+            opt.value = "";
+            opt.innerText = "Игроков не найдено";
+            select.appendChild(opt);
+        }
+
         loadOwnerForm();
     }
 
     function loadOwnerForm() {
         const id = document.getElementById('owner-user-select').value;
+        if (!id || !dbData[id]) return;
         const u = dbData[id]; 
-        if(!u) return;
         document.getElementById('ow-faction').value = u.faction || "Гражданский";
         document.getElementById('ow-balance').value = u.balance || 0;
     }
 
-    async function quickAddMoney(amount) {
-        const currentBal = parseInt(document.getElementById('ow-balance').value) || 0;
-        document.getElementById('ow-balance').value = currentBal + amount;
-        await saveOwnerChanges();
-    }
-
-    async function reviewApplication(status) {
-        const targetId = document.getElementById('owner-user-select').value;
-        try {
-            await fetch(`${BACKEND_URL}/api/review_application`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ admin_id: currentUser.id, target_id: parseInt(targetId), status: status })
-            });
-        } catch(e) {}
-        showModal("Готово", status === 'approved' ? "Принято!" : "Отклонено!", true);
-    }
-
     async function saveOwnerChanges() {
         const targetId = document.getElementById('owner-user-select').value;
+        if (!targetId) return;
+
         try {
             await fetch(`${BACKEND_URL}/api/owner_update`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    admin_id: currentUser.id, target_id: parseInt(targetId),
+                    admin_id: currentUser.id, 
+                    target_id: parseInt(targetId),
                     faction: document.getElementById('ow-faction').value,
                     balance: parseInt(document.getElementById('ow-balance').value),
                     fines: 0
                 })
             });
-        } catch(e) {}
-        showModal("Сохранено", "Данные игрока обновлены!", true);
+            showModal("Сохранено", "Данные игрока обновлены!", true);
+            loadAll();
+        } catch(e) {
+            showModal("Ошибка", "Не удалось связаться с сервером", false);
+        }
     }
 
     function setTheme(num) {
@@ -552,7 +567,12 @@
         setTimeout(() => m.style.display = 'none', 1800);
     }
 
-    function openApp(id) { document.getElementById(id).classList.add('active'); }
+    function openApp(id) { 
+        if (id === 'app-owner') {
+            loadAll();
+        }
+        document.getElementById(id).classList.add('active'); 
+    }
     function closeApp(id) { document.getElementById(id).classList.remove('active'); }
 
     loadAll();
