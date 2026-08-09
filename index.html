@@ -2,355 +2,464 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BeamNG RP Phone</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GTA V RP iFruit Phone</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --phone-bg: linear-gradient(180deg, #02021c 0%, #0000d6 50%, #000282 100%);
-            --dock-bg: rgba(255, 255, 255, 0.15);
-            --app-window-bg: #0b0c10;
-            --text-main: #ffffff;
-            --sber-green: #21a038;
+            --bg-glass: rgba(18, 18, 20, 0.85);
+            --border-glass: rgba(255, 255, 255, 0.12);
+            --accent-green: #2ecc71;
+            --accent-blue: #3498db;
+            --accent-purple: #9b59b6;
+            --accent-red: #e74c3c;
         }
 
-        * { box-sizing: border-box; user-select: none; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif; }
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
 
         body {
-            background: #000; color: var(--text-main);
-            margin: 0; padding: 0; display: flex; justify-content: center; align-items: center;
+            background: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
+            overflow: hidden;
         }
 
+        /* Корпус телефона в стиле GTA V */
         .phone-frame {
-            width: 100%; max-width: 380px; height: 100vh; max-height: 800px;
-            background: var(--phone-bg); border-radius: 36px; position: relative;
-            overflow: hidden; display: flex; flex-direction: column;
-            border: 4px solid #1c1c1e; box-shadow: 0 25px 60px rgba(0,0,0,0.9);
+            width: 100%;
+            max-width: 360px;
+            height: 100vh;
+            max-height: 740px;
+            background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
+            border-radius: 40px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 4px solid #2d2d2d;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9), inset 0 0 10px rgba(255, 255, 255, 0.1);
         }
 
+        /* Вырез динамика (Notch) */
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 24px;
+            background: #000;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            z-index: 1000;
+        }
+
+        /* Статус-бар GTA 5 */
         .header-bar {
-            padding: 14px 16px; display: flex; justify-content: space-between; align-items: center;
-            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); z-index: 10;
+            padding: 28px 20px 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+            z-index: 10;
         }
 
         .header-time {
-            background: rgba(255, 255, 255, 0.15); padding: 4px 10px; border-radius: 12px;
-            font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 4px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
-
-        .header-title { font-size: 14px; font-weight: 600; color: #fff; }
 
         .header-money {
-            background: rgba(255, 255, 255, 0.2); padding: 4px 10px; border-radius: 12px;
-            font-size: 13px; font-weight: 800; color: #ffffff;
+            background: rgba(46, 204, 113, 0.2);
+            border: 1px solid rgba(46, 204, 113, 0.4);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            color: #2ecc71;
         }
 
+        /* Рабочий стол GTA V (Сетка 3x3) */
         .home-screen {
-            flex: 1; padding: 20px 16px; display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 22px 10px; align-content: start;
+            flex: 1;
+            padding: 30px 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px 15px;
+            align-content: start;
         }
 
         .app-item {
-            display: flex; flex-direction: column; align-items: center; gap: 6px;
-            cursor: pointer; position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
         }
-        .app-item:active { transform: scale(0.88); }
 
-        /* Иконка владельца скрыта по умолчанию */
-        #owner-app-icon, #owner-dock-icon { display: none; }
+        .app-item:active {
+            transform: scale(0.92);
+        }
+
+        #owner-app-icon { display: none; }
 
         .app-box {
-            width: 62px; height: 62px; border-radius: 18px;
-            display: flex; align-items: center; justify-content: center; font-size: 30px;
-            box-shadow: 0 8px 18px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2);
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.15);
             position: relative;
-        }
-
-        .badge-new {
-            position: absolute; top: -4px; right: -4px; background: #ff2d55;
-            color: #fff; font-size: 8px; font-weight: 900; padding: 2px 5px;
-            border-radius: 8px; border: 1px solid #fff; text-transform: uppercase;
+            backdrop-filter: blur(10px);
         }
 
         .app-name {
-            font-size: 11px; font-weight: 600; text-align: center; color: #ffffff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8); white-space: nowrap;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
 
+        /* Док-панель снизу */
         .dock-bar {
-            margin: 0 14px 20px 14px; padding: 10px;
-            background: var(--dock-bg); backdrop-filter: blur(25px);
-            border-radius: 26px; display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 10px; border: 1px solid rgba(255,255,255,0.2);
+            margin: 0 16px 20px 16px;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            display: flex;
+            justify-content: space-around;
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
-        .app-window {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--app-window-bg); z-index: 100;
-            display: none; flex-direction: column;
-            animation: popIn 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
+        .dock-bar .app-box {
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            border-radius: 14px;
         }
+
+        /* Полноэкранные приложения iFruit */
+        .app-window {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-glass);
+            backdrop-filter: blur(25px);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            animation: slideUp 0.25s cubic-bezier(0.1, 0.9, 0.2, 1);
+        }
+
         .app-window.active { display: flex; }
 
-        @keyframes popIn {
-            from { transform: scale(0.85); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
         }
 
         .window-header {
-            padding: 16px; display: flex; align-items: center; justify-content: space-between;
-            background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 35px 16px 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid var(--border-glass);
         }
 
         .back-btn {
-            background: rgba(255,255,255,0.15); border: none; color: #fff;
-            padding: 8px 14px; border-radius: 12px; font-size: 12px; font-weight: 700; cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-glass);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
         }
 
-        .window-body { flex: 1; padding: 16px; overflow-y: auto; }
+        .window-body {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
 
         .card-item {
-            background: rgba(255,255,255,0.06); border-radius: 18px; padding: 16px;
-            border: 1px solid rgba(255,255,255,0.1); margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 14px;
+            border: 1px solid var(--border-glass);
+            margin-bottom: 12px;
         }
 
         .btn-action {
-            width: 100%; background: linear-gradient(135deg, #21a038, #147225);
-            color: white; border: none; padding: 12px; border-radius: 12px;
-            font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 8px;
+            width: 100%;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
         }
 
         input, select {
-            width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15);
-            color: #fff; padding: 10px; border-radius: 10px; margin: 4px 0 10px 0; font-size: 13px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-glass);
+            color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 4px 0 10px 0;
+            font-size: 12px;
+            outline: none;
         }
 
+        /* ID Карта / Паспорт */
         .id-card-doc {
-            background: linear-gradient(145deg, #ffffff, #e2e8f0); color: #0f172a;
-            border-radius: 16px; padding: 16px; border: 2px solid #1e293b;
-            position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: #fff;
+            border-radius: 16px;
+            padding: 14px;
+            border: 1px solid var(--border-glass);
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
         }
+
         .id-card-title {
-            text-align: center; font-size: 12px; font-weight: 900; color: #1e293b;
-            border-bottom: 2px solid #1e293b; padding-bottom: 4px; margin-bottom: 10px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--accent-blue);
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
         }
-        .id-card-grid { display: flex; gap: 12px; }
+
+        .id-card-grid { display: flex; gap: 10px; }
         .id-photo-box {
-            width: 75px; height: 95px; background: #cbd5e1; border-radius: 6px;
-            display: flex; align-items: center; justify-content: center;
-            color: #475569; font-weight: bold; font-size: 10px; border: 1px solid #94a3b8;
-        }
-        .id-info { flex: 1; font-size: 11px; }
-        .id-field-label { font-size: 8px; color: #64748b; text-transform: uppercase; font-weight: bold; }
-        .id-field-val { font-size: 12px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
-        .id-serial-sign { margin-top: 6px; font-family: monospace; font-weight: bold; color: #dc2626; font-size: 10px; }
-
-        .passport-stamp {
-            position: absolute; right: 8px; bottom: 8px; width: 60px; height: 60px;
-            border: 2px double #dc2626; border-radius: 50%; color: #dc2626; font-size: 5px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transform: rotate(-15deg); text-align: center; font-weight: bold; opacity: 0.85; pointer-events: none;
+            width: 65px;
+            height: 80px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-size: 9px;
+            border: 1px solid var(--border-glass);
         }
 
+        .id-info { flex: 1; font-size: 10px; }
+        .id-field-label { font-size: 8px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
+        .id-field-val { font-size: 11px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+
+        /* Модальные окна */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
             display: none; justify-content: center; align-items: center; z-index: 1000;
         }
+
         .modal-box {
-            background: #1c1c1e; padding: 20px; border-radius: 20px;
-            text-align: center; border: 1px solid #333; max-width: 260px;
+            background: #1e1e24; padding: 20px; border-radius: 20px;
+            text-align: center; border: 1px solid var(--border-glass); max-width: 240px;
         }
     </style>
 </head>
 <body>
 
 <div class="phone-frame">
+    <div class="notch"></div>
+
+    <!-- Верхний статус-бар -->
     <div class="header-bar">
-        <div class="header-time">‹ <span id="clock">8:52 AM</span></div>
-        <div class="header-title">Главный экран</div>
+        <div class="header-time" id="clock">12:00</div>
         <div class="header-money" id="top-balance">$100,000</div>
     </div>
 
+    <!-- Главный экран iFruit -->
     <div class="home-screen">
-        <!-- Владелец -->
-        <div class="app-item" id="owner-app-icon" onclick="openApp('app-owner')">
-            <div class="app-box" style="background: linear-gradient(135deg, #ff2d55, #87001c);">
-                👑
-                <div class="badge-new">НОВОЕ</div>
-            </div>
-            <div class="app-name">Владелец</div>
-        </div>
-
         <!-- Госуслуги -->
         <div class="app-item" onclick="openApp('app-gos')">
-            <div class="app-box" style="background: linear-gradient(135deg, #0052cc, #002b80);">🏛️</div>
+            <div class="app-box" style="background: linear-gradient(135deg, #2980b9, #3498db);">🏛️</div>
             <div class="app-name">Госуслуги</div>
         </div>
 
         <!-- Сбербанк -->
         <div class="app-item" onclick="openApp('app-sber')">
-            <div class="app-box" style="background: linear-gradient(135deg, #21a038, #0f521b);">🟢</div>
+            <div class="app-box" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">🟢</div>
             <div class="app-name">Сбербанк</div>
         </div>
 
         <!-- Документы -->
         <div class="app-item" onclick="openApp('app-docs')">
-            <div class="app-box" style="background: linear-gradient(135deg, #ff9500, #b36b00);">📁</div>
+            <div class="app-box" style="background: linear-gradient(135deg, #d35400, #e67e22);">📁</div>
             <div class="app-name">Документы</div>
         </div>
 
         <!-- Лицензии -->
         <div class="app-item" onclick="openApp('app-lic')">
-            <div class="app-box" style="background: linear-gradient(135deg, #af52de, #5856d6);">
-                📜
-                <div class="badge-new">НОВОЕ</div>
-            </div>
+            <div class="app-box" style="background: linear-gradient(135deg, #8e44ad, #9b59b6);">📜</div>
             <div class="app-name">Лицензии</div>
         </div>
 
         <!-- Настройки -->
         <div class="app-item" onclick="openApp('app-settings')">
-            <div class="app-box" style="background: linear-gradient(135deg, #555, #222);">⚙️</div>
+            <div class="app-box" style="background: linear-gradient(135deg, #7f8c8d, #95a5a6);">⚙️</div>
             <div class="app-name">Настройки</div>
         </div>
+
+        <!-- Владелец (Только для Owner) -->
+        <div class="app-item" id="owner-app-icon" onclick="openApp('app-owner')">
+            <div class="app-box" style="background: linear-gradient(135deg, #c0392b, #e74c3c);">👑</div>
+            <div class="app-name">Владелец</div>
+        </div>
     </div>
 
+    <!-- Нижняя Dock-панель -->
     <div class="dock-bar">
         <div class="app-item" onclick="openApp('app-gos')">
-            <div class="app-box" style="background: linear-gradient(135deg, #38ef7d, #11998e); width:50px; height:50px; font-size:24px;">📖</div>
+            <div class="app-box" style="background: linear-gradient(135deg, #2980b9, #3498db);">📖</div>
         </div>
         <div class="app-item" onclick="openApp('app-sber')">
-            <div class="app-box" style="background: linear-gradient(135deg, #ffe000, #799f0c); width:50px; height:50px; font-size:24px;">💳</div>
+            <div class="app-box" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">💳</div>
         </div>
         <div class="app-item" onclick="openApp('app-docs')">
-            <div class="app-box" style="background: linear-gradient(135deg, #00c6ff, #0072ff); width:50px; height:50px; font-size:24px;">📄</div>
-        </div>
-        <div class="app-item" id="owner-dock-icon" onclick="openApp('app-owner')">
-            <div class="app-box" style="background: linear-gradient(135deg, #f80759, #bc4e9c); width:50px; height:50px; font-size:24px;">⚙️</div>
+            <div class="app-box" style="background: linear-gradient(135deg, #d35400, #e67e22);">📄</div>
         </div>
     </div>
 
-    <!-- ГОСУСЛУГИ -->
+    <!-- ОКНО: ГОСУСЛУГИ -->
     <div id="app-gos" class="app-window">
         <div class="window-header">
-            <button class="back-btn" onclick="closeApp('app-gos')">❮ Назад</button>
-            <div style="font-weight:700;">ГОСУСЛУГИ</div>
+            <button class="back-btn" onclick="closeApp('app-gos')">‹ Назад</button>
+            <div style="font-weight:700; font-size:13px;">ГОСУСЛУГИ</div>
             <div></div>
         </div>
         <div class="window-body">
             <div style="margin-bottom: 12px;" id="gos-pass-box"></div>
             <div class="card-item">
-                <div style="font-weight:600; margin-bottom:8px;">✏️ Изменить личные данные</div>
-                <label style="font-size:10px; color:#aaa;">Имя:</label>
-                <input type="text" id="edit-fname" placeholder="Миша">
-                <label style="font-size:10px; color:#aaa;">Фамилия:</label>
-                <input type="text" id="edit-lname" placeholder="Персоньян">
-                <label style="font-size:10px; color:#aaa;">Дата рождения:</label>
-                <input type="text" id="edit-bday" placeholder="22.11.2006">
-                <button class="btn-action" onclick="savePersonalData()">Сохранить данные</button>
+                <div style="font-weight:600; margin-bottom:8px; font-size:12px;">✏️ Личные данные</div>
+                <input type="text" id="edit-fname" placeholder="Имя">
+                <input type="text" id="edit-lname" placeholder="Фамилия">
+                <input type="text" id="edit-bday" placeholder="Дата рождения">
+                <button class="btn-action" onclick="savePersonalData()">Сохранить</button>
             </div>
         </div>
     </div>
 
-    <!-- СБЕРБАНК -->
+    <!-- ОКНО: СБЕРБАНК -->
     <div id="app-sber" class="app-window">
-        <div class="window-header" style="background:#0f2012;">
-            <button class="back-btn" onclick="closeApp('app-sber')">❮ Назад</button>
-            <div style="font-weight:700; color:#21a038;">СБЕРБАНК</div>
+        <div class="window-header">
+            <button class="back-btn" onclick="closeApp('app-sber')">‹ Назад</button>
+            <div style="font-weight:700; color:#2ecc71; font-size:13px;">СБЕРБАНК</div>
             <div></div>
         </div>
         <div class="window-body">
-            <div class="card-item" style="background: linear-gradient(135deg, #1e3c23, #0b170e); border:1px solid #21a038;">
-                <div style="font-size:11px; color:#aaa;">Баланс счета</div>
-                <h2 style="margin:4px 0 10px 0; color:#21a038;" id="sber-balance">100,000 €</h2>
-                <div style="font-size:11px; font-family:monospace;" id="sber-card">CARD: **** **** **** 0000</div>
-                <div style="font-size:10px; color:#aaa; margin-top:2px;" id="sber-iban">IBAN: RU00BEAM000000000000</div>
+            <div class="card-item" style="background: linear-gradient(135deg, rgba(39,174,96,0.2), rgba(0,0,0,0.4)); border-color:#2ecc71;">
+                <div style="font-size:10px; color:#aaa;">Баланс счета</div>
+                <h2 style="margin:4px 0 8px 0; color:#2ecc71;" id="sber-balance">100,000 €</h2>
+                <div style="font-size:10px; font-family:monospace;" id="sber-card">CARD: **** **** **** 0000</div>
+                <div style="font-size:9px; color:#aaa; margin-top:2px;" id="sber-iban">IBAN: RU00BEAM000000000000</div>
             </div>
             <div class="card-item">
-                <div style="font-weight:600; margin-bottom:8px;">Перевод по IBAN</div>
-                <input type="text" id="transfer-iban" placeholder="Введитe IBAN получателя">
+                <div style="font-weight:600; margin-bottom:8px; font-size:12px;">Перевод по IBAN</div>
+                <input type="text" id="transfer-iban" placeholder="IBAN получателя">
                 <input type="number" id="transfer-sum" placeholder="Сумма (€)">
-                <button class="btn-action" onclick="makeTransfer()">Отправить перевод</button>
+                <button class="btn-action" onclick="makeTransfer()">Отправить</button>
             </div>
         </div>
     </div>
 
-    <!-- ДОКУМЕНТЫ -->
+    <!-- ОКНО: ДОКУМЕНТЫ -->
     <div id="app-docs" class="app-window">
         <div class="window-header">
-            <button class="back-btn" onclick="closeApp('app-docs')">❮ Назад</button>
-            <div style="font-weight:700;">ДОКУМЕНТЫ</div>
+            <button class="back-btn" onclick="closeApp('app-docs')">‹ Назад</button>
+            <div style="font-weight:700; font-size:13px;">ДОКУМЕНТЫ</div>
             <div></div>
         </div>
         <div class="window-body">
             <div style="margin-bottom: 12px;" id="docs-pass-box"></div>
             <div class="card-item">
-                <div style="font-weight:600; color:#21a038;">🚗 Водительское удостоверение</div>
-                <div style="font-size:12px; color:#aaa;" id="doc-drive-val">Статус: Нет лицензии</div>
+                <div style="font-weight:600; color:#2ecc71; font-size:12px;">🚗 Водительские права</div>
+                <div style="font-size:11px; color:#aaa; margin-top:4px;" id="doc-drive-val">Статус: Нет лицензии</div>
             </div>
             <div class="card-item">
-                <div style="font-weight:600; color:#af52de;">🔫 Лицензия на оружие</div>
-                <div style="font-size:12px; color:#aaa;" id="doc-gun-val">Статус: Нет лицензии</div>
+                <div style="font-weight:600; color:#9b59b6; font-size:12px;">🔫 Оружие</div>
+                <div style="font-size:11px; color:#aaa; margin-top:4px;" id="doc-gun-val">Статус: Нет лицензии</div>
             </div>
         </div>
     </div>
 
-    <!-- ЛИЦЕНЗИИ -->
+    <!-- ОКНО: ЛИЦЕНЗИИ -->
     <div id="app-lic" class="app-window">
         <div class="window-header">
-            <button class="back-btn" onclick="closeApp('app-lic')">❮ Назад</button>
-            <div style="font-weight:700;">ЛИЦЕНЗИИ</div>
+            <button class="back-btn" onclick="closeApp('app-lic')">‹ Назад</button>
+            <div style="font-weight:700; font-size:13px;">ЛИЦЕНЗИИ</div>
             <div></div>
         </div>
         <div class="window-body">
             <div class="card-item">
-                <div style="font-weight:600; margin-bottom:4px;">🚗 Водительские права (1500 €)</div>
-                <button class="btn-action" onclick="buyLicense('drive', 1500, 'B, B1, M')">Купить права</button>
+                <div style="font-weight:600; font-size:12px; margin-bottom:4px;">🚗 Водительские права (1500 €)</div>
+                <button class="btn-action" onclick="buyLicense('drive', 1500, 'B, B1, M')">Купить</button>
             </div>
             <div class="card-item">
-                <div style="font-weight:600; margin-bottom:4px;">🔫 Лицензия на оружие (3000 €)</div>
-                <button class="btn-action" style="background:linear-gradient(135deg, #af52de, #5856d6);" onclick="buyLicense('gun', 3000, 'Пистолеты, Автоматы')">Купить лицензию</button>
+                <div style="font-weight:600; font-size:12px; margin-bottom:4px;">🔫 Лицензия на оружие (3000 €)</div>
+                <button class="btn-action" style="background:linear-gradient(135deg, #8e44ad, #9b59b6);" onclick="buyLicense('gun', 3000, 'Пистолеты, Автоматы')">Купить</button>
             </div>
         </div>
     </div>
 
-    <!-- НАСТРОЙКИ -->
+    <!-- ОКНО: НАСТРОЙКИ -->
     <div id="app-settings" class="app-window">
         <div class="window-header">
-            <button class="back-btn" onclick="closeApp('app-settings')">❮ Назад</button>
-            <div style="font-weight:700;">Настройки</div>
+            <button class="back-btn" onclick="closeApp('app-settings')">‹ Назад</button>
+            <div style="font-weight:700; font-size:13px;">НАСТРОЙКИ</div>
             <div></div>
         </div>
         <div class="window-body">
             <div class="card-item">
-                <div style="font-weight:600; margin-bottom:8px;">🖼️ Выбор стиля заднего фона</div>
-                <button class="btn-action" style="background:#222; margin-bottom:6px;" onclick="setTheme(1)">Синий Градиент RP</button>
-                <button class="btn-action" style="background:#222; margin-bottom:6px;" onclick="setTheme(2)">Тёмный Космос</button>
+                <div style="font-weight:600; font-size:12px; margin-bottom:8px;">🖼️ Обои iFruit</div>
+                <button class="btn-action" style="background:rgba(255,255,255,0.1); margin-bottom:6px;" onclick="setTheme(1)">Тёмный Астрал</button>
+                <button class="btn-action" style="background:rgba(255,255,255,0.1);" onclick="setTheme(2)">Кибер Неон</button>
             </div>
         </div>
     </div>
 
-    <!-- ВЛАДЕЛЬЦ -->
+    <!-- ОКНО: ВЛАДЕЛЕЦ -->
     <div id="app-owner" class="app-window">
-        <div class="window-header" style="background:#2a080c;">
-            <button class="back-btn" onclick="closeApp('app-owner')">❮ Назад</button>
-            <div style="font-weight:700; color:#ff2d55;">👑 ПАНЕЛЬ ВЛАДЕЛЬЦА</div>
+        <div class="window-header">
+            <button class="back-btn" onclick="closeApp('app-owner')">‹ Назад</button>
+            <div style="font-weight:700; color:#e74c3c; font-size:13px;">👑 АДМИН-ПАНЕЛЬ</div>
             <div></div>
         </div>
         <div class="window-body">
             <div class="card-item">
-                <div style="font-weight:600; color:#ff2d55; margin-bottom:8px;">Управление Гражданами</div>
                 <select id="owner-user-select" onchange="loadOwnerForm()"></select>
-
-                <label style="font-size:10px; color:#aaa;">Фракция:</label>
+                <label style="font-size:9px; color:#aaa;">Фракция:</label>
                 <input type="text" id="ow-faction">
-
-                <label style="font-size:10px; color:#aaa;">Баланс (€):</label>
+                <label style="font-size:9px; color:#aaa;">Баланс (€):</label>
                 <input type="number" id="ow-balance">
-
-                <button class="btn-action" style="background:linear-gradient(135deg, #ff2d55, #87001c);" onclick="saveOwnerChanges()">Сохранить изменения</button>
+                <button class="btn-action" style="background:linear-gradient(135deg, #c0392b, #e74c3c);" onclick="saveOwnerChanges()">Сохранить</button>
             </div>
         </div>
     </div>
@@ -358,16 +467,14 @@
 
 <div class="modal-overlay" id="success-modal">
     <div class="modal-box">
-        <div style="font-size:32px; color:#21a038; margin-bottom:8px;" id="modal-icon">✓</div>
-        <div style="font-size:15px; font-weight:700; margin-bottom:4px;" id="modal-title">Операция выполнена</div>
-        <div style="font-size:12px; color:#aaa;" id="modal-text">Успешно!</div>
+        <div style="font-size:28px; color:#2ecc71; margin-bottom:6px;" id="modal-icon">✓</div>
+        <div style="font-size:14px; font-weight:700; margin-bottom:4px;" id="modal-title">Операция выполнена</div>
+        <div style="font-size:11px; color:#aaa;" id="modal-text">Успешно!</div>
     </div>
 </div>
 
 <script>
-    // ⚠️ ВАШ TELEGRAM ID ВПИСАН СЮДА:
     const OWNER_ID = 7914481551;
-
     const tg = window.Telegram.WebApp;
     tg.expand();
 
@@ -387,10 +494,9 @@
     function createPassportHTML(data) {
         return `
         <div class="id-card-doc">
-            <div class="passport-stamp">ПРАВИТЕЛЬСТВО<br>BEAMNG STATE<br>УДОСТОВЕРЕНО</div>
-            <div class="id-card-title">ДОКУМЕНТ УДОСТОВЕРЯЮЩИЙ ЛИЧНОСТЬ</div>
+            <div class="id-card-title">STATE OF SAN ANDREAS</div>
             <div class="id-card-grid">
-                <div class="id-photo-box">ФОТО</div>
+                <div class="id-photo-box">PHOTO</div>
                 <div class="id-info">
                     <div class="id-field-label">1. Фамилия</div>
                     <div class="id-field-val">${(data.lname || "Персоньян").toUpperCase()}</div>
@@ -400,13 +506,10 @@
                     <div class="id-field-val">${data.bday || "22.11.2006"}</div>
                 </div>
             </div>
-            <div class="id-serial-sign">
-                СЕРИЯ: ${data.passport_code || "RP 77-88 102030"}
-            </div>
         </div>`;
     }
 
-    const defaultPassport = { fname: "Миша", lname: "Персоньян", bday: "22.11.2006", passport_code: "RP 77-88 102030" };
+    const defaultPassport = { fname: "Миша", lname: "Персоньян", bday: "22.11.2006" };
     document.getElementById('gos-pass-box').innerHTML = createPassportHTML(defaultPassport);
     document.getElementById('docs-pass-box').innerHTML = createPassportHTML(defaultPassport);
 
@@ -416,10 +519,8 @@
             const data = await res.json();
             dbData = data.citizens || {};
 
-            // Отобразить Панель Владельца только владельцу
             if (data.is_owner || String(currentUser.id) === String(OWNER_ID)) {
                 document.getElementById('owner-app-icon').style.display = 'flex';
-                document.getElementById('owner-dock-icon').style.display = 'flex';
             }
 
             let me = dbData[currentUser.id] || defaultPassport;
@@ -457,7 +558,7 @@
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(payload)
         });
-        showModal("Сохранено", "Данные паспорта обновлены!", true);
+        showModal("Сохранено", "Данные обновлены!", true);
         loadAll();
     }
 
@@ -484,7 +585,7 @@
             body: JSON.stringify({ user_id: currentUser.id, lic_type: type, cat: cat, price: price })
         });
         if(res.ok) {
-            showModal("Куплено!", "Лицензия добавлена в Документы", true);
+            showModal("Куплено!", "Лицензия получена", true);
             loadAll();
         } else {
             showModal("Отказано", "Недостаточно средств", false);
@@ -496,7 +597,7 @@
         select.innerHTML = '';
         for (let id in dbData) {
             let opt = document.createElement('option'); opt.value = id;
-            opt.innerText = `${dbData[id].fname} ${dbData[id].lname} (${dbData[id].passport_code})`;
+            opt.innerText = `${dbData[id].fname} ${dbData[id].lname}`;
             select.appendChild(opt);
         }
         loadOwnerForm();
@@ -521,15 +622,15 @@
                 fines: 0
             })
         });
-        showModal("Сохранено", "Данные пользователя обновлены", true);
+        showModal("Сохранено", "Изменения внесены", true);
         loadAll();
     }
 
     function setTheme(num) {
         const frame = document.querySelector('.phone-frame');
-        if (num === 1) frame.style.background = "linear-gradient(180deg, #02021c 0%, #0000d6 50%, #000282 100%)";
-        if (num === 2) frame.style.background = "linear-gradient(180deg, #05050a 0%, #1a1a2e 100%)";
-        showModal("Готово", "Тема изменена!", true);
+        if (num === 1) frame.style.backgroundImage = "url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop')";
+        if (num === 2) frame.style.backgroundImage = "url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1000&auto=format&fit=crop')";
+        showModal("Готово", "Тема сменена!", true);
     }
 
     function showModal(title, text, success) {
@@ -537,7 +638,7 @@
         document.getElementById('modal-text').innerText = text;
         const icon = document.getElementById('modal-icon');
         icon.innerText = success ? "✓" : "✕";
-        icon.style.color = success ? "#21a038" : "#ff3b30";
+        icon.style.color = success ? "#2ecc71" : "#e74c3c";
         const m = document.getElementById('success-modal');
         m.style.display = 'flex';
         setTimeout(() => m.style.display = 'none', 1800);
