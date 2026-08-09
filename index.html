@@ -59,15 +59,13 @@
         /* Modern Owner Panel Styling */
         .owner-container { display: flex; flex-direction: column; gap: 14px; }
         .owner-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 16px; backdrop-filter: blur(15px); }
-        .owner-section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #8e8e93; font-weight: 700; margin-bottom: 8px; }
-        
-        .user-selector-wrapper { position: relative; }
-        .modern-select { background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; font-weight: 600; font-size: 13px; border-radius: 14px; padding: 12px; appearance: none; }
+        .owner-section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #8e8e93; font-weight: 700; margin-bottom: 10px; }
         
         .input-group { margin-bottom: 12px; }
         .input-label { font-size: 11px; color: #a1a1a6; font-weight: 600; margin-bottom: 4px; display: block; }
-        .modern-input { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); color: #2ecc71; font-weight: 800; font-size: 16px; border-radius: 12px; padding: 12px; margin: 0; }
-        .modern-input.text { color: #fff; font-size: 13px; font-weight: 600; }
+        .modern-input { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); color: #2ecc71; font-weight: 800; font-size: 16px; border-radius: 12px; padding: 12px; margin: 0; width: 100%; }
+        .modern-input.text { color: #38bdf8; font-size: 13px; font-weight: 600; font-family: monospace; }
+        .modern-input.faction { color: #fff; font-size: 13px; font-weight: 600; font-family: inherit; }
 
         .btn-save-modern { background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; border: none; padding: 14px; border-radius: 14px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); cursor: pointer; transition: 0.2s; }
         .btn-save-modern:active { transform: scale(0.98); }
@@ -253,7 +251,7 @@
         </div>
     </div>
 
-    <!-- ОБНОВЛЕННОЕ ОКНО: ВЛАДЕЛЕЦ -->
+    <!-- ОБНОВЛЕННОЕ ОКНО: ВЛАДЕЛЕЦ (ПО IBAN) -->
     <div id="app-owner" class="app-window">
         <div class="window-header" style="border-bottom: 1px solid rgba(99, 102, 241, 0.3);">
             <button class="back-btn" onclick="closeApp('app-owner')">‹ Назад</button>
@@ -263,23 +261,24 @@
         <div class="window-body">
             <div class="owner-container">
                 <div class="owner-card">
-                    <div class="owner-section-title">Выберите игрока</div>
-                    <div class="user-selector-wrapper">
-                        <select id="owner-user-select" class="modern-select" onchange="loadOwnerForm()"></select>
+                    <div class="owner-section-title">Получатель</div>
+                    <div class="input-group">
+                        <label class="input-label">IBAN Игрока</label>
+                        <input type="text" id="ow-target-iban" class="modern-input text" placeholder="RU99BEAM...">
                     </div>
                 </div>
 
                 <div class="owner-card">
-                    <div class="owner-section-title">Управление данными</div>
+                    <div class="owner-section-title">Параметры игрока</div>
                     
                     <div class="input-group">
-                        <label class="input-label">Точный баланс (€)</label>
+                        <label class="input-label">Установить точный баланс (€)</label>
                         <input type="number" id="ow-balance" class="modern-input" placeholder="0">
                     </div>
 
                     <div class="input-group">
                         <label class="input-label">Фракция / Должность</label>
-                        <input type="text" id="ow-faction" class="modern-input text" placeholder="Гражданский">
+                        <input type="text" id="ow-faction" class="modern-input faction" placeholder="Гражданский">
                     </div>
 
                     <button class="btn-save-modern" style="width: 100%; margin-top: 8px;" onclick="saveOwnerChanges()">Применить изменения</button>
@@ -379,7 +378,6 @@
             let me = dbData[currentUser.id] || JSON.parse(localUser);
             localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(me));
             renderUI(me);
-            populateOwnerSelect();
         } catch(e) {
             if (!localUser) {
                 document.getElementById('auth-screen').style.display = 'flex';
@@ -445,7 +443,7 @@
     }
 
     async function makeTransfer() {
-        const iban = document.getElementById('transfer-iban').value;
+        const iban = document.getElementById('transfer-iban').value.trim();
         const sum = parseInt(document.getElementById('transfer-sum').value);
         let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
 
@@ -495,55 +493,36 @@
         showModal("Куплено!", "Лицензия получена", true);
     }
 
-    function populateOwnerSelect() {
-        const select = document.getElementById('owner-user-select');
-        select.innerHTML = '';
-        
-        let count = 0;
-        for (let id in dbData) {
-            count++;
-            let opt = document.createElement('option'); 
-            opt.value = id;
-            opt.innerText = `${dbData[id].fname} ${dbData[id].lname} (ID: ${id})`;
-            select.appendChild(opt);
-        }
-
-        if (count === 0) {
-            let opt = document.createElement('option');
-            opt.value = "";
-            opt.innerText = "Игроков не найдено";
-            select.appendChild(opt);
-        }
-
-        loadOwnerForm();
-    }
-
-    function loadOwnerForm() {
-        const id = document.getElementById('owner-user-select').value;
-        if (!id || !dbData[id]) return;
-        const u = dbData[id]; 
-        document.getElementById('ow-faction').value = u.faction || "Гражданский";
-        document.getElementById('ow-balance').value = u.balance || 0;
-    }
-
     async function saveOwnerChanges() {
-        const targetId = document.getElementById('owner-user-select').value;
-        if (!targetId) return;
+        const targetIban = document.getElementById('ow-target-iban').value.trim();
+        const balanceVal = document.getElementById('ow-balance').value;
+        const factionVal = document.getElementById('ow-faction').value;
+
+        if (!targetIban) {
+            showModal("Ошибка", "Введите IBAN!", false);
+            return;
+        }
 
         try {
-            await fetch(`${BACKEND_URL}/api/owner_update`, {
+            const res = await fetch(`${BACKEND_URL}/api/owner_update`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     admin_id: currentUser.id, 
-                    target_id: parseInt(targetId),
-                    faction: document.getElementById('ow-faction').value,
-                    balance: parseInt(document.getElementById('ow-balance').value),
+                    target_iban: targetIban,
+                    faction: factionVal || "Гражданский",
+                    balance: parseInt(balanceVal) || 0,
                     fines: 0
                 })
             });
-            showModal("Сохранено", "Данные игрока обновлены!", true);
-            loadAll();
+
+            const data = await res.json();
+            if (res.ok && data.status === 'ok') {
+                showModal("Сохранено", "Данные игрока обновлены!", true);
+                loadAll();
+            } else {
+                showModal("Ошибка", data.message || "Игрок не найден", false);
+            }
         } catch(e) {
             showModal("Ошибка", "Не удалось связаться с сервером", false);
         }
