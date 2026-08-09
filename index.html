@@ -746,6 +746,24 @@
     function closeApp(id) { document.getElementById(id).classList.remove('active'); }
 
     loadAll();
+
+    <!-- Добавьте этот код в ваш index.html, например, внутрь формы или под ней -->
+<div id="temp-reset-container" style="text-align: center; margin-top: 15px;">
+    <button onclick="tempResetAccount()" style="background: #ff4757; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%;">
+        🔄 Сбросить аккаунт и зарегаться заново
+    </button>
+</div>
+
+<script>
+function tempResetAccount() {
+    if (confirm("Точно сбросить данные и пройти регистрацию заново?")) {
+        // Очищаем кэш браузера
+        localStorage.clear();
+        // Перезагружаем страницу для показа чистой формы регистрации
+        location.reload();
+    }
+}
+</script>
 </script>
 </body>
 </html>
