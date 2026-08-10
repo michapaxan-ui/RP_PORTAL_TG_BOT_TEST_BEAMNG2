@@ -298,10 +298,13 @@
 
             <div class="card-item">
                 <div style="font-weight:600; margin-bottom:8px; font-size:12px;">✏️ Изменить данные паспорта</div>
+                <label style="font-size:9px; color:#aaa;">Имя:</label>
                 <input type="text" id="edit-fname" placeholder="Имя">
+                <label style="font-size:9px; color:#aaa;">Фамилия:</label>
                 <input type="text" id="edit-lname" placeholder="Фамилия">
+                <label style="font-size:9px; color:#aaa;">Дата рождения:</label>
                 <input type="text" id="edit-bday" placeholder="Дата рождения">
-                <button class="btn-action" onclick="savePersonalData()">Сохранить</button>
+                <button class="btn-action" onclick="savePersonalData()">Сохранить изменения</button>
             </div>
         </div>
     </div>
@@ -318,10 +321,10 @@
                 <div style="font-weight:700; font-size:12px; margin-bottom:8px; color:#3498db;">Анкета ТС (VIN создастся автоматически):</div>
                 <input type="text" id="rc-fname" placeholder="Имя владельца">
                 <input type="text" id="rc-lname" placeholder="Фамилия владельца">
-                <input type="text" id="rc-brand" placeholder="Марка машины">
+                <input type="text" id="rc-brand" placeholder="Марка машины (напр. Karin Sultan)">
                 <input type="text" id="rc-year" placeholder="Год выпуска">
                 <input type="text" id="rc-color" placeholder="Цвет">
-                <input type="text" id="rc-plate" placeholder="Рег. номер">
+                <input type="text" id="rc-plate" placeholder="Рег. номер (напр. B777MP)">
                 <input type="text" id="rc-engine" placeholder="Двигатель">
                 <input type="text" id="rc-hp" placeholder="Мощность (ЛС)">
                 <input type="text" id="rc-tank" placeholder="Объём бака">
@@ -347,9 +350,11 @@
         </div>
         <div class="window-body">
             <div class="card-item">
+                <label style="font-size:9px; color:#aaa;">Модель оружия:</label>
                 <input type="text" id="rg-model" placeholder="Модель оружия">
+                <label style="font-size:9px; color:#aaa;">Серийный номер / Калибр:</label>
                 <input type="text" id="rg-serial" placeholder="Серийный номер">
-                <button class="btn-action" onclick="submitGunRegistration()">Зарегистрировать</button>
+                <button class="btn-action" onclick="submitGunRegistration()">Зарегистрировать оружие</button>
             </div>
         </div>
     </div>
@@ -369,9 +374,12 @@
                 <div style="font-size:9px; color:#aaa; margin-top:2px;" id="sber-iban">IBAN: RU00BEAM000000000000</div>
             </div>
             <div class="card-item">
+                <div style="font-weight:600; margin-bottom:6px; font-size:12px;">💸 Банковский перевод</div>
+                <label style="font-size:9px; color:#aaa;">IBAN получателя:</label>
                 <input type="text" id="transfer-iban" placeholder="IBAN получателя">
+                <label style="font-size:9px; color:#aaa;">Сумма перевода (€):</label>
                 <input type="number" id="transfer-sum" placeholder="Сумма (€)">
-                <button class="btn-action" onclick="makeTransfer()">Отправить</button>
+                <button class="btn-action" onclick="makeTransfer()">Отправить перевод</button>
             </div>
         </div>
     </div>
@@ -389,17 +397,21 @@
                 <h2 style="margin:4px 0 4px 0; color:#f39c12;" id="fam-balance">0 €</h2>
             </div>
             <div class="card-item">
+                <div style="font-weight:600; margin-bottom:6px; font-size:12px;">⚙️ Управление семейной казной</div>
+                <label style="font-size:9px; color:#aaa;">Тип операции:</label>
                 <select id="fam-action-type">
-                    <option value="deposit">➕ Пополнить</option>
-                    <option value="withdraw">➖ Снять</option>
+                    <option value="deposit">➕ Пополнить счёт (Заработок)</option>
+                    <option value="withdraw">➖ Снять со счёта (Трата)</option>
                 </select>
+                <label style="font-size:9px; color:#aaa;">Сумма (€):</label>
                 <input type="number" id="fam-amount" placeholder="Сумма (€)">
-                <input type="text" id="fam-desc" placeholder="Описание">
-                <button class="btn-action orange" onclick="submitFamilyAction()">Выполнить</button>
+                <label style="font-size:9px; color:#aaa;">Описание / Причина:</label>
+                <input type="text" id="fam-desc" placeholder="На что потратили / Откуда заработали?">
+                <button class="btn-action orange" onclick="submitFamilyAction()">Провести операцию</button>
             </div>
             <div class="card-item">
-                <div style="font-weight:700; font-size:12px; margin-bottom:8px; color:#f39c12;">📜 История:</div>
-                <div id="fam-tx-list" style="max-height: 150px; overflow-y: auto;"></div>
+                <div style="font-weight:700; font-size:12px; margin-bottom:8px; color:#f39c12;">📜 История семейных транзакций:</div>
+                <div id="fam-tx-list" style="max-height: 150px; overflow-y: auto;"><span style="color:#aaa; font-size:11px;">История пуста...</span></div>
             </div>
         </div>
     </div>
@@ -424,12 +436,12 @@
         <div class="window-body">
             <div class="card-item">
                 <div style="font-weight:600; font-size:12px; margin-bottom:4px;">🚗 Водительские права (1500 €)</div>
-                <div style="font-size:10px; color:#aaa; margin-bottom:8px;">Получение категорий на выбор</div>
+                <div style="font-size:10px; color:#aaa; margin-bottom:8px;">Получение категорий на выбор кликом</div>
                 <button class="btn-action" onclick="openLicenseModal('drive', 1500)">Выбрать категории</button>
             </div>
             <div class="card-item">
                 <div style="font-weight:600; font-size:12px; margin-bottom:4px;">🔫 Лицензия на оружие (3000 €)</div>
-                <button class="btn-action" style="background:linear-gradient(135deg, #8e44ad, #9b59b6);" onclick="buyLicenseDirect('gun', 3000, 'Пистолеты, Автоматы')">Купить</button>
+                <button class="btn-action" style="background:linear-gradient(135deg, #8e44ad, #9b59b6);" onclick="buyLicenseDirect('gun', 3000, 'Пистолеты, Автоматы')">Купить лицензию</button>
             </div>
         </div>
     </div>
@@ -502,6 +514,7 @@
         </div>
         <div class="window-body">
             <div class="card-item">
+                <div style="font-weight:600; font-size:12px; margin-bottom:8px;">🖼️ Обои iFruit</div>
                 <button class="btn-action" style="background:rgba(255,255,255,0.1); margin-bottom:6px;" onclick="setTheme(1)">Тёмный Астрал</button>
                 <button class="btn-action" style="background:rgba(255,255,255,0.1);" onclick="setTheme(2)">Кибер Неон</button>
             </div>
@@ -517,11 +530,15 @@
         </div>
         <div class="window-body">
             <div class="card-item">
+                <div style="font-weight:700; font-size:12px; margin-bottom:6px; color:#e74c3c;">Выберите игрока из базы:</div>
                 <select id="owner-user-select" onchange="loadOwnerForm()"></select>
+
                 <div style="display:flex; gap:6px; margin-bottom:10px;">
-                    <button class="btn-action" style="margin:0;" onclick="reviewApplication('approved')">Принять</button>
+                    <button class="btn-action" style="margin:0;" onclick="reviewApplication('approved')">Принять заявку</button>
                     <button class="btn-action red" style="margin:0;" onclick="reviewApplication('rejected')">Отклонить</button>
                 </div>
+
+                <label style="font-size:9px; color:#aaa;">Фракция:</label>
                 <select id="ow-faction" onchange="toggleRankSelect()">
                     <option value="Гражданский">Гражданский</option>
                     <option value="Государство">Государство</option>
@@ -530,12 +547,24 @@
                     <option value="МВД">МВД</option>
                     <option value="ДПС">ДПС</option>
                 </select>
+
                 <div id="ow-rank-container" style="display: none; margin-top: 6px;">
+                    <label style="font-size:9px; color:#aaa;">Должность / Ранг:</label>
                     <select id="ow-rank"></select>
                 </div>
+
+                <label style="font-size:9px; color:#aaa; margin-top:6px; display:block;">Баланс игрока (€):</label>
                 <input type="number" id="ow-balance" placeholder="Баланс">
+
+                <label style="font-size:9px; color:#aaa;">Штрафы игрока (€):</label>
                 <input type="number" id="ow-fines" placeholder="Штрафы">
-                <button class="btn-action orange" style="margin-top:10px;" onclick="saveOwnerChanges()">Сохранить</button>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
+                    <button class="btn-action blue" style="margin:0;" onclick="modifyBalance(1000)">+ 1k €</button>
+                    <button class="btn-action red" style="margin:0;" onclick="modifyBalance(-1000)">- 1k €</button>
+                </div>
+
+                <button class="btn-action orange" style="margin-top:10px;" onclick="saveOwnerChanges()">Сохранить изменения игрока</button>
             </div>
         </div>
     </div>
@@ -722,7 +751,6 @@
         document.getElementById(subId).classList.add('active');
     }
 
-    // Выбор категорий прав кликом
     function toggleCategory(el, catName) {
         el.classList.toggle('selected');
         if (selectedCategories.includes(catName)) {
@@ -802,7 +830,6 @@
             });
             const data = await res.json();
             
-            // Сразу добавляем машину локально, чтобы она появилась моментально без задержек бэкенда
             let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
             if (!localUser.cars) localUser.cars = [];
             localUser.cars.push({ ...carData, vin: data.vin || "VIN-TEST" });
@@ -981,6 +1008,12 @@
         toggleRankSelect();
         document.getElementById('ow-balance').value = u.balance || 0;
         document.getElementById('ow-fines').value = u.fines || 0;
+    }
+
+    async function modifyBalance(delta) {
+        const currentBal = parseInt(document.getElementById('ow-balance').value) || 0;
+        document.getElementById('ow-balance').value = currentBal + delta;
+        await saveOwnerChanges();
     }
 
     async function reviewApplication(status) {
