@@ -61,7 +61,7 @@
 
         #auth-screen { position: absolute; top:0; left:0; right:0; bottom:0; background: #0c0d12; z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 24px; text-align: center; }
 
-        /* Карточка документа (Паспорт / Права) */
+        /* Документы */
         .id-card-doc { background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); margin-bottom: 10px; }
         .id-card-title { text-align: center; font-size: 11px; font-weight: 800; color: var(--accent-blue); border-bottom: 1px solid var(--border-glass); padding-bottom: 4px; margin-bottom: 8px; }
         .id-card-grid { display: flex; gap: 10px; }
@@ -70,9 +70,13 @@
         .id-field-label { font-size: 8px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
         .id-field-val { font-size: 11px; font-weight: 700; color: #fff; margin-bottom: 3px; }
 
-        /* Техпаспорт автомобиля в стиле паспорта */
         .tech-passport { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #3498db; border-radius: 16px; padding: 14px; margin-bottom: 10px; }
         .tech-title { text-align: center; font-size: 11px; font-weight: 800; color: #3498db; border-bottom: 1px solid var(--border-glass); padding-bottom: 4px; margin-bottom: 8px; }
+
+        /* Сетка для выбора категорий прав */
+        .categories-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 8px 0; }
+        .cat-chip { background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); padding: 8px; border-radius: 8px; text-align: center; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .cat-chip.selected { background: var(--accent-blue); border-color: var(--accent-blue); color: #fff; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 3000; }
         .modal-box { background: #1e1e24; padding: 20px; border-radius: 20px; text-align: center; border: 1px solid var(--border-glass); max-width: 240px; }
@@ -133,7 +137,7 @@
             <div class="app-name">Калькулятор</div>
         </div>
 
-        <!-- Секретное приложение БАЗА (для Гос/ФСБ/МВД/ДПС) -->
+        <!-- Секретное приложение БАЗА -->
         <div class="app-item" id="base-app-icon" onclick="openApp('app-base')">
             <div class="app-box" style="background: linear-gradient(135deg, #2c3e50, #34495e);">🛡️</div>
             <div class="app-name">База Гос</div>
@@ -163,7 +167,7 @@
         </div>
     </div>
 
-    <!-- ОКНО: БАЗА (Главное меню силовых структур) -->
+    <!-- ОКНО: БАЗА -->
     <div id="app-base" class="app-window">
         <div class="window-header">
             <button class="back-btn" onclick="closeApp('app-base')">‹ Назад</button>
@@ -185,12 +189,12 @@
 
             <div class="card-item" style="cursor:pointer; text-align:center;" onclick="openSubWindow('cars-menu')">
                 <div style="font-size:16px; font-weight:800; color:#3498db;">🚗 Ориентировки машин</div>
-                <div style="font-size:10px; color:#aaa; margin-top:2px;">Поиск угнанного и подозрительного транспорта</div>
+                <div style="font-size:10px; color:#aaa; margin-top:2px;">Поиск угнанного транспорта</div>
             </div>
 
             <div class="card-item" style="cursor:pointer; text-align:center;" onclick="openSubWindow('citizens-db-menu')">
                 <div style="font-size:16px; font-weight:800; color:#2ecc71;">👥 База данных граждан</div>
-                <div style="font-size:10px; color:#aaa; margin-top:2px;">Паспорта, лицензии, авто и оружие жителей</div>
+                <div style="font-size:10px; color:#aaa; margin-top:2px;">Паспорта, лицензии, авто и оружие</div>
             </div>
         </div>
     </div>
@@ -209,10 +213,10 @@
                 <div style="font-weight:700; font-size:12px; margin-bottom:6px; color:#e74c3c;">Анкета розыска:</div>
                 <input type="text" id="w-fname" placeholder="Имя">
                 <input type="text" id="w-lname" placeholder="Фамилия">
-                <input type="text" id="w-bday" placeholder="Год / Дата рождения">
-                <input type="text" id="w-desc" placeholder="Приметы / Внешность">
+                <input type="text" id="w-bday" placeholder="Дата рождения">
+                <input type="text" id="w-desc" placeholder="Приметы">
                 <input type="text" id="w-reason" placeholder="Причина розыска">
-                <input type="number" id="w-stars" placeholder="Количество звёзд (1-5)" min="1" max="5">
+                <input type="number" id="w-stars" placeholder="Звёзд (1-5)" min="1" max="5">
                 
                 <div style="display:flex; gap:6px; margin-top:8px;">
                     <button class="btn-action" style="margin:0;" onclick="submitWanted()">Подтвердить</button>
@@ -220,9 +224,7 @@
                 </div>
             </div>
 
-            <div style="margin-top:12px;" id="wanted-list">
-                <span style="color:#aaa; font-size:11px;">Список розыска пуст...</span>
-            </div>
+            <div style="margin-top:12px;" id="wanted-list"><span style="color:#aaa; font-size:11px;">Список пуст...</span></div>
         </div>
     </div>
 
@@ -238,13 +240,13 @@
             
             <div id="car-form-box" class="card-item" style="display:none; margin-top:10px;">
                 <div style="font-weight:700; font-size:12px; margin-bottom:6px; color:#3498db;">Анкета ориентировки авто:</div>
-                <input type="text" id="ca-owner-fname" placeholder="Имя владельца (если нет: -)">
-                <input type="text" id="ca-owner-lname" placeholder="Фамилия владельца (если нет: -)">
-                <input type="text" id="ca-owner-bday" placeholder="Дата рождения владельца (если нет: -)">
+                <input type="text" id="ca-owner-fname" placeholder="Имя владельца">
+                <input type="text" id="ca-owner-lname" placeholder="Фамилия владельца">
+                <input type="text" id="ca-owner-bday" placeholder="Дата рождения владельца">
                 <input type="text" id="ca-brand" placeholder="Марка машины">
                 <input type="text" id="ca-color" placeholder="Цвет машины">
-                <input type="text" id="ca-plate" placeholder="Регистрационный номер (если нет: -)">
-                <input type="text" id="ca-reason" placeholder="За что ориентировка?">
+                <input type="text" id="ca-plate" placeholder="Рег. номер">
+                <input type="text" id="ca-reason" placeholder="Причина ориентировки">
                 
                 <div style="display:flex; gap:6px; margin-top:8px;">
                     <button class="btn-action" style="margin:0;" onclick="submitCarAlert()">Подтвердить</button>
@@ -252,9 +254,7 @@
                 </div>
             </div>
 
-            <div style="margin-top:12px;" id="car-alerts-list">
-                <span style="color:#aaa; font-size:11px;">Активных ориентировок нет...</span>
-            </div>
+            <div style="margin-top:12px;" id="car-alerts-list"><span style="color:#aaa; font-size:11px;">Ориентировок нет...</span></div>
         </div>
     </div>
 
@@ -266,12 +266,12 @@
             <div></div>
         </div>
         <div class="window-body">
-            <div style="font-size:11px; color:#aaa; margin-bottom:8px;">Нажмите на гражданина для просмотра полного досье:</div>
+            <div style="font-size:11px; color:#aaa; margin-bottom:8px;">Выберите жителя для досье:</div>
             <div id="citizens-db-list"></div>
         </div>
     </div>
 
-    <!-- ОКНО ДОСЬЕ КОНКРЕТНОГО ГРАЖДАНИНИА В БАЗЕ -->
+    <!-- ДОСЬЕ -->
     <div id="citizen-dossier-menu" class="app-window">
         <div class="window-header">
             <button class="back-btn" onclick="openSubWindow('citizens-db-menu')">‹ Назад</button>
@@ -289,7 +289,6 @@
             <div></div>
         </div>
         <div class="window-body">
-            <!-- Здесь документы будут выводиться в правильном порядке: Паспорт -> Техпаспорта -> Лицензии -->
             <div style="margin-bottom: 12px;" id="gos-docs-container"></div>
             
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:12px;">
@@ -302,12 +301,12 @@
                 <input type="text" id="edit-fname" placeholder="Имя">
                 <input type="text" id="edit-lname" placeholder="Фамилия">
                 <input type="text" id="edit-bday" placeholder="Дата рождения">
-                <button class="btn-action" onclick="savePersonalData()">Сохранить насовсем</button>
+                <button class="btn-action" onclick="savePersonalData()">Сохранить</button>
             </div>
         </div>
     </div>
 
-    <!-- ПОДМЕНЮ ГОСУСЛУГ: РЕГИСТРАЦИЯ МАШИНЫ -->
+    <!-- РЕГИСТРАЦИЯ МАШИНЫ -->
     <div id="gos-car-reg" class="app-window">
         <div class="window-header">
             <button class="back-btn" onclick="openSubWindow('app-gos')">‹ Назад</button>
@@ -316,30 +315,30 @@
         </div>
         <div class="window-body">
             <div class="card-item">
-                <div style="font-weight:700; font-size:12px; margin-bottom:8px; color:#3498db;">Анкета регистрации ТС:</div>
+                <div style="font-weight:700; font-size:12px; margin-bottom:8px; color:#3498db;">Анкета ТС (VIN создастся автоматически):</div>
                 <input type="text" id="rc-fname" placeholder="Имя владельца">
                 <input type="text" id="rc-lname" placeholder="Фамилия владельца">
-                <input type="text" id="rc-brand" placeholder="Полная марка машины">
+                <input type="text" id="rc-brand" placeholder="Марка машины">
                 <input type="text" id="rc-year" placeholder="Год выпуска">
-                <input type="text" id="rc-color" placeholder="Цвет машины">
-                <input type="text" id="rc-plate" placeholder="Регистрационный знак">
+                <input type="text" id="rc-color" placeholder="Цвет">
+                <input type="text" id="rc-plate" placeholder="Рег. номер">
                 <input type="text" id="rc-engine" placeholder="Двигатель">
-                <input type="text" id="rc-hp" placeholder="Мощность двигателя (ЛС)">
-                <input type="text" id="rc-tank" placeholder="Объём топливного бака">
-                <input type="text" id="rc-drive" placeholder="Привод (напр. Полный)">
-                <input type="text" id="rc-fuel-type" placeholder="Тип топлива">
-                <input type="text" id="rc-fuel-cons" placeholder="Смешанный расход топлива">
-                <textarea id="rc-extra" placeholder="Есть ли ещё информация, которую мы должны знать?"></textarea>
+                <input type="text" id="rc-hp" placeholder="Мощность (ЛС)">
+                <input type="text" id="rc-tank" placeholder="Объём бака">
+                <input type="text" id="rc-drive" placeholder="Привод">
+                <input type="text" id="rc-fuel-type" placeholder="Топливо">
+                <input type="text" id="rc-fuel-cons" placeholder="Расход">
+                <textarea id="rc-extra" placeholder="Доп. информация"></textarea>
 
                 <div style="display:flex; gap:6px; margin-top:8px;">
                     <button class="btn-action" style="margin:0;" onclick="submitCarRegistration()">Зарегистрировать</button>
-                    <button class="btn-action red" style="margin:0;" onclick="openSubWindow('app-gos')">Отменить</button>
+                    <button class="btn-action red" style="margin:0;" onclick="openSubWindow('app-gos')">Отмена</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ПОДМЕНЮ ГОСУСЛУГ: РЕГИСТРАЦИЯ ОРУЖИЯ -->
+    <!-- РЕГИСТРАЦИЯ ОРУЖИЯ -->
     <div id="gos-gun-reg" class="app-window">
         <div class="window-header">
             <button class="back-btn" onclick="openSubWindow('app-gos')">‹ Назад</button>
@@ -348,14 +347,9 @@
         </div>
         <div class="window-body">
             <div class="card-item">
-                <div style="font-weight:700; font-size:12px; margin-bottom:8px; color:#e74c3c;">Анкета регистрации оружия:</div>
-                <input type="text" id="rg-model" placeholder="Модель оружия (напр. Pistol .50)">
-                <input type="text" id="rg-serial" placeholder="Серийный номер / Калибр">
-
-                <div style="display:flex; gap:6px; margin-top:8px;">
-                    <button class="btn-action" style="margin:0;" onclick="submitGunRegistration()">Зарегистрировать</button>
-                    <button class="btn-action red" style="margin:0;" onclick="openSubWindow('app-gos')">Отменить</button>
-                </div>
+                <input type="text" id="rg-model" placeholder="Модель оружия">
+                <input type="text" id="rg-serial" placeholder="Серийный номер">
+                <button class="btn-action" onclick="submitGunRegistration()">Зарегистрировать</button>
             </div>
         </div>
     </div>
@@ -375,7 +369,6 @@
                 <div style="font-size:9px; color:#aaa; margin-top:2px;" id="sber-iban">IBAN: RU00BEAM000000000000</div>
             </div>
             <div class="card-item">
-                <div style="font-weight:600; margin-bottom:8px; font-size:12px;">Перевод по IBAN</div>
                 <input type="text" id="transfer-iban" placeholder="IBAN получателя">
                 <input type="number" id="transfer-sum" placeholder="Сумма (€)">
                 <button class="btn-action" onclick="makeTransfer()">Отправить</button>
@@ -383,7 +376,7 @@
         </div>
     </div>
 
-    <!-- ОКНО: СЕМЕЙНЫЙ СЧЁТ -->
+    <!-- ОКНО: СЕМЬЯ -->
     <div id="app-family" class="app-window">
         <div class="window-header">
             <button class="back-btn" onclick="closeApp('app-family')">‹ Назад</button>
@@ -392,28 +385,21 @@
         </div>
         <div class="window-body">
             <div class="card-item" style="background: linear-gradient(135deg, rgba(243,156,18,0.2), rgba(0,0,0,0.4)); border-color:#f39c12;">
-                <div style="font-size:10px; color:#aaa;">Общий баланс семьи</div>
+                <div style="font-size:10px; color:#aaa;">Казна семьи</div>
                 <h2 style="margin:4px 0 4px 0; color:#f39c12;" id="fam-balance">0 €</h2>
-                <div style="font-size:9px; color:#ddd;">Все члены семьи видят эту казну</div>
             </div>
-
             <div class="card-item">
-                <div style="font-weight:600; margin-bottom:8px; font-size:12px;">Изменить семейную казну</div>
-                
                 <select id="fam-action-type">
-                    <option value="deposit">➕ Пополнить счёт (Заработали)</option>
-                    <option value="withdraw">➖ Потратить со счёта (Покупка)</option>
+                    <option value="deposit">➕ Пополнить</option>
+                    <option value="withdraw">➖ Снять</option>
                 </select>
-
                 <input type="number" id="fam-amount" placeholder="Сумма (€)">
-                <input type="text" id="fam-desc" placeholder="На что потратили / Откуда заработали?">
-
-                <button class="btn-action orange" onclick="submitFamilyAction()">Провести операцию</button>
+                <input type="text" id="fam-desc" placeholder="Описание">
+                <button class="btn-action orange" onclick="submitFamilyAction()">Выполнить</button>
             </div>
-
             <div class="card-item">
-                <div style="font-weight:700; font-size:12px; margin-bottom:8px; color:#f39c12;">📜 Транзакции:</div>
-                <div id="fam-tx-list" style="max-height: 150px; overflow-y: auto;"><span style="color:#aaa; font-size:11px;">Загрузка истории...</span></div>
+                <div style="font-weight:700; font-size:12px; margin-bottom:8px; color:#f39c12;">📜 История:</div>
+                <div id="fam-tx-list" style="max-height: 150px; overflow-y: auto;"></div>
             </div>
         </div>
     </div>
@@ -425,9 +411,7 @@
             <div style="font-weight:700; font-size:13px;">ДОКУМЕНТЫ</div>
             <div></div>
         </div>
-        <div class="window-body">
-            <div id="docs-page-container"></div>
-        </div>
+        <div class="window-body"><div id="docs-page-container"></div></div>
     </div>
 
     <!-- ОКНО: ЛИЦЕНЗИИ -->
@@ -440,43 +424,46 @@
         <div class="window-body">
             <div class="card-item">
                 <div style="font-weight:600; font-size:12px; margin-bottom:4px;">🚗 Водительские права (1500 €)</div>
-                <div style="font-size:10px; color:#aaa; margin-bottom:8px;">Получение категорий на вождение транспорта</div>
-                <button class="btn-action" onclick="openLicenseModal('drive', 1500)">Оформить права</button>
+                <div style="font-size:10px; color:#aaa; margin-bottom:8px;">Получение категорий на выбор</div>
+                <button class="btn-action" onclick="openLicenseModal('drive', 1500)">Выбрать категории</button>
             </div>
             <div class="card-item">
                 <div style="font-weight:600; font-size:12px; margin-bottom:4px;">🔫 Лицензия на оружие (3000 €)</div>
-                <div style="font-size:10px; color:#aaa; margin-bottom:8px;">Разрешение на ношение и хранение оружия</div>
                 <button class="btn-action" style="background:linear-gradient(135deg, #8e44ad, #9b59b6);" onclick="buyLicenseDirect('gun', 3000, 'Пистолеты, Автоматы')">Купить</button>
             </div>
         </div>
     </div>
 
-    <!-- ПОДМЕНЮ ОФОРМЛЕНИЯ ПРАВ -->
+    <!-- ПОДМЕНЮ ВЫБОРА КАТЕГОРИЙ ПРАВ КЛИКОМ -->
     <div id="lic-drive-menu" class="app-window">
         <div class="window-header">
             <button class="back-btn" onclick="openSubWindow('app-lic')">‹ Назад</button>
-            <div style="font-weight:700; color:#3498db; font-size:13px;">🚗 ОФОРМЛЕНИЕ ПРАВ</div>
+            <div style="font-weight:700; color:#3498db; font-size:13px;">🚗 ВЫБОР КАТЕГОРИЙ ПРАВ</div>
             <div></div>
         </div>
         <div class="window-body">
             <div class="card-item">
-                <div style="font-weight:700; font-size:12px; margin-bottom:8px; color:#3498db;">Анкета на получение прав:</div>
-                <input type="text" id="ld-fname" placeholder="Имя">
-                <input type="text" id="ld-lname" placeholder="Фамилия">
-                <input type="text" id="ld-bday" placeholder="Год рождения">
-                
-                <label style="font-size:10px; color:#aaa; display:block; margin-top:6px;">Выберите желаемые категории:</label>
-                <input type="text" id="ld-cat" placeholder="Напр. A1, B1, B">
-
-                <div style="display:flex; gap:6px; margin-top:8px;">
-                    <button class="btn-action" style="margin:0;" onclick="submitDriveLicense()">Получить права (1500 €)</button>
-                    <button class="btn-action red" style="margin:0;" onclick="openSubWindow('app-lic')">Отменить</button>
+                <div style="font-weight:700; font-size:12px; margin-bottom:6px; color:#3498db;">Нажмите на нужные категории:</div>
+                <div class="categories-grid">
+                    <div class="cat-chip" onclick="toggleCategory(this, 'A1')">A1</div>
+                    <div class="cat-chip" onclick="toggleCategory(this, 'A')">A</div>
+                    <div class="cat-chip" onclick="toggleCategory(this, 'B1')">B1</div>
+                    <div class="cat-chip" onclick="toggleCategory(this, 'B')">B</div>
+                    <div class="cat-chip" onclick="toggleCategory(this, 'C1')">C1</div>
+                    <div class="cat-chip" onclick="toggleCategory(this, 'C')">C</div>
+                    <div class="cat-chip" onclick="toggleCategory(this, 'D1')">D1</div>
+                    <div class="cat-chip" onclick="toggleCategory(this, 'D')">D</div>
+                    <div class="cat-chip" onclick="toggleCategory(this, 'M')">M</div>
                 </div>
+
+                <div style="margin-top: 10px; font-size: 11px; color: #aaa;">Выбрано: <b id="selected-cats-preview" style="color: #2ecc71;">Нет</b></div>
+
+                <button class="btn-action" style="margin-top:12px;" onclick="submitDriveLicense()">Получить права (1500 €)</button>
             </div>
         </div>
     </div>
 
-    <!-- ОКНО: КАЛЬКУЛЯТОР -->
+    <!-- КАЛЬКУЛЯТОР -->
     <div id="app-calc" class="app-window">
         <div class="window-header">
             <button class="back-btn" onclick="closeApp('app-calc')">‹ Назад</button>
@@ -506,7 +493,7 @@
         </div>
     </div>
 
-    <!-- ОКНО: НАСТРОЙКИ -->
+    <!-- НАСТРОЙКИ -->
     <div id="app-settings" class="app-window">
         <div class="window-header">
             <button class="back-btn" onclick="closeApp('app-settings')">‹ Назад</button>
@@ -515,14 +502,13 @@
         </div>
         <div class="window-body">
             <div class="card-item">
-                <div style="font-weight:600; font-size:12px; margin-bottom:8px;">🖼️ Обои iFruit</div>
                 <button class="btn-action" style="background:rgba(255,255,255,0.1); margin-bottom:6px;" onclick="setTheme(1)">Тёмный Астрал</button>
                 <button class="btn-action" style="background:rgba(255,255,255,0.1);" onclick="setTheme(2)">Кибер Неон</button>
             </div>
         </div>
     </div>
 
-    <!-- ОКНО: ВЛАДЕЛЕЦ -->
+    <!-- ВЛАДЕЛЕЦ -->
     <div id="app-owner" class="app-window">
         <div class="window-header">
             <button class="back-btn" onclick="closeApp('app-owner')">‹ Назад</button>
@@ -531,15 +517,11 @@
         </div>
         <div class="window-body">
             <div class="card-item">
-                <div style="font-weight:700; font-size:12px; margin-bottom:6px; color:#e74c3c;">Выберите игрока из базы:</div>
                 <select id="owner-user-select" onchange="loadOwnerForm()"></select>
-
                 <div style="display:flex; gap:6px; margin-bottom:10px;">
                     <button class="btn-action" style="margin:0;" onclick="reviewApplication('approved')">Принять</button>
                     <button class="btn-action red" style="margin:0;" onclick="reviewApplication('rejected')">Отклонить</button>
                 </div>
-
-                <label style="font-size:9px; color:#aaa;">Фракция:</label>
                 <select id="ow-faction" onchange="toggleRankSelect()">
                     <option value="Гражданский">Гражданский</option>
                     <option value="Государство">Государство</option>
@@ -548,24 +530,12 @@
                     <option value="МВД">МВД</option>
                     <option value="ДПС">ДПС</option>
                 </select>
-
                 <div id="ow-rank-container" style="display: none; margin-top: 6px;">
-                    <label style="font-size:9px; color:#aaa;">Должность / Ранг:</label>
                     <select id="ow-rank"></select>
                 </div>
-
-                <label style="font-size:9px; color:#aaa; margin-top:6px; display:block;">Баланс (€):</label>
-                <input type="number" id="ow-balance">
-
-                <label style="font-size:9px; color:#aaa;">Штрафы (€):</label>
-                <input type="number" id="ow-fines">
-
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
-                    <button class="btn-action blue" style="margin:0;" onclick="modifyBalance(1000)">+ 1k €</button>
-                    <button class="btn-action red" style="margin:0;" onclick="modifyBalance(-1000)">- 1k €</button>
-                </div>
-
-                <button class="btn-action orange" style="margin-top:10px;" onclick="saveOwnerChanges()">Сохранить изменения</button>
+                <input type="number" id="ow-balance" placeholder="Баланс">
+                <input type="number" id="ow-fines" placeholder="Штрафы">
+                <button class="btn-action orange" style="margin-top:10px;" onclick="saveOwnerChanges()">Сохранить</button>
             </div>
         </div>
     </div>
@@ -574,7 +544,7 @@
 <div class="modal-overlay" id="success-modal">
     <div class="modal-box">
         <div style="font-size:28px; color:#2ecc71; margin-bottom:6px;" id="modal-icon">✓</div>
-        <div style="font-size:14px; font-weight:700; margin-bottom:4px;" id="modal-title">Операция выполнена</div>
+        <div style="font-size:14px; font-weight:700; margin-bottom:4px;" id="modal-title">Готово</div>
         <div style="font-size:11px; color:#aaa;" id="modal-text">Успешно!</div>
     </div>
 </div>
@@ -606,6 +576,7 @@
     let dbData = {};
     let globalWanted = [];
     let globalCarAlerts = [];
+    let selectedCategories = [];
 
     function updateClock() {
         const now = new Date();
@@ -613,7 +584,6 @@
     }
     setInterval(updateClock, 1000); updateClock();
 
-    // Генерация HTML паспорта
     function createPassportHTML(data) {
         const staticId = data.telegram_id || currentUser.id;
         return `
@@ -635,7 +605,6 @@
         </div>`;
     }
 
-    // Генерация HTML водительского удостоверения в стиле паспорта (без фракции, с категориями)
     function createDriverLicenseHTML(data) {
         if (!data.drive_lic) return '';
         const staticId = data.telegram_id || currentUser.id;
@@ -658,7 +627,6 @@
         </div>`;
     }
 
-    // Генерация техпаспортов авто
     function createTechPassportsHTML(carsList) {
         if (!carsList || carsList.length === 0) return '';
         let html = '';
@@ -682,7 +650,6 @@
     }
 
     function renderUI(me) {
-        // Рендерим госуслуги: Паспорт -> Техпаспорта -> Права (всегда строго в нужном порядке)
         let docsHTML = createPassportHTML(me);
         docsHTML += createTechPassportsHTML(me.cars);
         docsHTML += createDriverLicenseHTML(me);
@@ -726,36 +693,6 @@
             globalWanted = data.wanted || [];
             globalCarAlerts = data.car_alerts || [];
 
-            if (!dbData[currentUser.id]) {
-                const autoUser = {
-                    telegram_id: currentUser.id,
-                    fname: currentUser.first_name || "Гражданин",
-                    lname: currentUser.last_name || "Штата",
-                    bday: "01.01.2000",
-                    balance: 1000,
-                    fines: 0,
-                    faction: "Гражданский",
-                    rank: "",
-                    card_num: "CARD: 2202 " + Math.floor(1000 + Math.random() * 9000) + " 0000 1111",
-                    iban: "RU99BEAM" + Math.floor(1000000000 + Math.random() * 9000000000),
-                    drive_lic: "",
-                    gun_lic: "",
-                    cars: [],
-                    guns: [],
-                    status: "approved"
-                };
-
-                await apiFetch(`${BACKEND_URL}/api/register`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(autoUser)
-                });
-
-                const resReload = await apiFetch(`${BACKEND_URL}/api/get_tablet_data?user_id=${currentUser.id}`);
-                const dataReload = await resReload.json();
-                dbData = dataReload.citizens || {};
-            }
-
             let me = dbData[currentUser.id];
             if (me) {
                 localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(me));
@@ -777,157 +714,63 @@
                 document.getElementById('auth-screen').style.display = 'flex';
             }
         }
-        
         loadFamilyData();
     }
 
-    // Универсальная навигация по подменю (исправляет все баги с кнопкой «Назад»)
     function openSubWindow(subId) {
-        const windows = document.querySelectorAll('.app-window');
-        windows.forEach(w => w.classList.remove('active'));
+        document.querySelectorAll('.app-window').forEach(w => w.classList.remove('active'));
         document.getElementById(subId).classList.add('active');
     }
 
-    // Розыск
-    function toggleWantedForm(show) {
-        document.getElementById('wanted-form-box').style.display = show ? 'block' : 'none';
-    }
-
-    async function submitWanted() {
-        const item = {
-            fname: document.getElementById('w-fname').value,
-            lname: document.getElementById('w-lname').value,
-            bday: document.getElementById('w-bday').value,
-            desc: document.getElementById('w-desc').value,
-            reason: document.getElementById('w-reason').value,
-            stars: document.getElementById('w-stars').value || 1
-        };
-
-        try {
-            await apiFetch(`${BACKEND_URL}/api/add_wanted`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(item)
-            });
-            toggleWantedForm(false);
-            showModal("Успешно", "Человек добавлен в розыск!", true);
-            loadAll();
-        } catch(e) {
-            showModal("Ошибка", "Не удалось отправить", false);
-        }
-    }
-
-    function renderWantedList() {
-        const list = document.getElementById('wanted-list');
-        if (!globalWanted || globalWanted.length === 0) {
-            list.innerHTML = '<span style="color:#aaa; font-size:11px;">Список розыска пуст...</span>';
-            return;
-        }
-        let html = '';
-        globalWanted.forEach(w => {
-            html += `
-            <div class="card-item" style="border-color:#e74c3c;">
-                <div style="font-weight:800; color:#e74c3c; font-size:12px;">🔴 ${w.fname} ${w.lname} (${w.bday})</div>
-                <div style="font-size:11px; margin-top:4px;"><b>Звёзд розыска:</b> ${'⭐'.repeat(w.stars || 1)}</div>
-                <div style="font-size:11px; color:#ccc;"><b>Приметы:</b> ${w.desc}</div>
-                <div style="font-size:11px; color:#e74c3c; margin-top:2px;"><b>Причина:</b> ${w.reason}</div>
-            </div>`;
-        });
-        list.innerHTML = html;
-    }
-
-    // Ориентировки машин
-    function toggleCarAlertForm(show) {
-        document.getElementById('car-form-box').style.display = show ? 'block' : 'none';
-    }
-
-    async function submitCarAlert() {
-        const alertItem = {
-            owner_fname: document.getElementById('ca-owner-fname').value || "-",
-            owner_lname: document.getElementById('ca-owner-lname').value || "-",
-            owner_bday: document.getElementById('ca-owner-bday').value || "-",
-            brand: document.getElementById('ca-brand').value,
-            color: document.getElementById('ca-color').value,
-            plate: document.getElementById('ca-plate').value || "-",
-            reason: document.getElementById('ca-reason').value
-        };
-
-        try {
-            await apiFetch(`${BACKEND_URL}/api/add_car_alert`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(alertItem)
-            });
-            toggleCarAlertForm(false);
-            showModal("Успешно", "Ориентировка добавлена!", true);
-            loadAll();
-        } catch(e) {
-            showModal("Ошибка", "Не удалось отправить", false);
-        }
-    }
-
-    function renderCarAlertsList() {
-        const list = document.getElementById('car-alerts-list');
-        if (!globalCarAlerts || globalCarAlerts.length === 0) {
-            list.innerHTML = '<span style="color:#aaa; font-size:11px;">Активных ориентировок нет...</span>';
-            return;
-        }
-        let html = '';
-        globalCarAlerts.forEach(c => {
-            html += `
-            <div class="card-item" style="border-color:#3498db;">
-                <div style="font-weight:800; color:#3498db; font-size:12px;">🚗 ${c.brand} (${c.color})</div>
-                <div style="font-size:11px; margin-top:4px;"><b>Гос. номер:</b> ${c.plate}</div>
-                <div style="font-size:11px; color:#aaa;"><b>Владелец:</b> ${c.owner_fname} ${c.owner_lname} (${c.owner_bday})</div>
-                <div style="font-size:11px; color:#f39c12; margin-top:2px;"><b>Причина:</b> ${c.reason}</div>
-            </div>`;
-        });
-        list.innerHTML = html;
-    }
-
-    // База данных жителей и досье
-    function renderCitizensDBList() {
-        const list = document.getElementById('citizens-db-list');
-        if (!dbData || Object.keys(dbData).length === 0) {
-            list.innerHTML = '<span style="color:#aaa; font-size:11px;">База пуста</span>';
-            return;
-        }
-        let html = '';
-        for (let id in dbData) {
-            let u = dbData[id];
-            html += `
-            <div class="card-item" style="cursor:pointer;" onclick="openCitizenDossier('${id}')">
-                <div style="font-weight:700; font-size:12px; color:#2ecc71;">${u.fname} ${u.lname}</div>
-                <div style="font-size:10px; color:#aaa;">Фракция: ${u.faction || "Гражданский"} | ID: #${id}</div>
-            </div>`;
-        }
-        list.innerHTML = html;
-    }
-
-    function openCitizenDossier(id) {
-        const u = dbData[id];
-        if(!u) return;
-
-        let dossierHTML = createPassportHTML(u);
-        dossierHTML += createTechPassportsHTML(u.cars);
-        dossierHTML += createDriverLicenseHTML(u);
-
-        // Зарегистрированное оружие
-        dossierHTML += `<div class="card-item"><div style="font-weight:700; color:#e74c3c; font-size:12px; margin-bottom:4px;">🔫 Зарегистрированное оружие</div>`;
-        if (u.guns && u.guns.length > 0) {
-            u.guns.forEach(g => {
-                dossierHTML += `<div style="font-size:11px; border-bottom:1px solid rgba(255,255,255,0.05); padding:4px 0;">Модель: <b>${g.model}</b> | Номер: ${g.serial}</div>`;
-            });
+    // Выбор категорий прав кликом
+    function toggleCategory(el, catName) {
+        el.classList.toggle('selected');
+        if (selectedCategories.includes(catName)) {
+            selectedCategories = selectedCategories.filter(c => c !== catName);
         } else {
-            dossierHTML += `<div style="font-size:11px; color:#aaa;">Нет зарегистрированного оружия</div>`;
+            selectedCategories.push(catName);
         }
-        dossierHTML += `</div>`;
-
-        document.getElementById('dossier-body').innerHTML = dossierHTML;
-        openSubWindow('citizen-dossier-menu');
+        document.getElementById('selected-cats-preview').innerText = selectedCategories.length > 0 ? selectedCategories.join(', ') : "Нет";
     }
 
-    // Регистрация машины
+    function openLicenseModal(type, price) {
+        selectedCategories = [];
+        document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('selected'));
+        document.getElementById('selected-cats-preview').innerText = "Нет";
+        openSubWindow('lic-drive-menu');
+    }
+
+    async function submitDriveLicense() {
+        if (selectedCategories.length === 0) {
+            showModal("Ошибка", "Выберите хотя бы одну категорию!", false);
+            return;
+        }
+        const catStr = selectedCategories.join(', ');
+        const price = 1500;
+
+        let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
+        if ((localUser.balance || 0) < price) {
+            showModal("Отказано", "Недостаточно средств", false);
+            return;
+        }
+
+        localUser.balance = (localUser.balance || 0) - price;
+        localUser.drive_lic = catStr;
+        localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
+        renderUI(localUser);
+
+        try {
+            await apiFetch(`${BACKEND_URL}/api/buy_lic`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ user_id: currentUser.id, lic_type: 'drive', cat: catStr, price: price })
+            });
+            showModal("Успешно", "Права получены!", true);
+            await loadAll();
+            openSubWindow('app-lic');
+        } catch(e) {}
+    }
+
     async function submitCarRegistration() {
         const carData = {
             user_id: currentUser.id,
@@ -947,16 +790,25 @@
         };
 
         if(!carData.brand || !carData.plate) {
-            showModal("Ошибка", "Заполните основные поля машины!", false);
+            showModal("Ошибка", "Заполните марку и номер машины!", false);
             return;
         }
 
         try {
-            await apiFetch(`${BACKEND_URL}/api/register_car`, {
+            const res = await apiFetch(`${BACKEND_URL}/api/register_car`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(carData)
             });
+            const data = await res.json();
+            
+            // Сразу добавляем машину локально, чтобы она появилась моментально без задержек бэкенда
+            let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
+            if (!localUser.cars) localUser.cars = [];
+            localUser.cars.push({ ...carData, vin: data.vin || "VIN-TEST" });
+            localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
+            renderUI(localUser);
+
             showModal("Успешно", "Машина зарегистрирована!", true);
             await loadAll();
             openSubWindow('app-gos');
@@ -965,19 +817,12 @@
         }
     }
 
-    // Регистрация оружия
     async function submitGunRegistration() {
         const gunData = {
             user_id: currentUser.id,
             model: document.getElementById('rg-model').value,
             serial: document.getElementById('rg-serial').value
         };
-
-        if(!gunData.model || !gunData.serial) {
-            showModal("Ошибка", "Заполните данные оружия!", false);
-            return;
-        }
-
         try {
             await apiFetch(`${BACKEND_URL}/api/register_gun`, {
                 method: 'POST',
@@ -987,70 +832,72 @@
             showModal("Успешно", "Оружие зарегистрировано!", true);
             await loadAll();
             openSubWindow('app-gos');
-        } catch(e) {
-            showModal("Ошибка", "Не удалось зарегистрировать оружие", false);
-        }
-    }
-
-    // Открытие формы прав
-    function openLicenseModal(type, price) {
-        openSubWindow('lic-drive-menu');
-    }
-
-    // Получение прав с выбранными категориями
-    async function submitDriveLicense() {
-        const cat = document.getElementById('ld-cat').value.trim();
-        const price = 1500;
-
-        if (!cat) {
-            showModal("Ошибка", "Укажите категории прав!", false);
-            return;
-        }
-
-        let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
-        if ((localUser.balance || 0) < price) {
-            showModal("Отказано", "Недостаточно средств", false);
-            return;
-        }
-
-        localUser.balance = (localUser.balance || 0) - price;
-        localUser.drive_lic = cat;
-        localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
-        renderUI(localUser);
-
-        try {
-            await apiFetch(`${BACKEND_URL}/api/buy_lic`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ user_id: currentUser.id, lic_type: 'drive', cat: cat, price: price })
-            });
-            showModal("Успешно", "Права получены!", true);
-            await loadAll();
-            openSubWindow('app-lic');
         } catch(e) {}
     }
 
-    async function buyLicenseDirect(type, price, cat) {
-        let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
-        if ((localUser.balance || 0) < price) {
-            showModal("Отказано", "Недостаточно средств", false);
-            return;
+    function toggleWantedForm(show) { document.getElementById('wanted-form-box').style.display = show ? 'block' : 'none'; }
+    async function submitWanted() {
+        const item = {
+            fname: document.getElementById('w-fname').value,
+            lname: document.getElementById('w-lname').value,
+            bday: document.getElementById('w-bday').value,
+            desc: document.getElementById('w-desc').value,
+            reason: document.getElementById('w-reason').value,
+            stars: document.getElementById('w-stars').value || 1
+        };
+        await apiFetch(`${BACKEND_URL}/api/add_wanted`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(item) });
+        toggleWantedForm(false); loadAll();
+    }
+    function renderWantedList() {
+        const list = document.getElementById('wanted-list');
+        if (!globalWanted || globalWanted.length === 0) { list.innerHTML = '<span style="color:#aaa; font-size:11px;">Список пуст...</span>'; return; }
+        let html = '';
+        globalWanted.forEach(w => {
+            html += `<div class="card-item" style="border-color:#e74c3c;"><div style="font-weight:800; color:#e74c3c; font-size:12px;">🔴 ${w.fname} ${w.lname}</div><div style="font-size:11px;">${'⭐'.repeat(w.stars || 1)} | ${w.reason}</div></div>`;
+        });
+        list.innerHTML = html;
+    }
+
+    function toggleCarAlertForm(show) { document.getElementById('car-form-box').style.display = show ? 'block' : 'none'; }
+    async function submitCarAlert() {
+        const alertItem = {
+            owner_fname: document.getElementById('ca-owner-fname').value || "-",
+            owner_lname: document.getElementById('ca-owner-lname').value || "-",
+            owner_bday: document.getElementById('ca-owner-bday').value || "-",
+            brand: document.getElementById('ca-brand').value,
+            color: document.getElementById('ca-color').value,
+            plate: document.getElementById('ca-plate').value || "-",
+            reason: document.getElementById('ca-reason').value
+        };
+        await apiFetch(`${BACKEND_URL}/api/add_car_alert`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(alertItem) });
+        toggleCarAlertForm(false); loadAll();
+    }
+    function renderCarAlertsList() {
+        const list = document.getElementById('car-alerts-list');
+        if (!globalCarAlerts || globalCarAlerts.length === 0) { list.innerHTML = '<span style="color:#aaa; font-size:11px;">Ориентировок нет...</span>'; return; }
+        let html = '';
+        globalCarAlerts.forEach(c => {
+            html += `<div class="card-item" style="border-color:#3498db;"><div style="font-weight:800; color:#3498db; font-size:12px;">🚗 ${c.brand} (${c.color})</div><div style="font-size:11px;">Номер: ${c.plate} | ${c.reason}</div></div>`;
+        });
+        list.innerHTML = html;
+    }
+
+    function renderCitizensDBList() {
+        const list = document.getElementById('citizens-db-list');
+        let html = '';
+        for (let id in dbData) {
+            let u = dbData[id];
+            html += `<div class="card-item" style="cursor:pointer;" onclick="openCitizenDossier('${id}')"><div style="font-weight:700; font-size:12px; color:#2ecc71;">${u.fname} ${u.lname}</div><div style="font-size:10px; color:#aaa;">ID: #${id}</div></div>`;
         }
+        list.innerHTML = html;
+    }
 
-        localUser.balance = (localUser.balance || 0) - price;
-        localUser.gun_lic = cat;
-        localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
-        renderUI(localUser);
-
-        try {
-            await apiFetch(`${BACKEND_URL}/api/buy_lic`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ user_id: currentUser.id, lic_type: type, cat: cat, price: price })
-            });
-            showModal("Куплено!", "Лицензия получена", true);
-            loadAll();
-        } catch(e) {}
+    function openCitizenDossier(id) {
+        const u = dbData[id];
+        if(!u) return;
+        let dossierHTML = createPassportHTML(u) + createTechPassportsHTML(u.cars) + createDriverLicenseHTML(u);
+        document.getElementById('dossier-body').innerHTML = dossierHTML;
+        openSubWindow('citizen-dossier-menu');
     }
 
     async function loadFamilyData() {
@@ -1058,29 +905,6 @@
             const res = await apiFetch(`${BACKEND_URL}/api/get_family_data`);
             const data = await res.json();
             document.getElementById('fam-balance').innerText = (data.balance || 0) + " €";
-            
-            const list = document.getElementById('fam-tx-list');
-            if (!data.transactions || data.transactions.length === 0) {
-                list.innerHTML = '<div style="color:#aaa; font-size:11px;">История пока пуста</div>';
-                return;
-            }
-
-            let html = '';
-            data.transactions.forEach(tx => {
-                const isDeposit = tx.action_type === 'deposit';
-                const sign = isDeposit ? '+' : '-';
-                const color = isDeposit ? '#2ecc71' : '#e74c3c';
-
-                html += `
-                <div class="tx-item">
-                    <div style="display:flex; justify-content:space-between;">
-                        <span class="tx-user">${tx.user}</span>
-                        <span style="font-weight:800; color:${color};">${sign} ${tx.amount} €</span>
-                    </div>
-                    <div class="tx-desc">${tx.desc || 'Без описания'}</div>
-                </div>`;
-            });
-            list.innerHTML = html;
         } catch(e) {}
     }
 
@@ -1088,58 +912,17 @@
         const type = document.getElementById('fam-action-type').value;
         const amount = parseInt(document.getElementById('fam-amount').value);
         const desc = document.getElementById('fam-desc').value.trim();
-
-        if (!amount || amount <= 0) { showModal("Ошибка", "Укажите верную сумму!", false); return; }
-        if (!desc) { showModal("Ошибка", "Укажите причину!", false); return; }
-
-        try {
-            const res = await apiFetch(`${BACKEND_URL}/api/family_action`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ user_id: currentUser.id, action_type: type, amount: amount, description: desc })
-            });
-
-            if (res.ok) {
-                showModal("Успешно", "Семейный счёт обновлён!", true);
-                document.getElementById('fam-amount').value = '';
-                document.getElementById('fam-desc').value = '';
-                loadFamilyData();
-            } else {
-                const err = await res.json();
-                showModal("Ошибка", err.message || "Ошибка", false);
-            }
-        } catch(e) {
-            showModal("Ошибка", "Нет связи с сервером!", false);
-        }
+        await apiFetch(`${BACKEND_URL}/api/family_action`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ user_id: currentUser.id, action_type: type, amount: amount, description: desc }) });
+        loadFamilyData();
     }
 
     async function registerUser() {
         const fname = document.getElementById('reg-fname').value;
         const lname = document.getElementById('reg-lname').value;
         const bday = document.getElementById('reg-bday').value;
-
-        if (!fname || !lname || !bday) { showModal("Ошибка", "Заполните все поля!", false); return; }
-
-        const newUser = {
-            telegram_id: currentUser.id,
-            fname: fname, lname: lname, bday: bday, balance: 1000, fines: 0,
-            faction: "Гражданский", rank: "",
-            card_num: "CARD: 2202 " + Math.floor(1000 + Math.random() * 9000) + " 0000 1111",
-            iban: "RU99BEAM" + Math.floor(1000000000 + Math.random() * 9000000000),
-            cars: [], guns: []
-        };
-
+        const newUser = { telegram_id: currentUser.id, fname, lname, bday, balance: 1000, fines: 0, faction: "Гражданский", rank: "", cars: [], guns: [] };
         localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(newUser));
-
-        try {
-            await apiFetch(`${BACKEND_URL}/api/register`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(newUser)
-            });
-        } catch(e) {}
-
-        showModal("Успешно", "Регистрация завершена!", true);
+        await apiFetch(`${BACKEND_URL}/api/register`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(newUser) });
         document.getElementById('auth-screen').style.display = 'none';
         renderUI(newUser);
     }
@@ -1148,51 +931,26 @@
         const fname = document.getElementById('edit-fname').value;
         const lname = document.getElementById('edit-lname').value;
         const bday = document.getElementById('edit-bday').value;
-
         let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
         localUser.fname = fname; localUser.lname = lname; localUser.bday = bday;
         localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
-
         renderUI(localUser);
-
-        try {
-            await apiFetch(`${BACKEND_URL}/api/update_profile`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ user_id: currentUser.id, fname: fname, lname: lname, bday: bday })
-            });
-        } catch(e) {}
-
+        await apiFetch(`${BACKEND_URL}/api/update_profile`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ user_id: currentUser.id, fname, lname, bday }) });
         showModal("Сохранено", "Паспорт обновлён!", true);
     }
 
     async function makeTransfer() {
         const iban = document.getElementById('transfer-iban').value;
         const sum = parseInt(document.getElementById('transfer-sum').value);
-        let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
-
-        if ((localUser.balance || 0) < sum) { showModal("Отказано", "Недостаточно средств", false); return; }
-
-        localUser.balance = (localUser.balance || 0) - sum;
-        localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
-        renderUI(localUser);
-
-        try {
-            await apiFetch(`${BACKEND_URL}/api/transfer`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ from_id: currentUser.id, to_iban: iban, sum: sum })
-            });
-        } catch(e) {}
-
+        await apiFetch(`${BACKEND_URL}/api/transfer`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ from_id: currentUser.id, to_iban: iban, sum: sum }) });
         showModal("Успешно", "Перевод выполнен!", true);
     }
 
     function calcInput(val) {
         const scr = document.getElementById('calc-screen');
-        if (val === 'C') { scr.value = ''; }
+        if (val === 'C') scr.value = '';
         else if (val === '=') { try { scr.value = eval(scr.value); } catch { scr.value = 'Error'; } }
-        else { scr.value += val; }
+        else scr.value += val;
     }
 
     function populateOwnerSelect() {
@@ -1200,9 +958,7 @@
         select.innerHTML = '';
         for (let id in dbData) {
             let u = dbData[id];
-            let opt = document.createElement('option'); 
-            opt.value = id;
-            opt.innerText = `${u.fname} ${u.lname} [TG ID: ${id}]`;
+            let opt = document.createElement('option'); opt.value = id; opt.innerText = `${u.fname} ${u.lname} [${id}]`;
             select.appendChild(opt);
         }
         loadOwnerForm();
@@ -1212,94 +968,55 @@
         const faction = document.getElementById('ow-faction').value;
         const container = document.getElementById('ow-rank-container');
         const rankSelect = document.getElementById('ow-rank');
-
         if (factionRanks[faction]) {
-            container.style.display = 'block';
-            rankSelect.innerHTML = '';
-            factionRanks[faction].forEach(r => {
-                let opt = document.createElement('option');
-                opt.value = r; opt.innerText = r;
-                rankSelect.appendChild(opt);
-            });
-        } else {
-            container.style.display = 'none';
-            rankSelect.innerHTML = '';
-        }
+            container.style.display = 'block'; rankSelect.innerHTML = '';
+            factionRanks[faction].forEach(r => { let opt = document.createElement('option'); opt.value = r; opt.innerText = r; rankSelect.appendChild(opt); });
+        } else { container.style.display = 'none'; }
     }
 
     function loadOwnerForm() {
         const id = document.getElementById('owner-user-select').value;
-        const u = dbData[id]; 
-        if(!u) return;
-        
+        const u = dbData[id]; if(!u) return;
         document.getElementById('ow-faction').value = u.faction || "Гражданский";
         toggleRankSelect();
-        if (u.rank && document.getElementById('ow-rank')) {
-            document.getElementById('ow-rank').value = u.rank;
-        }
-
         document.getElementById('ow-balance').value = u.balance || 0;
         document.getElementById('ow-fines').value = u.fines || 0;
     }
 
-    async function modifyBalance(delta) {
-        const currentBal = parseInt(document.getElementById('ow-balance').value) || 0;
-        document.getElementById('ow-balance').value = currentBal + delta;
-        await saveOwnerChanges();
-    }
-
     async function reviewApplication(status) {
         const targetId = document.getElementById('owner-user-select').value;
-        try {
-            await apiFetch(`${BACKEND_URL}/api/review_application`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ admin_id: currentUser.id, target_id: parseInt(targetId), status: status })
-            });
-        } catch(e) {}
-        showModal("Готово", status === 'approved' ? "Принято!" : "Отклонено!", true);
+        await apiFetch(`${BACKEND_URL}/api/review_application`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ admin_id: currentUser.id, target_id: parseInt(targetId), status }) });
+        showModal("Готово", "Статус изменён!", true);
     }
 
     async function saveOwnerChanges() {
         const targetId = document.getElementById('owner-user-select').value;
-        const factionVal = document.getElementById('ow-faction').value;
-        const rankVal = document.getElementById('ow-rank-container').style.display !== 'none' ? document.getElementById('ow-rank').value : "";
-
-        try {
-            await apiFetch(`${BACKEND_URL}/api/owner_update`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    admin_id: currentUser.id, 
-                    target_id: parseInt(targetId),
-                    faction: factionVal,
-                    rank: rankVal,
-                    balance: parseInt(document.getElementById('ow-balance').value) || 0,
-                    fines: parseInt(document.getElementById('ow-fines').value) || 0
-                })
-            });
-            showModal("Сохранено", "Данные игрока обновлены!", true);
-        } catch(e) {
-            showModal("Ошибка", "Не удалось сохранить", false);
-        }
+        await apiFetch(`${BACKEND_URL}/api/owner_update`, {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                admin_id: currentUser.id, target_id: parseInt(targetId),
+                faction: document.getElementById('ow-faction').value,
+                rank: document.getElementById('ow-rank-container').style.display !== 'none' ? document.getElementById('ow-rank').value : "",
+                balance: parseInt(document.getElementById('ow-balance').value) || 0,
+                fines: parseInt(document.getElementById('ow-fines').value) || 0
+            })
+        });
+        showModal("Сохранено", "Изменения применены!", true);
     }
 
     function setTheme(num) {
         const frame = document.querySelector('.phone-frame');
         if (num === 1) frame.style.backgroundImage = "url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop')";
         if (num === 2) frame.style.backgroundImage = "url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1000&auto=format&fit=crop')";
-        showModal("Готово", "Тема сменена!", true);
     }
 
     function showModal(title, text, success) {
         document.getElementById('modal-title').innerText = title;
         document.getElementById('modal-text').innerText = text;
         const icon = document.getElementById('modal-icon');
-        icon.innerText = success ? "✓" : "✕";
-        icon.style.color = success ? "#2ecc71" : "#e74c3c";
+        icon.innerText = success ? "✓" : "✕"; icon.style.color = success ? "#2ecc71" : "#e74c3c";
         const m = document.getElementById('success-modal');
-        m.style.display = 'flex';
-        setTimeout(() => m.style.display = 'none', 1800);
+        m.style.display = 'flex'; setTimeout(() => m.style.display = 'none', 1800);
     }
 
     function openApp(id) { 
@@ -1310,7 +1027,6 @@
     function closeApp(id) { document.getElementById(id).classList.remove('active'); }
 
     loadAll();
-
 </script>
 </body>
 </html>
