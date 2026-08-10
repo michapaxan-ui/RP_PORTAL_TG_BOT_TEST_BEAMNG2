@@ -61,7 +61,6 @@
 
         #auth-screen { position: absolute; top:0; left:0; right:0; bottom:0; background: #0c0d12; z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 24px; text-align: center; }
 
-        /* Документы */
         .id-card-doc { background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); margin-bottom: 10px; }
         .id-card-title { text-align: center; font-size: 11px; font-weight: 800; color: var(--accent-blue); border-bottom: 1px solid var(--border-glass); padding-bottom: 4px; margin-bottom: 8px; }
         .id-card-grid { display: flex; gap: 10px; }
@@ -73,13 +72,12 @@
         .tech-passport { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #3498db; border-radius: 16px; padding: 14px; margin-bottom: 10px; }
         .tech-title { text-align: center; font-size: 11px; font-weight: 800; color: #3498db; border-bottom: 1px solid var(--border-glass); padding-bottom: 4px; margin-bottom: 8px; }
 
-        /* Сетка для выбора категорий прав */
         .categories-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 8px 0; }
         .cat-chip { background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); padding: 8px; border-radius: 8px; text-align: center; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; }
         .cat-chip.selected { background: var(--accent-blue); border-color: var(--accent-blue); color: #fff; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 3000; }
-        .modal-box { background: #1e1e24; padding: 20px; border-radius: 20px; text-align: center; border: 1px solid var(--border-glass); max-width: 240px; }
+        .modal-box { background: #1e1e24; padding: 20px; border-radius: 20px; text-align: center; border: 1px solid var(--border-glass); max-width: 260px; }
     </style>
 </head>
 <body>
@@ -318,13 +316,13 @@
         </div>
         <div class="window-body">
             <div class="card-item">
-                <div style="font-weight:700; font-size:12px; margin-bottom:8px; color:#3498db;">Анкета ТС (VIN создастся автоматически):</div>
+                <div style="font-weight:700; font-size:12px; margin-bottom:8px; color:#3498db;">Анкета ТС:</div>
                 <input type="text" id="rc-fname" placeholder="Имя владельца">
                 <input type="text" id="rc-lname" placeholder="Фамилия владельца">
-                <input type="text" id="rc-brand" placeholder="Марка машины (напр. Karin Sultan)">
+                <input type="text" id="rc-brand" placeholder="Марка машины">
                 <input type="text" id="rc-year" placeholder="Год выпуска">
                 <input type="text" id="rc-color" placeholder="Цвет">
-                <input type="text" id="rc-plate" placeholder="Рег. номер (напр. B777MP)">
+                <input type="text" id="rc-plate" placeholder="Рег. номер">
                 <input type="text" id="rc-engine" placeholder="Двигатель">
                 <input type="text" id="rc-hp" placeholder="Мощность (ЛС)">
                 <input type="text" id="rc-tank" placeholder="Объём бака">
@@ -437,11 +435,11 @@
             <div class="card-item">
                 <div style="font-weight:600; font-size:12px; margin-bottom:4px;">🚗 Водительские права (1500 €)</div>
                 <div style="font-size:10px; color:#aaa; margin-bottom:8px;">Получение категорий на выбор кликом</div>
-                <button class="btn-action" onclick="openLicenseModal('drive', 1500)">Выбрать категории</button>
+                <button class="btn-action" onclick="openLicenseModal()">Выбрать категории</button>
             </div>
             <div class="card-item">
                 <div style="font-weight:600; font-size:12px; margin-bottom:4px;">🔫 Лицензия на оружие (3000 €)</div>
-                <button class="btn-action" style="background:linear-gradient(135deg, #8e44ad, #9b59b6);" onclick="buyLicenseDirect('gun', 3000, 'Пистолеты, Автоматы')">Купить лицензию</button>
+                <button class="btn-action" style="background:linear-gradient(135deg, #8e44ad, #9b59b6);" onclick="promptPaymentChoice('gun', 3000, 'Лицензия на оружие')">Купить лицензию</button>
             </div>
         </div>
     </div>
@@ -470,7 +468,7 @@
 
                 <div style="margin-top: 10px; font-size: 11px; color: #aaa;">Выбрано: <b id="selected-cats-preview" style="color: #2ecc71;">Нет</b></div>
 
-                <button class="btn-action" style="margin-top:12px;" onclick="submitDriveLicense()">Получить права (1500 €)</button>
+                <button class="btn-action" style="margin-top:12px;" onclick="promptPaymentChoice('drive', 1500, 'Водительские права')">Получить права (1500 €)</button>
             </div>
         </div>
     </div>
@@ -578,6 +576,20 @@
     </div>
 </div>
 
+<!-- МОДАЛЬНОЕ ОКНО ВЫБОРА СЧЕТА ДЛЯ ОПЛАТЫ -->
+<div class="modal-overlay" id="payment-choice-modal" style="display:none;">
+    <div class="modal-box" style="max-width: 280px;">
+        <div style="font-size:24px; margin-bottom:6px;">💳</div>
+        <div style="font-size:13px; font-weight:700; margin-bottom:4px;" id="pay-modal-title">Выберите счет для оплаты</div>
+        <div style="font-size:11px; color:#aaa; margin-bottom:12px;" id="pay-modal-desc">Сумма: 0 €</div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="btn-action blue" style="margin:0;" onclick="executePayment('personal')">С личного счёта</button>
+            <button class="btn-action orange" style="margin:0;" onclick="executePayment('family')">С семейного счёта</button>
+            <button class="btn-action red" style="margin:0;" onclick="closePaymentChoiceModal()">Отмена</button>
+        </div>
+    </div>
+</div>
+
 <!-- МОДАЛЬНОЕ ОКНО ПОДТВЕРЖДЕНИЯ СНЯТИЯ ТЕХПАСПОРТА -->
 <div class="modal-overlay" id="confirm-modal" style="display:none;">
     <div class="modal-box" style="max-width: 280px;">
@@ -586,6 +598,22 @@
         <div style="display: flex; gap: 8px;">
             <button class="btn-action" style="margin:0; background: linear-gradient(135deg, #2ecc71, #27ae60);" id="confirm-yes-btn">Да</button>
             <button class="btn-action red" style="margin:0;" onclick="closeConfirmModal()">Нет</button>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО ВЫБОРА КАТЕГОРИЙ ДЛЯ ИЗЪЯТИЯ ПРАВ -->
+<div class="modal-overlay" id="revoke-lic-modal" style="display:none;">
+    <div class="modal-box" style="max-width: 280px;">
+        <div style="font-size:20px; margin-bottom:4px;">📜</div>
+        <div style="font-size:13px; font-weight:700; margin-bottom:8px; color:#e74c3c;">Забрать категорию прав</div>
+        <div style="font-size:10px; color:#aaa; margin-bottom:10px;">Выберите категорию, которую хотите забрать у гражданина:</div>
+        <div class="categories-grid" id="revoke-grid" style="margin-bottom:10px;">
+            <!-- Динамические категории для изъятия -->
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button class="btn-action red" style="margin:0;" id="revoke-yes-btn" onclick="executeRevokeLicense()">Забрать</button>
+            <button class="btn-action blue" style="margin:0;" onclick="closeRevokeModal()">Отмена</button>
         </div>
     </div>
 </div>
@@ -618,6 +646,9 @@
     let globalWanted = [];
     let globalCarAlerts = [];
     let selectedCategories = [];
+    let familyBalance = 0;
+
+    let pendingPayment = { type: null, price: 0, meta: null };
 
     function updateClock() {
         const now = new Date();
@@ -646,7 +677,7 @@
         </div>`;
     }
 
-    function createDriverLicenseHTML(data) {
+    function createDriverLicenseHTML(data, citizenId = null, canRevoke = false) {
         if (!data.drive_lic) return '';
         const staticId = data.telegram_id || currentUser.id;
         return `
@@ -665,6 +696,7 @@
                     <div class="id-field-val" style="color: #2ecc71;">${data.drive_lic}</div>
                 </div>
             </div>
+            ${canRevoke ? `<button class="btn-action red" style="margin-top:8px;" onclick="openRevokeLicenseModal('${citizenId}', '${data.drive_lic}')">Забрать лицензию</button>` : ''}
         </div>`;
     }
 
@@ -781,42 +813,81 @@
         document.getElementById('selected-cats-preview').innerText = selectedCategories.length > 0 ? selectedCategories.join(', ') : "Нет";
     }
 
-    function openLicenseModal(type, price) {
+    function openLicenseModal() {
         selectedCategories = [];
         document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('selected'));
         document.getElementById('selected-cats-preview').innerText = "Нет";
         openSubWindow('lic-drive-menu');
     }
 
-    async function submitDriveLicense() {
-        if (selectedCategories.length === 0) {
-            showModal("Ошибка", "Выберите хотя бы одну категорию!", false);
+    function promptPaymentChoice(type, price, title) {
+        if (type === 'drive' && selectedCategories.length === 0) {
+            showModal("Ошибка", "Выберите хотя бы одну категорию прав!", false);
             return;
         }
-        const catStr = selectedCategories.join(', ');
-        const price = 1500;
+        pendingPayment = { type, price, title, cats: [...selectedCategories] };
+        document.getElementById('pay-modal-title').innerText = `Оплата: ${title}`;
+        document.getElementById('pay-modal-desc').innerText = `Сумма к оплате: ${price} €`;
+        document.getElementById('payment-choice-modal').style.display = 'flex';
+    }
+
+    function closePaymentChoiceModal() {
+        document.getElementById('payment-choice-modal').style.display = 'none';
+    }
+
+    async function executePayment(source) {
+        closePaymentChoiceModal();
+        const { type, price, title, cats } = pendingPayment;
 
         let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
-        if ((localUser.balance || 0) < price) {
-            showModal("Отказано", "Недостаточно средств", false);
-            return;
-        }
 
-        localUser.balance = (localUser.balance || 0) - price;
-        localUser.drive_lic = catStr;
-        localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
-        renderUI(localUser);
-
-        try {
-            await apiFetch(`${BACKEND_URL}/api/buy_lic`, {
+        if (source === 'personal') {
+            if ((localUser.balance || 0) < price) {
+                showModal("Отказано", "Недостаточно средств на личным счёте", false);
+                return;
+            }
+            localUser.balance = (localUser.balance || 0) - price;
+        } else if (source === 'family') {
+            if (familyBalance < price) {
+                showModal("Отказано", "Недостаточно средств в семейной казне", false);
+                return;
+            }
+            familyBalance -= price;
+            document.getElementById('fam-balance').innerText = familyBalance + " €";
+            // Также отправляем транзакцию казначейства на бэкенд
+            await apiFetch(`${BACKEND_URL}/api/family_action`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ user_id: currentUser.id, lic_type: 'drive', cat: catStr, price: price })
+                body: JSON.stringify({ user_id: currentUser.id, action_type: 'withdraw', amount: price, description: `Оплата услуги: ${title}` })
             });
-            showModal("Успешно", "Права получены!", true);
-            await loadAll();
+        }
+
+        if (type === 'drive') {
+            const catStr = cats.join(', ');
+            localUser.drive_lic = catStr;
+            try {
+                await apiFetch(`${BACKEND_URL}/api/buy_lic`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ user_id: currentUser.id, lic_type: 'drive', cat: catStr, price: price })
+                });
+            } catch(e) {}
             openSubWindow('app-lic');
-        } catch(e) {}
+        } else if (type === 'gun') {
+            localUser.gun_lic = true;
+            try {
+                await apiFetch(`${BACKEND_URL}/api/buy_lic`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ user_id: currentUser.id, lic_type: 'gun', cat: 'Пистолеты, Автоматы', price: price })
+                });
+            } catch(e) {}
+        }
+
+        localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
+        renderUI(localUser);
+        showModal("Успешно", `Услуга "${title}" оплачена!`, true);
+        await loadAll();
     }
 
     async function submitCarRegistration() {
@@ -942,7 +1013,7 @@
     function openCitizenDossier(id) {
         const u = dbData[id];
         if(!u) return;
-        let dossierHTML = createPassportHTML(u) + createTechPassportsHTML(u.cars, id, true) + createDriverLicenseHTML(u);
+        let dossierHTML = createPassportHTML(u) + createTechPassportsHTML(u.cars, id, true) + createDriverLicenseHTML(u, id, true);
         document.getElementById('dossier-body').innerHTML = dossierHTML;
         openSubWindow('citizen-dossier-menu');
     }
@@ -964,7 +1035,6 @@
         const { citizenId, vin } = activeUnregisterTarget;
         
         try {
-            // Запрос на бэкенд для удаления техпаспорта (если есть соответствующий эндпоинт, либо обновляем локально и через owner_update)
             let u = dbData[citizenId];
             if (u && u.cars) {
                 u.cars = u.cars.filter(c => c.vin !== vin);
@@ -975,7 +1045,6 @@
                     renderUI(u);
                 }
 
-                // Синхронизация с сервером через эндпоинт владельца или аналогичный метод обновления
                 await apiFetch(`${BACKEND_URL}/api/owner_update`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -998,11 +1067,83 @@
         }
     }
 
+    let activeRevokeTarget = { citizenId: null, currentCats: [] };
+    let selectedRevokeCats = [];
+
+    function openRevokeLicenseModal(citizenId, driveLicStr) {
+        activeRevokeTarget = { citizenId, currentCats: driveLicStr.split(',').map(s => s.trim()) };
+        selectedRevokeCats = [];
+
+        const grid = document.getElementById('revoke-grid');
+        grid.innerHTML = '';
+        activeRevokeTarget.currentCats.forEach(cat => {
+            const chip = document.createElement('div');
+            chip.className = 'cat-chip';
+            chip.innerText = cat;
+            chip.onclick = () => {
+                chip.classList.toggle('selected');
+                if (selectedRevokeCats.includes(cat)) {
+                    selectedRevokeCats = selectedRevokeCats.filter(c => c !== cat);
+                } else {
+                    selectedRevokeCats.push(cat);
+                }
+            };
+            grid.appendChild(chip);
+        });
+
+        document.getElementById('revoke-lic-modal').style.display = 'flex';
+    }
+
+    function closeRevokeModal() {
+        document.getElementById('revoke-lic-modal').style.display = 'none';
+    }
+
+    async function executeRevokeLicense() {
+        if (selectedRevokeCats.length === 0) {
+            showModal("Ошибка", "Выберите категории для изъятия!", false);
+            return;
+        }
+        closeRevokeModal();
+        const { citizenId, currentCats } = activeRevokeTarget;
+
+        const remainingCats = currentCats.filter(c => !selectedRevokeCats.includes(c));
+        let u = dbData[citizenId];
+        if (u) {
+            u.drive_lic = remainingCats.join(', ');
+            dbData[citizenId] = u;
+
+            if (String(currentUser.id) === String(citizenId)) {
+                localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(u));
+                renderUI(u);
+            }
+
+            try {
+                await apiFetch(`${BACKEND_URL}/api/owner_update`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        admin_id: currentUser.id,
+                        target_id: parseInt(citizenId),
+                        faction: u.faction || "Гражданский",
+                        rank: u.rank || "",
+                        balance: u.balance || 0,
+                        fines: u.fines || 0
+                    })
+                });
+            } catch(e) {}
+
+            showModal("Успешно", "Лицензии изъяты у гражданина!", true);
+            openCitizenDossier(citizenId);
+            await loadAll();
+        }
+    }
+
     async function loadFamilyData() {
         try {
             const res = await apiFetch(`${BACKEND_URL}/api/get_family_data`);
             const data = await res.json();
-            document.getElementById('fam-balance').innerText = (data.balance || 0) + " €";
+            familyBalance = data.balance || 0;
+            document.getElementById('fam-balance').innerText = familyBalance + " €";
         } catch(e) {}
     }
 
