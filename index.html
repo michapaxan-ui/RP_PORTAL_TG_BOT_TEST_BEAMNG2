@@ -61,6 +61,7 @@
 
         #auth-screen { position: absolute; top:0; left:0; right:0; bottom:0; background: #0c0d12; z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 24px; text-align: center; }
 
+        /* Карточка документа (Паспорт / Права) */
         .id-card-doc { background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); margin-bottom: 10px; }
         .id-card-title { text-align: center; font-size: 11px; font-weight: 800; color: var(--accent-blue); border-bottom: 1px solid var(--border-glass); padding-bottom: 4px; margin-bottom: 8px; }
         .id-card-grid { display: flex; gap: 10px; }
@@ -69,8 +70,9 @@
         .id-field-label { font-size: 8px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
         .id-field-val { font-size: 11px; font-weight: 700; color: #fff; margin-bottom: 3px; }
 
-        .tech-passport { background: linear-gradient(135deg, #2c3e50, #1a252f); border: 1px solid #3498db; border-radius: 14px; padding: 12px; margin-top: 10px; font-size: 11px; }
-        .tech-title { color: #3498db; font-weight: 800; font-size: 11px; margin-bottom: 6px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; }
+        /* Техпаспорт автомобиля в стиле паспорта */
+        .tech-passport { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #3498db; border-radius: 16px; padding: 14px; margin-bottom: 10px; }
+        .tech-title { text-align: center; font-size: 11px; font-weight: 800; color: #3498db; border-bottom: 1px solid var(--border-glass); padding-bottom: 4px; margin-bottom: 8px; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 3000; }
         .modal-box { background: #1e1e24; padding: 20px; border-radius: 20px; text-align: center; border: 1px solid var(--border-glass); max-width: 240px; }
@@ -176,17 +178,17 @@
                 <div style="font-size:11px; color:#f39c12; margin-top:2px;" id="base-user-rank">Должность: Не назначена</div>
             </div>
 
-            <div class="card-item" style="cursor:pointer; text-align:center;" onclick="openBaseSub('wanted-menu')">
+            <div class="card-item" style="cursor:pointer; text-align:center;" onclick="openSubWindow('wanted-menu')">
                 <div style="font-size:16px; font-weight:800; color:#e74c3c;">🚨 Разыскиваемые лица</div>
                 <div style="font-size:10px; color:#aaa; margin-top:2px;">База данных преступников штата</div>
             </div>
 
-            <div class="card-item" style="cursor:pointer; text-align:center;" onclick="openBaseSub('cars-menu')">
+            <div class="card-item" style="cursor:pointer; text-align:center;" onclick="openSubWindow('cars-menu')">
                 <div style="font-size:16px; font-weight:800; color:#3498db;">🚗 Ориентировки машин</div>
                 <div style="font-size:10px; color:#aaa; margin-top:2px;">Поиск угнанного и подозрительного транспорта</div>
             </div>
 
-            <div class="card-item" style="cursor:pointer; text-align:center;" onclick="openBaseSub('citizens-db-menu')">
+            <div class="card-item" style="cursor:pointer; text-align:center;" onclick="openSubWindow('citizens-db-menu')">
                 <div style="font-size:16px; font-weight:800; color:#2ecc71;">👥 База данных граждан</div>
                 <div style="font-size:10px; color:#aaa; margin-top:2px;">Паспорта, лицензии, авто и оружие жителей</div>
             </div>
@@ -196,14 +198,13 @@
     <!-- ПОДМЕНЮ БАЗЫ: РАЗЫСКИВАЕМЫЕ -->
     <div id="wanted-menu" class="app-window">
         <div class="window-header">
-            <button class="back-btn" onclick="closeBaseSub('app-base')">‹ Назад</button>
+            <button class="back-btn" onclick="openSubWindow('app-base')">‹ Назад</button>
             <div style="font-weight:700; color:#e74c3c; font-size:13px;">🚨 РОЗЫСК ЛЮДЕЙ</div>
             <div></div>
         </div>
         <div class="window-body">
             <button class="btn-action red" onclick="toggleWantedForm(true)">+ Добавить в розыск</button>
             
-            <!-- Форма добавления в розыск -->
             <div id="wanted-form-box" class="card-item" style="display:none; margin-top:10px;">
                 <div style="font-weight:700; font-size:12px; margin-bottom:6px; color:#e74c3c;">Анкета розыска:</div>
                 <input type="text" id="w-fname" placeholder="Имя">
@@ -228,14 +229,13 @@
     <!-- ПОДМЕНЮ БАЗЫ: ОРИЕНТИРОВКИ МАШИН -->
     <div id="cars-menu" class="app-window">
         <div class="window-header">
-            <button class="back-btn" onclick="closeBaseSub('app-base')">‹ Назад</button>
+            <button class="back-btn" onclick="openSubWindow('app-base')">‹ Назад</button>
             <div style="font-weight:700; color:#3498db; font-size:13px;">🚗 ОРИЕНТИРОВКИ ТРАНСПОРТА</div>
             <div></div>
         </div>
         <div class="window-body">
             <button class="btn-action blue" onclick="toggleCarAlertForm(true)">+ Добавить ориентировку</button>
             
-            <!-- Форма ориентировки авто -->
             <div id="car-form-box" class="card-item" style="display:none; margin-top:10px;">
                 <div style="font-weight:700; font-size:12px; margin-bottom:6px; color:#3498db;">Анкета ориентировки авто:</div>
                 <input type="text" id="ca-owner-fname" placeholder="Имя владельца (если нет: -)">
@@ -258,10 +258,10 @@
         </div>
     </div>
 
-    <!-- ПОДМЕНЮ БАЗЫ: СПИСОК ГРАЖДАН (БАЗА ДАННЫХ) -->
+    <!-- ПОДМЕНЮ БАЗЫ: СПИСОК ГРАЖДАН -->
     <div id="citizens-db-menu" class="app-window">
         <div class="window-header">
-            <button class="back-btn" onclick="closeBaseSub('app-base')">‹ Назад</button>
+            <button class="back-btn" onclick="openSubWindow('app-base')">‹ Назад</button>
             <div style="font-weight:700; color:#2ecc71; font-size:13px;">👥 БАЗА ЖИТЕЛЕЙ ШТАТА</div>
             <div></div>
         </div>
@@ -274,13 +274,11 @@
     <!-- ОКНО ДОСЬЕ КОНКРЕТНОГО ГРАЖДАНИНИА В БАЗЕ -->
     <div id="citizen-dossier-menu" class="app-window">
         <div class="window-header">
-            <button class="back-btn" onclick="openBaseSub('citizens-db-menu')">‹ Назад</button>
+            <button class="back-btn" onclick="openSubWindow('citizens-db-menu')">‹ Назад</button>
             <div style="font-weight:700; color:#2ecc71; font-size:13px;">📄 ДОСЬЕ ГРАЖДАНИНИА</div>
             <div></div>
         </div>
-        <div class="window-body" id="dossier-body">
-            <!-- Динамически заполняется -->
-        </div>
+        <div class="window-body" id="dossier-body"></div>
     </div>
 
     <!-- ОКНО: ГОСУСЛУГИ -->
@@ -291,11 +289,12 @@
             <div></div>
         </div>
         <div class="window-body">
-            <div style="margin-bottom: 12px;" id="gos-pass-box"></div>
+            <!-- Здесь документы будут выводиться в правильном порядке: Паспорт -> Техпаспорта -> Лицензии -->
+            <div style="margin-bottom: 12px;" id="gos-docs-container"></div>
             
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:12px;">
-                <button class="btn-action blue" style="margin:0;" onclick="openGosSub('gos-car-reg')">🚗 Рег. машины</button>
-                <button class="btn-action orange" style="margin:0;" onclick="openGosSub('gos-gun-reg')">🔫 Рег. оружия</button>
+                <button class="btn-action blue" style="margin:0;" onclick="openSubWindow('gos-car-reg')">🚗 Рег. машины</button>
+                <button class="btn-action orange" style="margin:0;" onclick="openSubWindow('gos-gun-reg')">🔫 Рег. оружия</button>
             </div>
 
             <div class="card-item">
@@ -311,7 +310,7 @@
     <!-- ПОДМЕНЮ ГОСУСЛУГ: РЕГИСТРАЦИЯ МАШИНЫ -->
     <div id="gos-car-reg" class="app-window">
         <div class="window-header">
-            <button class="back-btn" onclick="closeApp('app-gos')">‹ Назад</button>
+            <button class="back-btn" onclick="openSubWindow('app-gos')">‹ Назад</button>
             <div style="font-weight:700; color:#3498db; font-size:13px;">🚗 РЕГИСТРАЦИЯ ТРАНСПОРТА</div>
             <div></div>
         </div>
@@ -334,7 +333,7 @@
 
                 <div style="display:flex; gap:6px; margin-top:8px;">
                     <button class="btn-action" style="margin:0;" onclick="submitCarRegistration()">Зарегистрировать</button>
-                    <button class="btn-action red" style="margin:0;" onclick="closeApp('app-gos')">Отменить</button>
+                    <button class="btn-action red" style="margin:0;" onclick="openSubWindow('app-gos')">Отменить</button>
                 </div>
             </div>
         </div>
@@ -343,7 +342,7 @@
     <!-- ПОДМЕНЮ ГОСУСЛУГ: РЕГИСТРАЦИЯ ОРУЖИЯ -->
     <div id="gos-gun-reg" class="app-window">
         <div class="window-header">
-            <button class="back-btn" onclick="closeApp('app-gos')">‹ Назад</button>
+            <button class="back-btn" onclick="openSubWindow('app-gos')">‹ Назад</button>
             <div style="font-weight:700; color:#e74c3c; font-size:13px;">🔫 РЕГИСТРАЦИЯ ОРУЖИЯ</div>
             <div></div>
         </div>
@@ -355,7 +354,7 @@
 
                 <div style="display:flex; gap:6px; margin-top:8px;">
                     <button class="btn-action" style="margin:0;" onclick="submitGunRegistration()">Зарегистрировать</button>
-                    <button class="btn-action red" style="margin:0;" onclick="closeApp('app-gos')">Отменить</button>
+                    <button class="btn-action red" style="margin:0;" onclick="openSubWindow('app-gos')">Отменить</button>
                 </div>
             </div>
         </div>
@@ -427,15 +426,7 @@
             <div></div>
         </div>
         <div class="window-body">
-            <div style="margin-bottom: 12px;" id="docs-pass-box"></div>
-            <div class="card-item">
-                <div style="font-weight:600; color:#2ecc71; font-size:12px;">🚗 Водительские права</div>
-                <div style="font-size:11px; color:#aaa; margin-top:4px;" id="doc-drive-val">Статус: Нет лицензии</div>
-            </div>
-            <div class="card-item">
-                <div style="font-weight:600; color:#9b59b6; font-size:12px;">🔫 Оружие</div>
-                <div style="font-size:11px; color:#aaa; margin-top:4px;" id="doc-gun-val">Статус: Нет лицензии</div>
-            </div>
+            <div id="docs-page-container"></div>
         </div>
     </div>
 
@@ -449,11 +440,38 @@
         <div class="window-body">
             <div class="card-item">
                 <div style="font-weight:600; font-size:12px; margin-bottom:4px;">🚗 Водительские права (1500 €)</div>
-                <button class="btn-action" onclick="buyLicense('drive', 1500, 'B, B1, M')">Купить</button>
+                <div style="font-size:10px; color:#aaa; margin-bottom:8px;">Получение категорий на вождение транспорта</div>
+                <button class="btn-action" onclick="openLicenseModal('drive', 1500)">Оформить права</button>
             </div>
             <div class="card-item">
                 <div style="font-weight:600; font-size:12px; margin-bottom:4px;">🔫 Лицензия на оружие (3000 €)</div>
-                <button class="btn-action" style="background:linear-gradient(135deg, #8e44ad, #9b59b6);" onclick="buyLicense('gun', 3000, 'Пистолеты, Автоматы')">Купить</button>
+                <div style="font-size:10px; color:#aaa; margin-bottom:8px;">Разрешение на ношение и хранение оружия</div>
+                <button class="btn-action" style="background:linear-gradient(135deg, #8e44ad, #9b59b6);" onclick="buyLicenseDirect('gun', 3000, 'Пистолеты, Автоматы')">Купить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПОДМЕНЮ ОФОРМЛЕНИЯ ПРАВ -->
+    <div id="lic-drive-menu" class="app-window">
+        <div class="window-header">
+            <button class="back-btn" onclick="openSubWindow('app-lic')">‹ Назад</button>
+            <div style="font-weight:700; color:#3498db; font-size:13px;">🚗 ОФОРМЛЕНИЕ ПРАВ</div>
+            <div></div>
+        </div>
+        <div class="window-body">
+            <div class="card-item">
+                <div style="font-weight:700; font-size:12px; margin-bottom:8px; color:#3498db;">Анкета на получение прав:</div>
+                <input type="text" id="ld-fname" placeholder="Имя">
+                <input type="text" id="ld-lname" placeholder="Фамилия">
+                <input type="text" id="ld-bday" placeholder="Год рождения">
+                
+                <label style="font-size:10px; color:#aaa; display:block; margin-top:6px;">Выберите желаемые категории:</label>
+                <input type="text" id="ld-cat" placeholder="Напр. A1, B1, B">
+
+                <div style="display:flex; gap:6px; margin-top:8px;">
+                    <button class="btn-action" style="margin:0;" onclick="submitDriveLicense()">Получить права (1500 €)</button>
+                    <button class="btn-action red" style="margin:0;" onclick="openSubWindow('app-lic')">Отменить</button>
+                </div>
             </div>
         </div>
     </div>
@@ -595,6 +613,7 @@
     }
     setInterval(updateClock, 1000); updateClock();
 
+    // Генерация HTML паспорта
     function createPassportHTML(data) {
         const staticId = data.telegram_id || currentUser.id;
         return `
@@ -616,10 +635,60 @@
         </div>`;
     }
 
+    // Генерация HTML водительского удостоверения в стиле паспорта (без фракции, с категориями)
+    function createDriverLicenseHTML(data) {
+        if (!data.drive_lic) return '';
+        const staticId = data.telegram_id || currentUser.id;
+        return `
+        <div class="id-card-doc" style="border-color: #2ecc71;">
+            <div class="id-card-title" style="color: #2ecc71;">ВОДИТЕЛЬСКОЕ УДОСТОВЕРЕНИЕ (ID: #${staticId})</div>
+            <div class="id-card-grid">
+                <div class="id-photo-box">PHOTO</div>
+                <div class="id-info">
+                    <div class="id-field-label">1. Фамилия</div>
+                    <div class="id-field-val">${(data.lname || "").toUpperCase()}</div>
+                    <div class="id-field-label">2. Имя</div>
+                    <div class="id-field-val">${(data.fname || "").toUpperCase()}</div>
+                    <div class="id-field-label">3. Дата рождения</div>
+                    <div class="id-field-val">${data.bday || ""}</div>
+                    <div class="id-field-label">4. Категории прав</div>
+                    <div class="id-field-val" style="color: #2ecc71;">${data.drive_lic}</div>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    // Генерация техпаспортов авто
+    function createTechPassportsHTML(carsList) {
+        if (!carsList || carsList.length === 0) return '';
+        let html = '';
+        carsList.forEach(car => {
+            html += `
+            <div class="tech-passport">
+                <div class="tech-title">ТЕХНИЧЕСКИЙ ПАСПОРТ ТС</div>
+                <div style="font-size:10px;">
+                    <div><b>Владелец:</b> ${car.fname} ${car.lname}</div>
+                    <div><b>Марка:</b> ${car.brand} (${car.year})</div>
+                    <div><b>Цвет:</b> ${car.color} | <b>Номер:</b> ${car.plate}</div>
+                    <div><b>VIN:</b> <span style="color:#f39c12; font-family:monospace;">${car.vin}</span></div>
+                    <div><b>Двигатель:</b> ${car.engine} (${car.hp} ЛС)</div>
+                    <div><b>Бак:</b> ${car.tank} | <b>Привод:</b> ${car.drive}</div>
+                    <div><b>Топливо:</b> ${car.fuel_type} (${car.fuel_cons})</div>
+                    ${car.extra ? `<div style="margin-top:4px; color:#aaa;"><b>Доп. инфо:</b> ${car.extra}</div>` : ''}
+                </div>
+            </div>`;
+        });
+        return html;
+    }
+
     function renderUI(me) {
-        const passHTML = createPassportHTML(me);
-        document.getElementById('gos-pass-box').innerHTML = passHTML;
-        document.getElementById('docs-pass-box').innerHTML = passHTML;
+        // Рендерим госуслуги: Паспорт -> Техпаспорта -> Права (всегда строго в нужном порядке)
+        let docsHTML = createPassportHTML(me);
+        docsHTML += createTechPassportsHTML(me.cars);
+        docsHTML += createDriverLicenseHTML(me);
+        
+        document.getElementById('gos-docs-container').innerHTML = docsHTML;
+        document.getElementById('docs-page-container').innerHTML = docsHTML;
 
         document.getElementById('edit-fname').value = me.fname || "";
         document.getElementById('edit-lname').value = me.lname || "";
@@ -629,8 +698,6 @@
         document.getElementById('top-balance').innerText = (me.balance || 0) + " €";
         document.getElementById('sber-card').innerText = me.card_num || "CARD: **** **** **** 0000";
         document.getElementById('sber-iban').innerText = me.iban || "IBAN: RU00BEAM000000000000";
-        document.getElementById('doc-drive-val').innerText = me.drive_lic ? `Категории: ${me.drive_lic}` : "Статус: Нет лицензии";
-        document.getElementById('doc-gun-val').innerText = me.gun_lic ? `Тип: ${me.gun_lic}` : "Статус: Нет лицензии";
 
         const allowedFactions = ["Государство", "ФСБ", "МВД", "ДПС"];
         const baseIcon = document.getElementById('base-app-icon');
@@ -714,18 +781,10 @@
         loadFamilyData();
     }
 
-    // Навигация по подменю Базы
-    function openBaseSub(subId) {
-        document.getElementById('app-base').classList.remove('active');
-        document.getElementById('wanted-menu').classList.remove('active');
-        document.getElementById('cars-menu').classList.remove('active');
-        document.getElementById('citizens-db-menu').classList.remove('active');
-        document.getElementById('citizen-dossier-menu').classList.remove('active');
-        
-        document.getElementById(subId).classList.add('active');
-    }
-
-    function openGosSub(subId) {
+    // Универсальная навигация по подменю (исправляет все баги с кнопкой «Назад»)
+    function openSubWindow(subId) {
+        const windows = document.querySelectorAll('.app-window');
+        windows.forEach(w => w.classList.remove('active'));
         document.getElementById(subId).classList.add('active');
     }
 
@@ -850,14 +909,8 @@
         if(!u) return;
 
         let dossierHTML = createPassportHTML(u);
-
-        // Лицензии
-        dossierHTML += `
-        <div class="card-item">
-            <div style="font-weight:700; color:#3498db; font-size:12px; margin-bottom:4px;">📜 Лицензии</div>
-            <div style="font-size:11px; color:#aaa;">Водительские: ${u.drive_lic || "Нет"}</div>
-            <div style="font-size:11px; color:#aaa;">Оружие: ${u.gun_lic || "Нет"}</div>
-        </div>`;
+        dossierHTML += createTechPassportsHTML(u.cars);
+        dossierHTML += createDriverLicenseHTML(u);
 
         // Зарегистрированное оружие
         dossierHTML += `<div class="card-item"><div style="font-weight:700; color:#e74c3c; font-size:12px; margin-bottom:4px;">🔫 Зарегистрированное оружие</div>`;
@@ -870,33 +923,11 @@
         }
         dossierHTML += `</div>`;
 
-        // Техпаспорта машин
-        dossierHTML += `<div class="card-item"><div style="font-weight:700; color:#f39c12; font-size:12px; margin-bottom:4px;">🚙 Техпаспорта автомобилей</div>`;
-        if (u.cars && u.cars.length > 0) {
-            u.cars.forEach(car => {
-                dossierHTML += `
-                <div class="tech-passport">
-                    <div class="tech-title">ТЕХНИЧЕСКИЙ ПАСПОРТ ТС</div>
-                    <div><b>Владелец:</b> ${car.fname} ${car.lname}</div>
-                    <div><b>Марка:</b> ${car.brand} (${car.year})</div>
-                    <div><b>Цвет:</b> ${car.color} | <b>Номер:</b> ${car.plate}</div>
-                    <div><b>VIN:</b> <span style="color:#f39c12; font-family:monospace;">${car.vin}</span></div>
-                    <div><b>Двигатель:</b> ${car.engine} (${car.hp} ЛС)</div>
-                    <div><b>Бак:</b> ${car.tank} | <b>Привод:</b> ${car.drive}</div>
-                    <div><b>Топливо:</b> ${car.fuel_type} (${car.fuel_cons})</div>
-                    ${car.extra ? `<div style="margin-top:4px; color:#aaa; font-size:10px;"><b>Доп. инфо:</b> ${car.extra}</div>` : ''}
-                </div>`;
-            });
-        } else {
-            dossierHTML += `<div style="font-size:11px; color:#aaa;">Нет зарегистрированных машин</div>`;
-        }
-        dossierHTML += `</div>`;
-
         document.getElementById('dossier-body').innerHTML = dossierHTML;
-        openBaseSub('citizen-dossier-menu');
+        openSubWindow('citizen-dossier-menu');
     }
 
-    // Регистрация машины в Госуслугах
+    // Регистрация машины
     async function submitCarRegistration() {
         const carData = {
             user_id: currentUser.id,
@@ -926,15 +957,15 @@
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(carData)
             });
-            showModal("Успешно", "Машина зарегистрирована! Техпаспорт создан.", true);
-            closeApp('app-gos');
-            loadAll();
+            showModal("Успешно", "Машина зарегистрирована!", true);
+            await loadAll();
+            openSubWindow('app-gos');
         } catch(e) {
             showModal("Ошибка", "Не удалось зарегистрировать авто", false);
         }
     }
 
-    // Регистрация оружия в Госуслугах
+    // Регистрация оружия
     async function submitGunRegistration() {
         const gunData = {
             user_id: currentUser.id,
@@ -954,11 +985,72 @@
                 body: JSON.stringify(gunData)
             });
             showModal("Успешно", "Оружие зарегистрировано!", true);
-            closeApp('app-gos');
-            loadAll();
+            await loadAll();
+            openSubWindow('app-gos');
         } catch(e) {
             showModal("Ошибка", "Не удалось зарегистрировать оружие", false);
         }
+    }
+
+    // Открытие формы прав
+    function openLicenseModal(type, price) {
+        openSubWindow('lic-drive-menu');
+    }
+
+    // Получение прав с выбранными категориями
+    async function submitDriveLicense() {
+        const cat = document.getElementById('ld-cat').value.trim();
+        const price = 1500;
+
+        if (!cat) {
+            showModal("Ошибка", "Укажите категории прав!", false);
+            return;
+        }
+
+        let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
+        if ((localUser.balance || 0) < price) {
+            showModal("Отказано", "Недостаточно средств", false);
+            return;
+        }
+
+        localUser.balance = (localUser.balance || 0) - price;
+        localUser.drive_lic = cat;
+        localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
+        renderUI(localUser);
+
+        try {
+            await apiFetch(`${BACKEND_URL}/api/buy_lic`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ user_id: currentUser.id, lic_type: 'drive', cat: cat, price: price })
+            });
+            showModal("Успешно", "Права получены!", true);
+            await loadAll();
+            openSubWindow('app-lic');
+        } catch(e) {}
+    }
+
+    async function buyLicenseDirect(type, price, cat) {
+        let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
+        if ((localUser.balance || 0) < price) {
+            showModal("Отказано", "Недостаточно средств", false);
+            return;
+        }
+
+        localUser.balance = (localUser.balance || 0) - price;
+        localUser.gun_lic = cat;
+        localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
+        renderUI(localUser);
+
+        try {
+            await apiFetch(`${BACKEND_URL}/api/buy_lic`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ user_id: currentUser.id, lic_type: type, cat: cat, price: price })
+            });
+            showModal("Куплено!", "Лицензия получена", true);
+            loadAll();
+        } catch(e) {}
     }
 
     async function loadFamilyData() {
@@ -1094,29 +1186,6 @@
         } catch(e) {}
 
         showModal("Успешно", "Перевод выполнен!", true);
-    }
-
-    async function buyLicense(type, price, cat) {
-        let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
-
-        if ((localUser.balance || 0) < price) { showModal("Отказано", "Недостаточно средств", false); return; }
-
-        localUser.balance = (localUser.balance || 0) - price;
-        if (type === 'drive') localUser.drive_lic = cat;
-        else localUser.gun_lic = cat;
-
-        localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
-        renderUI(localUser);
-
-        try {
-            await apiFetch(`${BACKEND_URL}/api/buy_lic`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ user_id: currentUser.id, lic_type: type, cat: cat, price: price })
-            });
-        } catch(e) {}
-
-        showModal("Куплено!", "Лицензия получена", true);
     }
 
     function calcInput(val) {
