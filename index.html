@@ -578,6 +578,18 @@
     </div>
 </div>
 
+<!-- МОДАЛЬНОЕ ОКНО ПОДТВЕРЖДЕНИЯ СНЯТИЯ ТЕХПАСПОРТА -->
+<div class="modal-overlay" id="confirm-modal" style="display:none;">
+    <div class="modal-box" style="max-width: 280px;">
+        <div style="font-size:24px; margin-bottom:6px;">⚠️</div>
+        <div style="font-size:13px; font-weight:700; margin-bottom:12px; color:#fff;" id="confirm-modal-text">Вы точно хотите отрегистрировать машину от данного человека?</div>
+        <div style="display: flex; gap: 8px;">
+            <button class="btn-action" style="margin:0; background: linear-gradient(135deg, #2ecc71, #27ae60);" id="confirm-yes-btn">Да</button>
+            <button class="btn-action red" style="margin:0;" onclick="closeConfirmModal()">Нет</button>
+        </div>
+    </div>
+</div>
+
 <script>
     const BACKEND_URL = "https://spooky-unhealthy-esquire.ngrok-free.dev";
     const OWNER_ID = 7914481551;
@@ -656,10 +668,10 @@
         </div>`;
     }
 
-    function createTechPassportsHTML(carsList) {
+    function createTechPassportsHTML(carsList, citizenId = null, canUnregister = false) {
         if (!carsList || carsList.length === 0) return '';
         let html = '';
-        carsList.forEach(car => {
+        carsList.forEach((car, index) => {
             html += `
             <div class="tech-passport">
                 <div class="tech-title">ТЕХНИЧЕСКИЙ ПАСПОРТ ТС</div>
@@ -673,6 +685,7 @@
                     <div><b>Топливо:</b> ${car.fuel_type} (${car.fuel_cons})</div>
                     ${car.extra ? `<div style="margin-top:4px; color:#aaa;"><b>Доп. инфо:</b> ${car.extra}</div>` : ''}
                 </div>
+                ${canUnregister ? `<button class="btn-action red" style="margin-top:8px;" onclick="confirmUnregisterCar('${citizenId}', '${car.vin}')">Отрегистрировать</button>` : ''}
             </div>`;
         });
         return html;
@@ -929,9 +942,60 @@
     function openCitizenDossier(id) {
         const u = dbData[id];
         if(!u) return;
-        let dossierHTML = createPassportHTML(u) + createTechPassportsHTML(u.cars) + createDriverLicenseHTML(u);
+        let dossierHTML = createPassportHTML(u) + createTechPassportsHTML(u.cars, id, true) + createDriverLicenseHTML(u);
         document.getElementById('dossier-body').innerHTML = dossierHTML;
         openSubWindow('citizen-dossier-menu');
+    }
+
+    let activeUnregisterTarget = { citizenId: null, vin: null };
+
+    function confirmUnregisterCar(citizenId, vin) {
+        activeUnregisterTarget = { citizenId, vin };
+        document.getElementById('confirm-modal').style.display = 'flex';
+        document.getElementById('confirm-yes-btn').onclick = executeUnregisterCar;
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('confirm-modal').style.display = 'none';
+    }
+
+    async function executeUnregisterCar() {
+        closeConfirmModal();
+        const { citizenId, vin } = activeUnregisterTarget;
+        
+        try {
+            // Запрос на бэкенд для удаления техпаспорта (если есть соответствующий эндпоинт, либо обновляем локально и через owner_update)
+            let u = dbData[citizenId];
+            if (u && u.cars) {
+                u.cars = u.cars.filter(c => c.vin !== vin);
+                dbData[citizenId] = u;
+                
+                if (String(currentUser.id) === String(citizenId)) {
+                    localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(u));
+                    renderUI(u);
+                }
+
+                // Синхронизация с сервером через эндпоинт владельца или аналогичный метод обновления
+                await apiFetch(`${BACKEND_URL}/api/owner_update`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        admin_id: currentUser.id,
+                        target_id: parseInt(citizenId),
+                        faction: u.faction || "Гражданский",
+                        rank: u.rank || "",
+                        balance: u.balance || 0,
+                        fines: u.fines || 0
+                    })
+                });
+            }
+
+            showModal("Успешно", "Техпаспорт отregistered!", true);
+            openCitizenDossier(citizenId);
+            await loadAll();
+        } catch(e) {
+            showModal("Ошибка", "Не удалось отрегистрировать ТС", false);
+        }
     }
 
     async function loadFamilyData() {
