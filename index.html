@@ -56,12 +56,12 @@
         .btn-action.blue { background: linear-gradient(135deg, #3498db, #2980b9); }
         .btn-action.orange { background: linear-gradient(135deg, #f39c12, #d35400); }
 
-        input, select { width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--border-glass); color: #fff; padding: 10px; border-radius: 10px; margin: 4px 0 8px 0; font-size: 12px; outline: none; }
+        input, select, textarea { width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--border-glass); color: #fff; padding: 10px; border-radius: 10px; margin: 4px 0 8px 0; font-size: 12px; outline: none; resize: none; }
         select option { background: #1e1e24; color: #fff; }
 
         #auth-screen { position: absolute; top:0; left:0; right:0; bottom:0; background: #0c0d12; z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 24px; text-align: center; }
 
-        .id-card-doc { background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); }
+        .id-card-doc { background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; border-radius: 16px; padding: 14px; border: 1px solid var(--border-glass); margin-bottom: 10px; }
         .id-card-title { text-align: center; font-size: 11px; font-weight: 800; color: var(--accent-blue); border-bottom: 1px solid var(--border-glass); padding-bottom: 4px; margin-bottom: 8px; }
         .id-card-grid { display: flex; gap: 10px; }
         .id-photo-box { width: 65px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 9px; border: 1px solid var(--border-glass); }
@@ -69,10 +69,8 @@
         .id-field-label { font-size: 8px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
         .id-field-val { font-size: 11px; font-weight: 700; color: #fff; margin-bottom: 3px; }
 
-        .tx-item { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 11px; }
-        .tx-item:last-child { border-bottom: none; }
-        .tx-user { font-weight: 700; color: #fff; }
-        .tx-desc { color: #aaa; font-size: 10px; margin-top: 2px; }
+        .tech-passport { background: linear-gradient(135deg, #2c3e50, #1a252f); border: 1px solid #3498db; border-radius: 14px; padding: 12px; margin-top: 10px; font-size: 11px; }
+        .tech-title { color: #3498db; font-weight: 800; font-size: 11px; margin-bottom: 6px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 3000; }
         .modal-box { background: #1e1e24; padding: 20px; border-radius: 20px; text-align: center; border: 1px solid var(--border-glass); max-width: 240px; }
@@ -163,7 +161,7 @@
         </div>
     </div>
 
-    <!-- ОКНО: БАЗА (Только для Гос/ФСБ/МВД/ДПС) -->
+    <!-- ОКНО: БАЗА (Главное меню силовых структур) -->
     <div id="app-base" class="app-window">
         <div class="window-header">
             <button class="back-btn" onclick="closeApp('app-base')">‹ Назад</button>
@@ -177,10 +175,111 @@
                 <div style="font-size:11px; color:#2ecc71;" id="base-user-faction">Фракция: Гражданский</div>
                 <div style="font-size:11px; color:#f39c12; margin-top:2px;" id="base-user-rank">Должность: Не назначена</div>
             </div>
-            <div class="card-item">
-                <div style="font-weight:600; font-size:12px; margin-bottom:6px;">📌 Функционал базы</div>
-                <div style="font-size:11px; color:#aaa;">Служебный доступ активирован. Просмотр отчетов и ориентировок штата San Andreas.</div>
+
+            <div class="card-item" style="cursor:pointer; text-align:center;" onclick="openBaseSub('wanted-menu')">
+                <div style="font-size:16px; font-weight:800; color:#e74c3c;">🚨 Разыскиваемые лица</div>
+                <div style="font-size:10px; color:#aaa; margin-top:2px;">База данных преступников штата</div>
             </div>
+
+            <div class="card-item" style="cursor:pointer; text-align:center;" onclick="openBaseSub('cars-menu')">
+                <div style="font-size:16px; font-weight:800; color:#3498db;">🚗 Ориентировки машин</div>
+                <div style="font-size:10px; color:#aaa; margin-top:2px;">Поиск угнанного и подозрительного транспорта</div>
+            </div>
+
+            <div class="card-item" style="cursor:pointer; text-align:center;" onclick="openBaseSub('citizens-db-menu')">
+                <div style="font-size:16px; font-weight:800; color:#2ecc71;">👥 База данных граждан</div>
+                <div style="font-size:10px; color:#aaa; margin-top:2px;">Паспорта, лицензии, авто и оружие жителей</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПОДМЕНЮ БАЗЫ: РАЗЫСКИВАЕМЫЕ -->
+    <div id="wanted-menu" class="app-window">
+        <div class="window-header">
+            <button class="back-btn" onclick="closeBaseSub('app-base')">‹ Назад</button>
+            <div style="font-weight:700; color:#e74c3c; font-size:13px;">🚨 РОЗЫСК ЛЮДЕЙ</div>
+            <div></div>
+        </div>
+        <div class="window-body">
+            <button class="btn-action red" onclick="toggleWantedForm(true)">+ Добавить в розыск</button>
+            
+            <!-- Форма добавления в розыск -->
+            <div id="wanted-form-box" class="card-item" style="display:none; margin-top:10px;">
+                <div style="font-weight:700; font-size:12px; margin-bottom:6px; color:#e74c3c;">Анкета розыска:</div>
+                <input type="text" id="w-fname" placeholder="Имя">
+                <input type="text" id="w-lname" placeholder="Фамилия">
+                <input type="text" id="w-bday" placeholder="Год / Дата рождения">
+                <input type="text" id="w-desc" placeholder="Приметы / Внешность">
+                <input type="text" id="w-reason" placeholder="Причина розыска">
+                <input type="number" id="w-stars" placeholder="Количество звёзд (1-5)" min="1" max="5">
+                
+                <div style="display:flex; gap:6px; margin-top:8px;">
+                    <button class="btn-action" style="margin:0;" onclick="submitWanted()">Подтвердить</button>
+                    <button class="btn-action red" style="margin:0;" onclick="toggleWantedForm(false)">Отменить</button>
+                </div>
+            </div>
+
+            <div style="margin-top:12px;" id="wanted-list">
+                <span style="color:#aaa; font-size:11px;">Список розыска пуст...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПОДМЕНЮ БАЗЫ: ОРИЕНТИРОВКИ МАШИН -->
+    <div id="cars-menu" class="app-window">
+        <div class="window-header">
+            <button class="back-btn" onclick="closeBaseSub('app-base')">‹ Назад</button>
+            <div style="font-weight:700; color:#3498db; font-size:13px;">🚗 ОРИЕНТИРОВКИ ТРАНСПОРТА</div>
+            <div></div>
+        </div>
+        <div class="window-body">
+            <button class="btn-action blue" onclick="toggleCarAlertForm(true)">+ Добавить ориентировку</button>
+            
+            <!-- Форма ориентировки авто -->
+            <div id="car-form-box" class="card-item" style="display:none; margin-top:10px;">
+                <div style="font-weight:700; font-size:12px; margin-bottom:6px; color:#3498db;">Анкета ориентировки авто:</div>
+                <input type="text" id="ca-owner-fname" placeholder="Имя владельца (если нет: -)">
+                <input type="text" id="ca-owner-lname" placeholder="Фамилия владельца (если нет: -)">
+                <input type="text" id="ca-owner-bday" placeholder="Дата рождения владельца (если нет: -)">
+                <input type="text" id="ca-brand" placeholder="Марка машины">
+                <input type="text" id="ca-color" placeholder="Цвет машины">
+                <input type="text" id="ca-plate" placeholder="Регистрационный номер (если нет: -)">
+                <input type="text" id="ca-reason" placeholder="За что ориентировка?">
+                
+                <div style="display:flex; gap:6px; margin-top:8px;">
+                    <button class="btn-action" style="margin:0;" onclick="submitCarAlert()">Подтвердить</button>
+                    <button class="btn-action red" style="margin:0;" onclick="toggleCarAlertForm(false)">Отменить</button>
+                </div>
+            </div>
+
+            <div style="margin-top:12px;" id="car-alerts-list">
+                <span style="color:#aaa; font-size:11px;">Активных ориентировок нет...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПОДМЕНЮ БАЗЫ: СПИСОК ГРАЖДАН (БАЗА ДАННЫХ) -->
+    <div id="citizens-db-menu" class="app-window">
+        <div class="window-header">
+            <button class="back-btn" onclick="closeBaseSub('app-base')">‹ Назад</button>
+            <div style="font-weight:700; color:#2ecc71; font-size:13px;">👥 БАЗА ЖИТЕЛЕЙ ШТАТА</div>
+            <div></div>
+        </div>
+        <div class="window-body">
+            <div style="font-size:11px; color:#aaa; margin-bottom:8px;">Нажмите на гражданина для просмотра полного досье:</div>
+            <div id="citizens-db-list"></div>
+        </div>
+    </div>
+
+    <!-- ОКНО ДОСЬЕ КОНКРЕТНОГО ГРАЖДАНИНИА В БАЗЕ -->
+    <div id="citizen-dossier-menu" class="app-window">
+        <div class="window-header">
+            <button class="back-btn" onclick="openBaseSub('citizens-db-menu')">‹ Назад</button>
+            <div style="font-weight:700; color:#2ecc71; font-size:13px;">📄 ДОСЬЕ ГРАЖДАНИНИА</div>
+            <div></div>
+        </div>
+        <div class="window-body" id="dossier-body">
+            <!-- Динамически заполняется -->
         </div>
     </div>
 
@@ -193,12 +292,71 @@
         </div>
         <div class="window-body">
             <div style="margin-bottom: 12px;" id="gos-pass-box"></div>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:12px;">
+                <button class="btn-action blue" style="margin:0;" onclick="openGosSub('gos-car-reg')">🚗 Рег. машины</button>
+                <button class="btn-action orange" style="margin:0;" onclick="openGosSub('gos-gun-reg')">🔫 Рег. оружия</button>
+            </div>
+
             <div class="card-item">
                 <div style="font-weight:600; margin-bottom:8px; font-size:12px;">✏️ Изменить данные паспорта</div>
                 <input type="text" id="edit-fname" placeholder="Имя">
                 <input type="text" id="edit-lname" placeholder="Фамилия">
                 <input type="text" id="edit-bday" placeholder="Дата рождения">
                 <button class="btn-action" onclick="savePersonalData()">Сохранить насовсем</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПОДМЕНЮ ГОСУСЛУГ: РЕГИСТРАЦИЯ МАШИНЫ -->
+    <div id="gos-car-reg" class="app-window">
+        <div class="window-header">
+            <button class="back-btn" onclick="closeApp('app-gos')">‹ Назад</button>
+            <div style="font-weight:700; color:#3498db; font-size:13px;">🚗 РЕГИСТРАЦИЯ ТРАНСПОРТА</div>
+            <div></div>
+        </div>
+        <div class="window-body">
+            <div class="card-item">
+                <div style="font-weight:700; font-size:12px; margin-bottom:8px; color:#3498db;">Анкета регистрации ТС:</div>
+                <input type="text" id="rc-fname" placeholder="Имя владельца">
+                <input type="text" id="rc-lname" placeholder="Фамилия владельца">
+                <input type="text" id="rc-brand" placeholder="Полная марка машины">
+                <input type="text" id="rc-year" placeholder="Год выпуска">
+                <input type="text" id="rc-color" placeholder="Цвет машины">
+                <input type="text" id="rc-plate" placeholder="Регистрационный знак">
+                <input type="text" id="rc-engine" placeholder="Двигатель">
+                <input type="text" id="rc-hp" placeholder="Мощность двигателя (ЛС)">
+                <input type="text" id="rc-tank" placeholder="Объём топливного бака">
+                <input type="text" id="rc-drive" placeholder="Привод (напр. Полный)">
+                <input type="text" id="rc-fuel-type" placeholder="Тип топлива">
+                <input type="text" id="rc-fuel-cons" placeholder="Смешанный расход топлива">
+                <textarea id="rc-extra" placeholder="Есть ли ещё информация, которую мы должны знать?"></textarea>
+
+                <div style="display:flex; gap:6px; margin-top:8px;">
+                    <button class="btn-action" style="margin:0;" onclick="submitCarRegistration()">Зарегистрировать</button>
+                    <button class="btn-action red" style="margin:0;" onclick="closeApp('app-gos')">Отменить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПОДМЕНЮ ГОСУСЛУГ: РЕГИСТРАЦИЯ ОРУЖИЯ -->
+    <div id="gos-gun-reg" class="app-window">
+        <div class="window-header">
+            <button class="back-btn" onclick="closeApp('app-gos')">‹ Назад</button>
+            <div style="font-weight:700; color:#e74c3c; font-size:13px;">🔫 РЕГИСТРАЦИЯ ОРУЖИЯ</div>
+            <div></div>
+        </div>
+        <div class="window-body">
+            <div class="card-item">
+                <div style="font-weight:700; font-size:12px; margin-bottom:8px; color:#e74c3c;">Анкета регистрации оружия:</div>
+                <input type="text" id="rg-model" placeholder="Модель оружия (напр. Pistol .50)">
+                <input type="text" id="rg-serial" placeholder="Серийный номер / Калибр">
+
+                <div style="display:flex; gap:6px; margin-top:8px;">
+                    <button class="btn-action" style="margin:0;" onclick="submitGunRegistration()">Зарегистрировать</button>
+                    <button class="btn-action red" style="margin:0;" onclick="closeApp('app-gos')">Отменить</button>
+                </div>
             </div>
         </div>
     </div>
@@ -373,12 +531,9 @@
                     <option value="ДПС">ДПС</option>
                 </select>
 
-                <!-- Динамический выбор должности (появляется для Гос, ФСБ, МВД, ДПС) -->
                 <div id="ow-rank-container" style="display: none; margin-top: 6px;">
                     <label style="font-size:9px; color:#aaa;">Должность / Ранг:</label>
-                    <select id="ow-rank">
-                        <!-- Заполняется динамически скриптом -->
-                    </select>
+                    <select id="ow-rank"></select>
                 </div>
 
                 <label style="font-size:9px; color:#aaa; margin-top:6px; display:block;">Баланс (€):</label>
@@ -410,7 +565,6 @@
     const BACKEND_URL = "https://spooky-unhealthy-esquire.ngrok-free.dev";
     const OWNER_ID = 7914481551;
 
-    // Списки должностей для фракций
     const factionRanks = {
         "Государство": ["Стажер", "Секретарь", "Министр", "Губернатор"],
         "ФСБ": ["Курсант", "Оперативник", "Старший агент", "Начальник отдела"],
@@ -419,10 +573,7 @@
     };
 
     async function apiFetch(url, options = {}) {
-        options.headers = {
-            ...options.headers,
-            'ngrok-skip-browser-warning': 'true'
-        };
+        options.headers = { ...options.headers, 'ngrok-skip-browser-warning': 'true' };
         return fetch(url, options);
     }
 
@@ -435,6 +586,8 @@
     }
 
     let dbData = {};
+    let globalWanted = [];
+    let globalCarAlerts = [];
 
     function updateClock() {
         const now = new Date();
@@ -479,7 +632,6 @@
         document.getElementById('doc-drive-val').innerText = me.drive_lic ? `Категории: ${me.drive_lic}` : "Статус: Нет лицензии";
         document.getElementById('doc-gun-val').innerText = me.gun_lic ? `Тип: ${me.gun_lic}` : "Статус: Нет лицензии";
 
-        // Отображение приложения "База" только для силовиков и госструктур
         const allowedFactions = ["Государство", "ФСБ", "МВД", "ДПС"];
         const baseIcon = document.getElementById('base-app-icon');
         if (allowedFactions.includes(me.faction)) {
@@ -504,6 +656,8 @@
             const res = await apiFetch(`${BACKEND_URL}/api/get_tablet_data?user_id=${currentUser.id}`);
             const data = await res.json();
             dbData = data.citizens || {};
+            globalWanted = data.wanted || [];
+            globalCarAlerts = data.car_alerts || [];
 
             if (!dbData[currentUser.id]) {
                 const autoUser = {
@@ -519,6 +673,8 @@
                     iban: "RU99BEAM" + Math.floor(1000000000 + Math.random() * 9000000000),
                     drive_lic: "",
                     gun_lic: "",
+                    cars: [],
+                    guns: [],
                     status: "approved"
                 };
 
@@ -543,6 +699,9 @@
             }
 
             populateOwnerSelect();
+            renderWantedList();
+            renderCarAlertsList();
+            renderCitizensDBList();
         } catch(e) {
             const localUser = localStorage.getItem(`rp_user_${currentUser.id}`);
             if (localUser) {
@@ -555,11 +714,257 @@
         loadFamilyData();
     }
 
+    // Навигация по подменю Базы
+    function openBaseSub(subId) {
+        document.getElementById('app-base').classList.remove('active');
+        document.getElementById('wanted-menu').classList.remove('active');
+        document.getElementById('cars-menu').classList.remove('active');
+        document.getElementById('citizens-db-menu').classList.remove('active');
+        document.getElementById('citizen-dossier-menu').classList.remove('active');
+        
+        document.getElementById(subId).classList.add('active');
+    }
+
+    function openGosSub(subId) {
+        document.getElementById(subId).classList.add('active');
+    }
+
+    // Розыск
+    function toggleWantedForm(show) {
+        document.getElementById('wanted-form-box').style.display = show ? 'block' : 'none';
+    }
+
+    async function submitWanted() {
+        const item = {
+            fname: document.getElementById('w-fname').value,
+            lname: document.getElementById('w-lname').value,
+            bday: document.getElementById('w-bday').value,
+            desc: document.getElementById('w-desc').value,
+            reason: document.getElementById('w-reason').value,
+            stars: document.getElementById('w-stars').value || 1
+        };
+
+        try {
+            await apiFetch(`${BACKEND_URL}/api/add_wanted`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(item)
+            });
+            toggleWantedForm(false);
+            showModal("Успешно", "Человек добавлен в розыск!", true);
+            loadAll();
+        } catch(e) {
+            showModal("Ошибка", "Не удалось отправить", false);
+        }
+    }
+
+    function renderWantedList() {
+        const list = document.getElementById('wanted-list');
+        if (!globalWanted || globalWanted.length === 0) {
+            list.innerHTML = '<span style="color:#aaa; font-size:11px;">Список розыска пуст...</span>';
+            return;
+        }
+        let html = '';
+        globalWanted.forEach(w => {
+            html += `
+            <div class="card-item" style="border-color:#e74c3c;">
+                <div style="font-weight:800; color:#e74c3c; font-size:12px;">🔴 ${w.fname} ${w.lname} (${w.bday})</div>
+                <div style="font-size:11px; margin-top:4px;"><b>Звёзд розыска:</b> ${'⭐'.repeat(w.stars || 1)}</div>
+                <div style="font-size:11px; color:#ccc;"><b>Приметы:</b> ${w.desc}</div>
+                <div style="font-size:11px; color:#e74c3c; margin-top:2px;"><b>Причина:</b> ${w.reason}</div>
+            </div>`;
+        });
+        list.innerHTML = html;
+    }
+
+    // Ориентировки машин
+    function toggleCarAlertForm(show) {
+        document.getElementById('car-form-box').style.display = show ? 'block' : 'none';
+    }
+
+    async function submitCarAlert() {
+        const alertItem = {
+            owner_fname: document.getElementById('ca-owner-fname').value || "-",
+            owner_lname: document.getElementById('ca-owner-lname').value || "-",
+            owner_bday: document.getElementById('ca-owner-bday').value || "-",
+            brand: document.getElementById('ca-brand').value,
+            color: document.getElementById('ca-color').value,
+            plate: document.getElementById('ca-plate').value || "-",
+            reason: document.getElementById('ca-reason').value
+        };
+
+        try {
+            await apiFetch(`${BACKEND_URL}/api/add_car_alert`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(alertItem)
+            });
+            toggleCarAlertForm(false);
+            showModal("Успешно", "Ориентировка добавлена!", true);
+            loadAll();
+        } catch(e) {
+            showModal("Ошибка", "Не удалось отправить", false);
+        }
+    }
+
+    function renderCarAlertsList() {
+        const list = document.getElementById('car-alerts-list');
+        if (!globalCarAlerts || globalCarAlerts.length === 0) {
+            list.innerHTML = '<span style="color:#aaa; font-size:11px;">Активных ориентировок нет...</span>';
+            return;
+        }
+        let html = '';
+        globalCarAlerts.forEach(c => {
+            html += `
+            <div class="card-item" style="border-color:#3498db;">
+                <div style="font-weight:800; color:#3498db; font-size:12px;">🚗 ${c.brand} (${c.color})</div>
+                <div style="font-size:11px; margin-top:4px;"><b>Гос. номер:</b> ${c.plate}</div>
+                <div style="font-size:11px; color:#aaa;"><b>Владелец:</b> ${c.owner_fname} ${c.owner_lname} (${c.owner_bday})</div>
+                <div style="font-size:11px; color:#f39c12; margin-top:2px;"><b>Причина:</b> ${c.reason}</div>
+            </div>`;
+        });
+        list.innerHTML = html;
+    }
+
+    // База данных жителей и досье
+    function renderCitizensDBList() {
+        const list = document.getElementById('citizens-db-list');
+        if (!dbData || Object.keys(dbData).length === 0) {
+            list.innerHTML = '<span style="color:#aaa; font-size:11px;">База пуста</span>';
+            return;
+        }
+        let html = '';
+        for (let id in dbData) {
+            let u = dbData[id];
+            html += `
+            <div class="card-item" style="cursor:pointer;" onclick="openCitizenDossier('${id}')">
+                <div style="font-weight:700; font-size:12px; color:#2ecc71;">${u.fname} ${u.lname}</div>
+                <div style="font-size:10px; color:#aaa;">Фракция: ${u.faction || "Гражданский"} | ID: #${id}</div>
+            </div>`;
+        }
+        list.innerHTML = html;
+    }
+
+    function openCitizenDossier(id) {
+        const u = dbData[id];
+        if(!u) return;
+
+        let dossierHTML = createPassportHTML(u);
+
+        // Лицензии
+        dossierHTML += `
+        <div class="card-item">
+            <div style="font-weight:700; color:#3498db; font-size:12px; margin-bottom:4px;">📜 Лицензии</div>
+            <div style="font-size:11px; color:#aaa;">Водительские: ${u.drive_lic || "Нет"}</div>
+            <div style="font-size:11px; color:#aaa;">Оружие: ${u.gun_lic || "Нет"}</div>
+        </div>`;
+
+        // Зарегистрированное оружие
+        dossierHTML += `<div class="card-item"><div style="font-weight:700; color:#e74c3c; font-size:12px; margin-bottom:4px;">🔫 Зарегистрированное оружие</div>`;
+        if (u.guns && u.guns.length > 0) {
+            u.guns.forEach(g => {
+                dossierHTML += `<div style="font-size:11px; border-bottom:1px solid rgba(255,255,255,0.05); padding:4px 0;">Модель: <b>${g.model}</b> | Номер: ${g.serial}</div>`;
+            });
+        } else {
+            dossierHTML += `<div style="font-size:11px; color:#aaa;">Нет зарегистрированного оружия</div>`;
+        }
+        dossierHTML += `</div>`;
+
+        // Техпаспорта машин
+        dossierHTML += `<div class="card-item"><div style="font-weight:700; color:#f39c12; font-size:12px; margin-bottom:4px;">🚙 Техпаспорта автомобилей</div>`;
+        if (u.cars && u.cars.length > 0) {
+            u.cars.forEach(car => {
+                dossierHTML += `
+                <div class="tech-passport">
+                    <div class="tech-title">ТЕХНИЧЕСКИЙ ПАСПОРТ ТС</div>
+                    <div><b>Владелец:</b> ${car.fname} ${car.lname}</div>
+                    <div><b>Марка:</b> ${car.brand} (${car.year})</div>
+                    <div><b>Цвет:</b> ${car.color} | <b>Номер:</b> ${car.plate}</div>
+                    <div><b>VIN:</b> <span style="color:#f39c12; font-family:monospace;">${car.vin}</span></div>
+                    <div><b>Двигатель:</b> ${car.engine} (${car.hp} ЛС)</div>
+                    <div><b>Бак:</b> ${car.tank} | <b>Привод:</b> ${car.drive}</div>
+                    <div><b>Топливо:</b> ${car.fuel_type} (${car.fuel_cons})</div>
+                    ${car.extra ? `<div style="margin-top:4px; color:#aaa; font-size:10px;"><b>Доп. инфо:</b> ${car.extra}</div>` : ''}
+                </div>`;
+            });
+        } else {
+            dossierHTML += `<div style="font-size:11px; color:#aaa;">Нет зарегистрированных машин</div>`;
+        }
+        dossierHTML += `</div>`;
+
+        document.getElementById('dossier-body').innerHTML = dossierHTML;
+        openBaseSub('citizen-dossier-menu');
+    }
+
+    // Регистрация машины в Госуслугах
+    async function submitCarRegistration() {
+        const carData = {
+            user_id: currentUser.id,
+            fname: document.getElementById('rc-fname').value,
+            lname: document.getElementById('rc-lname').value,
+            brand: document.getElementById('rc-brand').value,
+            year: document.getElementById('rc-year').value,
+            color: document.getElementById('rc-color').value,
+            plate: document.getElementById('rc-plate').value,
+            engine: document.getElementById('rc-engine').value,
+            hp: document.getElementById('rc-hp').value,
+            tank: document.getElementById('rc-tank').value,
+            drive: document.getElementById('rc-drive').value,
+            fuel_type: document.getElementById('rc-fuel-type').value,
+            fuel_cons: document.getElementById('rc-fuel-cons').value,
+            extra: document.getElementById('rc-extra').value
+        };
+
+        if(!carData.brand || !carData.plate) {
+            showModal("Ошибка", "Заполните основные поля машины!", false);
+            return;
+        }
+
+        try {
+            await apiFetch(`${BACKEND_URL}/api/register_car`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(carData)
+            });
+            showModal("Успешно", "Машина зарегистрирована! Техпаспорт создан.", true);
+            closeApp('app-gos');
+            loadAll();
+        } catch(e) {
+            showModal("Ошибка", "Не удалось зарегистрировать авто", false);
+        }
+    }
+
+    // Регистрация оружия в Госуслугах
+    async function submitGunRegistration() {
+        const gunData = {
+            user_id: currentUser.id,
+            model: document.getElementById('rg-model').value,
+            serial: document.getElementById('rg-serial').value
+        };
+
+        if(!gunData.model || !gunData.serial) {
+            showModal("Ошибка", "Заполните данные оружия!", false);
+            return;
+        }
+
+        try {
+            await apiFetch(`${BACKEND_URL}/api/register_gun`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(gunData)
+            });
+            showModal("Успешно", "Оружие зарегистрировано!", true);
+            closeApp('app-gos');
+            loadAll();
+        } catch(e) {
+            showModal("Ошибка", "Не удалось зарегистрировать оружие", false);
+        }
+    }
+
     async function loadFamilyData() {
         try {
             const res = await apiFetch(`${BACKEND_URL}/api/get_family_data`);
             const data = await res.json();
-            
             document.getElementById('fam-balance').innerText = (data.balance || 0) + " €";
             
             const list = document.getElementById('fam-tx-list');
@@ -592,25 +997,14 @@
         const amount = parseInt(document.getElementById('fam-amount').value);
         const desc = document.getElementById('fam-desc').value.trim();
 
-        if (!amount || amount <= 0) {
-            showModal("Ошибка", "Укажите верную сумму!", false);
-            return;
-        }
-        if (!desc) {
-            showModal("Ошибка", "Укажите причину!", false);
-            return;
-        }
+        if (!amount || amount <= 0) { showModal("Ошибка", "Укажите верную сумму!", false); return; }
+        if (!desc) { showModal("Ошибка", "Укажите причину!", false); return; }
 
         try {
             const res = await apiFetch(`${BACKEND_URL}/api/family_action`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    user_id: currentUser.id,
-                    action_type: type,
-                    amount: amount,
-                    description: desc
-                })
+                body: JSON.stringify({ user_id: currentUser.id, action_type: type, amount: amount, description: desc })
             });
 
             if (res.ok) {
@@ -632,17 +1026,15 @@
         const lname = document.getElementById('reg-lname').value;
         const bday = document.getElementById('reg-bday').value;
 
-        if (!fname || !lname || !bday) {
-            showModal("Ошибка", "Заполните все поля!", false);
-            return;
-        }
+        if (!fname || !lname || !bday) { showModal("Ошибка", "Заполните все поля!", false); return; }
 
         const newUser = {
             telegram_id: currentUser.id,
             fname: fname, lname: lname, bday: bday, balance: 1000, fines: 0,
             faction: "Гражданский", rank: "",
             card_num: "CARD: 2202 " + Math.floor(1000 + Math.random() * 9000) + " 0000 1111",
-            iban: "RU99BEAM" + Math.floor(1000000000 + Math.random() * 9000000000)
+            iban: "RU99BEAM" + Math.floor(1000000000 + Math.random() * 9000000000),
+            cars: [], guns: []
         };
 
         localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(newUser));
@@ -666,9 +1058,7 @@
         const bday = document.getElementById('edit-bday').value;
 
         let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
-        localUser.fname = fname;
-        localUser.lname = lname;
-        localUser.bday = bday;
+        localUser.fname = fname; localUser.lname = lname; localUser.bday = bday;
         localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
 
         renderUI(localUser);
@@ -689,10 +1079,7 @@
         const sum = parseInt(document.getElementById('transfer-sum').value);
         let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
 
-        if ((localUser.balance || 0) < sum) {
-            showModal("Отказано", "Недостаточно средств", false);
-            return;
-        }
+        if ((localUser.balance || 0) < sum) { showModal("Отказано", "Недостаточно средств", false); return; }
 
         localUser.balance = (localUser.balance || 0) - sum;
         localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
@@ -712,10 +1099,7 @@
     async function buyLicense(type, price, cat) {
         let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
 
-        if ((localUser.balance || 0) < price) {
-            showModal("Отказано", "Недостаточно средств", false);
-            return;
-        }
+        if ((localUser.balance || 0) < price) { showModal("Отказано", "Недостаточно средств", false); return; }
 
         localUser.balance = (localUser.balance || 0) - price;
         if (type === 'drive') localUser.drive_lic = cat;
@@ -737,17 +1121,9 @@
 
     function calcInput(val) {
         const scr = document.getElementById('calc-screen');
-        if (val === 'C') {
-            scr.value = '';
-        } else if (val === '=') {
-            try {
-                scr.value = eval(scr.value);
-            } catch {
-                scr.value = 'Error';
-            }
-        } else {
-            scr.value += val;
-        }
+        if (val === 'C') { scr.value = ''; }
+        else if (val === '=') { try { scr.value = eval(scr.value); } catch { scr.value = 'Error'; } }
+        else { scr.value += val; }
     }
 
     function populateOwnerSelect() {
@@ -773,8 +1149,7 @@
             rankSelect.innerHTML = '';
             factionRanks[faction].forEach(r => {
                 let opt = document.createElement('option');
-                opt.value = r;
-                opt.innerText = r;
+                opt.value = r; opt.innerText = r;
                 rankSelect.appendChild(opt);
             });
         } else {
@@ -860,7 +1235,7 @@
 
     function openApp(id) { 
         if (id === 'app-family') loadFamilyData();
-        if (id === 'app-owner') loadAll();
+        if (id === 'app-owner' || id === 'app-base') loadAll();
         document.getElementById(id).classList.add('active'); 
     }
     function closeApp(id) { document.getElementById(id).classList.remove('active'); }
