@@ -34,7 +34,7 @@
         .app-item { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
         .app-item:active { transform: scale(0.92); }
 
-        #owner-app-icon { display: none; }
+        #owner-app-icon, #base-app-icon { display: none; }
 
         .app-box { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 26px; box-shadow: 0 8px 20px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(10px); }
         .app-name { font-size: 10px; font-weight: 600; text-align: center; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
@@ -133,6 +133,12 @@
             <div class="app-name">Калькулятор</div>
         </div>
 
+        <!-- Секретное приложение БАЗА (для Гос/ФСБ/МВД/ДПС) -->
+        <div class="app-item" id="base-app-icon" onclick="openApp('app-base')">
+            <div class="app-box" style="background: linear-gradient(135deg, #2c3e50, #34495e);">🛡️</div>
+            <div class="app-name">База Гос</div>
+        </div>
+
         <div class="app-item" onclick="openApp('app-settings')">
             <div class="app-box" style="background: linear-gradient(135deg, #7f8c8d, #95a5a6);">⚙️</div>
             <div class="app-name">Настройки</div>
@@ -154,6 +160,27 @@
         </div>
         <div class="app-item" onclick="openApp('app-family')">
             <div class="app-box" style="background: linear-gradient(135deg, #f39c12, #e67e22);">🏠</div>
+        </div>
+    </div>
+
+    <!-- ОКНО: БАЗА (Только для Гос/ФСБ/МВД/ДПС) -->
+    <div id="app-base" class="app-window">
+        <div class="window-header">
+            <button class="back-btn" onclick="closeApp('app-base')">‹ Назад</button>
+            <div style="font-weight:700; color:#3498db; font-size:13px;">🛡️ БАЗА ГОСУДАРСТВА</div>
+            <div></div>
+        </div>
+        <div class="window-body">
+            <div class="card-item" style="background: linear-gradient(135deg, rgba(52,152,219,0.2), rgba(0,0,0,0.4)); border-color:#3498db;">
+                <div style="font-size:11px; color:#aaa; margin-bottom:4px;" id="base-welcome">Добро пожаловать в систему</div>
+                <h3 style="margin-bottom:8px; color:#fff;" id="base-username">Имя Фамилия</h3>
+                <div style="font-size:11px; color:#2ecc71;" id="base-user-faction">Фракция: Гражданский</div>
+                <div style="font-size:11px; color:#f39c12; margin-top:2px;" id="base-user-rank">Должность: Не назначена</div>
+            </div>
+            <div class="card-item">
+                <div style="font-weight:600; font-size:12px; margin-bottom:6px;">📌 Функционал базы</div>
+                <div style="font-size:11px; color:#aaa;">Служебный доступ активирован. Просмотр отчетов и ориентировок штата San Andreas.</div>
+            </div>
         </div>
     </div>
 
@@ -337,7 +364,7 @@
                 </div>
 
                 <label style="font-size:9px; color:#aaa;">Фракция:</label>
-                <select id="ow-faction">
+                <select id="ow-faction" onchange="toggleRankSelect()">
                     <option value="Гражданский">Гражданский</option>
                     <option value="Государство">Государство</option>
                     <option value="ФСБ">ФСБ</option>
@@ -346,7 +373,15 @@
                     <option value="ДПС">ДПС</option>
                 </select>
 
-                <label style="font-size:9px; color:#aaa;">Баланс (€):</label>
+                <!-- Динамический выбор должности (появляется для Гос, ФСБ, МВД, ДПС) -->
+                <div id="ow-rank-container" style="display: none; margin-top: 6px;">
+                    <label style="font-size:9px; color:#aaa;">Должность / Ранг:</label>
+                    <select id="ow-rank">
+                        <!-- Заполняется динамически скриптом -->
+                    </select>
+                </div>
+
+                <label style="font-size:9px; color:#aaa; margin-top:6px; display:block;">Баланс (€):</label>
                 <input type="number" id="ow-balance">
 
                 <label style="font-size:9px; color:#aaa;">Штрафы (€):</label>
@@ -374,6 +409,14 @@
 <script>
     const BACKEND_URL = "https://spooky-unhealthy-esquire.ngrok-free.dev";
     const OWNER_ID = 7914481551;
+
+    // Списки должностей для фракций
+    const factionRanks = {
+        "Государство": ["Стажер", "Секретарь", "Министр", "Губернатор"],
+        "ФСБ": ["Курсант", "Оперативник", "Старший агент", "Начальник отдела"],
+        "МВД": ["Кадет", "Сержант", "Лейтенант", "Полковник"],
+        "ДПС": ["Инспектор", "Старший инспектор", "Капитан", "Начальник ДПС"]
+    };
 
     async function apiFetch(url, options = {}) {
         options.headers = {
@@ -435,6 +478,19 @@
         document.getElementById('sber-iban').innerText = me.iban || "IBAN: RU00BEAM000000000000";
         document.getElementById('doc-drive-val').innerText = me.drive_lic ? `Категории: ${me.drive_lic}` : "Статус: Нет лицензии";
         document.getElementById('doc-gun-val').innerText = me.gun_lic ? `Тип: ${me.gun_lic}` : "Статус: Нет лицензии";
+
+        // Отображение приложения "База" только для силовиков и госструктур
+        const allowedFactions = ["Государство", "ФСБ", "МВД", "ДПС"];
+        const baseIcon = document.getElementById('base-app-icon');
+        if (allowedFactions.includes(me.faction)) {
+            baseIcon.style.display = 'flex';
+            document.getElementById('base-welcome').innerText = `Добро пожаловать,`;
+            document.getElementById('base-username').innerText = `${me.fname} ${me.lname}`;
+            document.getElementById('base-user-faction').innerText = `Фракция: ${me.faction}`;
+            document.getElementById('base-user-rank').innerText = `Должность: ${me.rank || "Не назначена"}`;
+        } else {
+            baseIcon.style.display = 'none';
+        }
     }
 
     async function loadAll() {
@@ -458,6 +514,7 @@
                     balance: 1000,
                     fines: 0,
                     faction: "Гражданский",
+                    rank: "",
                     card_num: "CARD: 2202 " + Math.floor(1000 + Math.random() * 9000) + " 0000 1111",
                     iban: "RU99BEAM" + Math.floor(1000000000 + Math.random() * 9000000000),
                     drive_lic: "",
@@ -583,6 +640,7 @@
         const newUser = {
             telegram_id: currentUser.id,
             fname: fname, lname: lname, bday: bday, balance: 1000, fines: 0,
+            faction: "Гражданский", rank: "",
             card_num: "CARD: 2202 " + Math.floor(1000 + Math.random() * 9000) + " 0000 1111",
             iban: "RU99BEAM" + Math.floor(1000000000 + Math.random() * 9000000000)
         };
@@ -705,11 +763,37 @@
         loadOwnerForm();
     }
 
+    function toggleRankSelect() {
+        const faction = document.getElementById('ow-faction').value;
+        const container = document.getElementById('ow-rank-container');
+        const rankSelect = document.getElementById('ow-rank');
+
+        if (factionRanks[faction]) {
+            container.style.display = 'block';
+            rankSelect.innerHTML = '';
+            factionRanks[faction].forEach(r => {
+                let opt = document.createElement('option');
+                opt.value = r;
+                opt.innerText = r;
+                rankSelect.appendChild(opt);
+            });
+        } else {
+            container.style.display = 'none';
+            rankSelect.innerHTML = '';
+        }
+    }
+
     function loadOwnerForm() {
         const id = document.getElementById('owner-user-select').value;
         const u = dbData[id]; 
         if(!u) return;
+        
         document.getElementById('ow-faction').value = u.faction || "Гражданский";
+        toggleRankSelect();
+        if (u.rank && document.getElementById('ow-rank')) {
+            document.getElementById('ow-rank').value = u.rank;
+        }
+
         document.getElementById('ow-balance').value = u.balance || 0;
         document.getElementById('ow-fines').value = u.fines || 0;
     }
@@ -734,6 +818,9 @@
 
     async function saveOwnerChanges() {
         const targetId = document.getElementById('owner-user-select').value;
+        const factionVal = document.getElementById('ow-faction').value;
+        const rankVal = document.getElementById('ow-rank-container').style.display !== 'none' ? document.getElementById('ow-rank').value : "";
+
         try {
             await apiFetch(`${BACKEND_URL}/api/owner_update`, {
                 method: 'POST',
@@ -741,7 +828,8 @@
                 body: JSON.stringify({
                     admin_id: currentUser.id, 
                     target_id: parseInt(targetId),
-                    faction: document.getElementById('ow-faction').value,
+                    faction: factionVal,
+                    rank: rankVal,
                     balance: parseInt(document.getElementById('ow-balance').value) || 0,
                     fines: parseInt(document.getElementById('ow-fines').value) || 0
                 })
