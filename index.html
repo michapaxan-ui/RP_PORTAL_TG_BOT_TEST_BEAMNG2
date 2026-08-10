@@ -378,7 +378,7 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    let currentUser = { id: OWNER_ID, first_name: "Миша", username: "mishapaxan" };
+    let currentUser = { id: OWNER_ID, first_name: "Миша", last_name: "Персоньян", username: "mishapaxan" };
     if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
         currentUser = tg.initDataUnsafe.user;
     }
@@ -392,7 +392,6 @@
     setInterval(updateClock, 1000); updateClock();
 
     function createPassportHTML(data) {
-        // Подставляем статик на основе Telegram ID
         const staticId = data.telegram_id || currentUser.id;
         return `
         <div class="id-card-doc">
@@ -435,29 +434,57 @@
             document.getElementById('owner-app-icon').style.display = 'none';
         }
 
-        const localUser = localStorage.getItem(`rp_user_${currentUser.id}`);
-        if (localUser) {
-            renderUI(JSON.parse(localUser));
-        }
-
         try {
             const res = await apiFetch(`${BACKEND_URL}/api/get_tablet_data?user_id=${currentUser.id}`);
             const data = await res.json();
             dbData = data.citizens || {};
 
-            if (!dbData[currentUser.id] && !localUser) {
-                document.getElementById('auth-screen').style.display = 'flex';
-                return;
-            } else {
-                document.getElementById('auth-screen').style.display = 'none';
+            // АВТОМАТИЧЕСКАЯ ПОДСТРАХОВКА: если пользователя нет в базе сервера, регистрируем на лету!
+            if (!dbData[currentUser.id]) {
+                const autoUser = {
+                    telegram_id: currentUser.id,
+                    fname: currentUser.first_name || "Гражданин",
+                    lname: currentUser.last_name || "Штата",
+                    bday: "01.01.2000",
+                    balance: 1000,
+                    fines: 0,
+                    faction: "Гражданский",
+                    card_num: "CARD: 2202 " + Math.floor(1000 + Math.random() * 9000) + " 0000 1111",
+                    iban: "RU99BEAM" + Math.floor(1000000000 + Math.random() * 9000000000),
+                    drive_lic: "",
+                    gun_lic: "",
+                    status: "approved"
+                };
+
+                // Отправляем авто-регистрацию на бэкенд
+                await apiFetch(`${BACKEND_URL}/api/register`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(autoUser)
+                });
+
+                // Снова запрашиваем актуальные данные с сервера
+                const resReload = await apiFetch(`${BACKEND_URL}/api/get_tablet_data?user_id=${currentUser.id}`);
+                const dataReload = await resReload.json();
+                dbData = dataReload.citizens || {};
             }
 
-            let me = dbData[currentUser.id] || JSON.parse(localUser);
-            localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(me));
-            renderUI(me);
+            let me = dbData[currentUser.id];
+            if (me) {
+                localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(me));
+                document.getElementById('auth-screen').style.display = 'none';
+                renderUI(me);
+            } else {
+                // Если совсем крайний случай — показываем форму вручную
+                document.getElementById('auth-screen').style.display = 'flex';
+            }
+
             populateOwnerSelect();
         } catch(e) {
-            if (!localUser) {
+            const localUser = localStorage.getItem(`rp_user_${currentUser.id}`);
+            if (localUser) {
+                renderUI(JSON.parse(localUser));
+            } else {
                 document.getElementById('auth-screen').style.display = 'flex';
             }
         }
@@ -549,7 +576,7 @@
 
         const newUser = {
             telegram_id: currentUser.id,
-            fname: fname, lname: lname, bday: bday, balance: 0, fines: 0,
+            fname: fname, lname: lname, bday: bday, balance: 1000, fines: 0,
             card_num: "CARD: 2202 " + Math.floor(1000 + Math.random() * 9000) + " 0000 1111",
             iban: "RU99BEAM" + Math.floor(1000000000 + Math.random() * 9000000000)
         };
@@ -560,7 +587,7 @@
             await apiFetch(`${BACKEND_URL}/api/register`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ user_id: currentUser.id, fname: fname, lname: lname, bday: bday })
+                body: JSON.stringify(newUser)
             });
         } catch(e) {}
 
@@ -666,7 +693,6 @@
             let u = dbData[id];
             let opt = document.createElement('option'); 
             opt.value = id;
-            // Показываем Имя, Фамилию и точный Telegram ID (статик) в скобках
             opt.innerText = `${u.fname} ${u.lname} [TG ID: ${id}]`;
             select.appendChild(opt);
         }
