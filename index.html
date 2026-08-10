@@ -1117,12 +1117,13 @@
             dbData[citizenId] = u;
 
             if (String(currentUser.id) === String(citizenId)) {
-                localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(u));
-                renderUI(u);
+                let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
+                localUser.drive_lic = u.drive_lic;
+                localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
+                renderUI(localUser);
             }
 
             try {
-                // Используем расширенный эндпоинт сохранения, чтобы на сервере тоже фиксировались изменения прав
                 await apiFetch(`${BACKEND_URL}/api/owner_update_full`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
