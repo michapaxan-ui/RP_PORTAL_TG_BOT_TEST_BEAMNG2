@@ -774,6 +774,9 @@
                 if ((!me.cars || me.cars.length === 0) && localUser.cars && localUser.cars.length > 0) {
                     me.cars = localUser.cars;
                 }
+                if (!me.drive_lic && localUser.drive_lic) {
+                    me.drive_lic = localUser.drive_lic;
+                }
                 localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(me));
                 document.getElementById('auth-screen').style.display = 'none';
                 renderUI(me);
@@ -854,7 +857,6 @@
             }
             familyBalance -= price;
             document.getElementById('fam-balance').innerText = familyBalance + " €";
-            // Также отправляем транзакцию казначейства на бэкенд
             await apiFetch(`${BACKEND_URL}/api/family_action`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -1045,7 +1047,7 @@
                     renderUI(u);
                 }
 
-                await apiFetch(`${BACKEND_URL}/api/owner_update`, {
+                await apiFetch(`${BACKEND_URL}/api/owner_update_full`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
@@ -1054,7 +1056,9 @@
                         faction: u.faction || "Гражданский",
                         rank: u.rank || "",
                         balance: u.balance || 0,
-                        fines: u.fines || 0
+                        fines: u.fines || 0,
+                        drive_lic: u.drive_lic || "",
+                        cars: u.cars
                     })
                 });
             }
@@ -1118,7 +1122,8 @@
             }
 
             try {
-                await apiFetch(`${BACKEND_URL}/api/owner_update`, {
+                // Используем расширенный эндпоинт сохранения, чтобы на сервере тоже фиксировались изменения прав
+                await apiFetch(`${BACKEND_URL}/api/owner_update_full`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
@@ -1127,7 +1132,9 @@
                         faction: u.faction || "Гражданский",
                         rank: u.rank || "",
                         balance: u.balance || 0,
-                        fines: u.fines || 0
+                        fines: u.fines || 0,
+                        drive_lic: u.drive_lic || "",
+                        cars: u.cars || []
                     })
                 });
             } catch(e) {}
