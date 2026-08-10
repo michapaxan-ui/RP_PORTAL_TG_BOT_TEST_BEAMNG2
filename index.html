@@ -761,6 +761,7 @@
         }
 
         let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
+        let cachedDb = JSON.parse(localStorage.getItem('rp_db_data') || '{}');
 
         try {
             const res = await apiFetch(`${BACKEND_URL}/api/get_tablet_data?user_id=${currentUser.id}`);
@@ -769,18 +770,34 @@
             globalWanted = data.wanted || [];
             globalCarAlerts = data.car_alerts || [];
 
+            // Синхронизация с локальным кешем, чтобы изъятые права и удаленные авто не откатывались сервером
+            for (let id in cachedDb) {
+                if (dbData[id]) {
+                    if (cachedDb[id].drive_lic !== undefined) {
+                        dbData[id].drive_lic = cachedDb[id].drive_lic;
+                    }
+                    if (cachedDb[id].cars !== undefined) {
+                        dbData[id].cars = cachedDb[id].cars;
+                    }
+                } else {
+                    dbData[id] = cachedDb[id];
+                }
+            }
+            localStorage.setItem('rp_db_data', JSON.stringify(dbData));
+
             let me = dbData[currentUser.id];
             if (me) {
-                if ((!me.cars || me.cars.length === 0) && localUser.cars && localUser.cars.length > 0) {
+                if (localUser.cars !== undefined && localUser.cars.length < (me.cars || []).length) {
                     me.cars = localUser.cars;
                 }
-                if (!me.drive_lic && localUser.drive_lic) {
+                if (localUser.drive_lic !== undefined && localUser.drive_lic.length < (me.drive_lic || '').length) {
                     me.drive_lic = localUser.drive_lic;
                 }
                 localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(me));
                 document.getElementById('auth-screen').style.display = 'none';
                 renderUI(me);
             } else if (localUser.telegram_id) {
+                document.getElementById('auth-screen').style.display = 'none';
                 renderUI(localUser);
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
@@ -791,12 +808,17 @@
             renderCarAlertsList();
             renderCitizensDBList();
         } catch(e) {
+            dbData = cachedDb;
             if (localUser && localUser.telegram_id) {
                 document.getElementById('auth-screen').style.display = 'none';
                 renderUI(localUser);
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
             }
+            populateOwnerSelect();
+            renderWantedList();
+            renderCarAlertsList();
+            renderCitizensDBList();
         }
         loadFamilyData();
     }
@@ -1041,9 +1063,12 @@
             if (u && u.cars) {
                 u.cars = u.cars.filter(c => c.vin !== vin);
                 dbData[citizenId] = u;
+                localStorage.setItem('rp_db_data', JSON.stringify(dbData));
                 
                 if (String(currentUser.id) === String(citizenId)) {
-                    localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(u));
+                    let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
+                    localUser.cars = u.cars;
+                    localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
                     renderUI(u);
                 }
 
@@ -1115,6 +1140,7 @@
         if (u) {
             u.drive_lic = remainingCats.join(', ');
             dbData[citizenId] = u;
+            localStorage.setItem('rp_db_data', JSON.stringify(dbData));
 
             if (String(currentUser.id) === String(citizenId)) {
                 let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
