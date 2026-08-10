@@ -770,7 +770,6 @@
             globalWanted = data.wanted || [];
             globalCarAlerts = data.car_alerts || [];
 
-            // Синхронизация с локальным кешем, чтобы изъятые права и удаленные авто не откатывались сервером
             for (let id in cachedDb) {
                 if (dbData[id]) {
                     if (cachedDb[id].drive_lic !== undefined) {
@@ -787,11 +786,11 @@
 
             let me = dbData[currentUser.id];
             if (me) {
-                if (localUser.cars !== undefined && localUser.cars.length < (me.cars || []).length) {
-                    me.cars = localUser.cars;
-                }
-                if (localUser.drive_lic !== undefined && localUser.drive_lic.length < (me.drive_lic || '').length) {
+                if (localUser.drive_lic !== undefined) {
                     me.drive_lic = localUser.drive_lic;
+                }
+                if (localUser.cars !== undefined) {
+                    me.cars = localUser.cars;
                 }
                 localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(me));
                 document.getElementById('auth-screen').style.display = 'none';
@@ -887,8 +886,19 @@
         }
 
         if (type === 'drive') {
-            const catStr = cats.join(', ');
+            let existingCats = localUser.drive_lic ? localUser.drive_lic.split(',').map(s => s.trim()).filter(Boolean) : [];
+            cats.forEach(c => {
+                if (!existingCats.includes(c)) existingCats.push(c);
+            });
+            const catStr = existingCats.join(', ');
+            
             localUser.drive_lic = catStr;
+            
+            if (dbData[currentUser.id]) {
+                dbData[currentUser.id].drive_lic = catStr;
+                localStorage.setItem('rp_db_data', JSON.stringify(dbData));
+            }
+
             try {
                 await apiFetch(`${BACKEND_URL}/api/buy_lic`, {
                     method: 'POST',
@@ -1265,7 +1275,7 @@
     async function reviewApplication(status) {
         const targetId = document.getElementById('owner-user-select').value;
         await apiFetch(`${BACKEND_URL}/api/review_application`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ admin_id: currentUser.id, target_id: parseInt(targetId), status }) });
-        showModal("Готово", "Статус изменён!", true);
+        showModal("Готово", "Статус изменен!", true);
     }
 
     async function saveOwnerChanges() {
