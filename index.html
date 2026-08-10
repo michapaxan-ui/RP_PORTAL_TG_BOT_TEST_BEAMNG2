@@ -57,6 +57,7 @@
         .btn-action.orange { background: linear-gradient(135deg, #f39c12, #d35400); }
 
         input, select { width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--border-glass); color: #fff; padding: 10px; border-radius: 10px; margin: 4px 0 8px 0; font-size: 12px; outline: none; }
+        select option { background: #1e1e24; color: #fff; }
 
         #auth-screen { position: absolute; top:0; left:0; right:0; bottom:0; background: #0c0d12; z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 24px; text-align: center; }
 
@@ -336,7 +337,14 @@
                 </div>
 
                 <label style="font-size:9px; color:#aaa;">Фракция:</label>
-                <input type="text" id="ow-faction">
+                <select id="ow-faction">
+                    <option value="Гражданский">Гражданский</option>
+                    <option value="Государство">Государство</option>
+                    <option value="ФСБ">ФСБ</option>
+                    <option value="ТЦК">ТЦК</option>
+                    <option value="МВД">МВД</option>
+                    <option value="ДПС">ДПС</option>
+                </select>
 
                 <label style="font-size:9px; color:#aaa;">Баланс (€):</label>
                 <input type="number" id="ow-balance">
@@ -405,6 +413,8 @@
                     <div class="id-field-val">${(data.fname || "").toUpperCase()}</div>
                     <div class="id-field-label">3. Дата рождения</div>
                     <div class="id-field-val">${data.bday || ""}</div>
+                    <div class="id-field-label">4. Фракция</div>
+                    <div class="id-field-val" style="color: #f39c12;">${data.faction || "Гражданский"}</div>
                 </div>
             </div>
         </div>`;
@@ -439,7 +449,6 @@
             const data = await res.json();
             dbData = data.citizens || {};
 
-            // АВТОМАТИЧЕСКАЯ ПОДСТРАХОВКА: если пользователя нет в базе сервера, регистрируем на лету!
             if (!dbData[currentUser.id]) {
                 const autoUser = {
                     telegram_id: currentUser.id,
@@ -456,14 +465,12 @@
                     status: "approved"
                 };
 
-                // Отправляем авто-регистрацию на бэкенд
                 await apiFetch(`${BACKEND_URL}/api/register`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(autoUser)
                 });
 
-                // Снова запрашиваем актуальные данные с сервера
                 const resReload = await apiFetch(`${BACKEND_URL}/api/get_tablet_data?user_id=${currentUser.id}`);
                 const dataReload = await resReload.json();
                 dbData = dataReload.citizens || {};
@@ -475,7 +482,6 @@
                 document.getElementById('auth-screen').style.display = 'none';
                 renderUI(me);
             } else {
-                // Если совсем крайний случай — показываем форму вручную
                 document.getElementById('auth-screen').style.display = 'flex';
             }
 
