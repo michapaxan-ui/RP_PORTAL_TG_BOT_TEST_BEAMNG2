@@ -715,6 +715,8 @@
             document.getElementById('owner-app-icon').style.display = 'none';
         }
 
+        let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
+
         try {
             const res = await apiFetch(`${BACKEND_URL}/api/get_tablet_data?user_id=${currentUser.id}`);
             const data = await res.json();
@@ -724,9 +726,14 @@
 
             let me = dbData[currentUser.id];
             if (me) {
+                if ((!me.cars || me.cars.length === 0) && localUser.cars && localUser.cars.length > 0) {
+                    me.cars = localUser.cars;
+                }
                 localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(me));
                 document.getElementById('auth-screen').style.display = 'none';
                 renderUI(me);
+            } else if (localUser.telegram_id) {
+                renderUI(localUser);
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
             }
@@ -736,9 +743,9 @@
             renderCarAlertsList();
             renderCitizensDBList();
         } catch(e) {
-            const localUser = localStorage.getItem(`rp_user_${currentUser.id}`);
-            if (localUser) {
-                renderUI(JSON.parse(localUser));
+            if (localUser && localUser.telegram_id) {
+                document.getElementById('auth-screen').style.display = 'none';
+                renderUI(localUser);
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
             }
