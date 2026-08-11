@@ -608,9 +608,7 @@
         <div style="font-size:20px; margin-bottom:4px;">📜</div>
         <div style="font-size:13px; font-weight:700; margin-bottom:8px; color:#e74c3c;">Забрать категорию прав</div>
         <div style="font-size:10px; color:#aaa; margin-bottom:10px;">Выберите категорию, которую хотите забрать у гражданина:</div>
-        <div class="categories-grid" id="revoke-grid" style="margin-bottom:10px;">
-            <!-- Динамические категории для изъятия -->
-        </div>
+        <div class="categories-grid" id="revoke-grid" style="margin-bottom:10px;"></div>
         <div style="display: flex; gap: 8px;">
             <button class="btn-action red" style="margin:0;" id="revoke-yes-btn" onclick="executeRevokeLicense()">Забрать</button>
             <button class="btn-action blue" style="margin:0;" onclick="closeRevokeModal()">Отмена</button>
@@ -772,12 +770,8 @@
 
             for (let id in cachedDb) {
                 if (dbData[id]) {
-                    if (cachedDb[id].drive_lic !== undefined) {
-                        dbData[id].drive_lic = cachedDb[id].drive_lic;
-                    }
-                    if (cachedDb[id].cars !== undefined) {
-                        dbData[id].cars = cachedDb[id].cars;
-                    }
+                    if (cachedDb[id].drive_lic !== undefined) dbData[id].drive_lic = cachedDb[id].drive_lic;
+                    if (cachedDb[id].cars !== undefined) dbData[id].cars = cachedDb[id].cars;
                 } else {
                     dbData[id] = cachedDb[id];
                 }
@@ -786,12 +780,8 @@
 
             let me = dbData[currentUser.id];
             if (me) {
-                if (localUser.drive_lic !== undefined) {
-                    me.drive_lic = localUser.drive_lic;
-                }
-                if (localUser.cars !== undefined) {
-                    me.cars = localUser.cars;
-                }
+                if (localUser.drive_lic !== undefined) me.drive_lic = localUser.drive_lic;
+                if (localUser.cars !== undefined) me.cars = localUser.cars;
                 localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(me));
                 document.getElementById('auth-screen').style.display = 'none';
                 renderUI(me);
@@ -862,12 +852,11 @@
     async function executePayment(source) {
         closePaymentChoiceModal();
         const { type, price, title, cats } = pendingPayment;
-
         let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
 
         if (source === 'personal') {
             if ((localUser.balance || 0) < price) {
-                showModal("Отказано", "Недостаточно средств на личным счёте", false);
+                showModal("Отказано", "Недостаточно средств на личном счёте", false);
                 return;
             }
             localUser.balance = (localUser.balance || 0) - price;
@@ -887,11 +876,8 @@
 
         if (type === 'drive') {
             let existingCats = localUser.drive_lic ? localUser.drive_lic.split(',').map(s => s.trim()).filter(Boolean) : [];
-            cats.forEach(c => {
-                if (!existingCats.includes(c)) existingCats.push(c);
-            });
+            cats.forEach(c => { if (!existingCats.includes(c)) existingCats.push(c); });
             const catStr = existingCats.join(', ');
-            
             localUser.drive_lic = catStr;
             
             if (dbData[currentUser.id]) {
@@ -1110,7 +1096,7 @@
                 });
             }
 
-            showModal("Успешно", "Техпаспорт отregistered!", true);
+            showModal("Успешно", "Техпаспорт отрегистрирован!", true);
             openCitizenDossier(citizenId);
             await loadAll();
         } catch(e) {
@@ -1194,21 +1180,66 @@
         }
     }
 
+    // ИСПРАВЛЕННАЯ ФУНКЦИЯ ЗАГРУЗКИ СЕМЕЙНОГО СЧЕТА И ИСТОРИИ
     async function loadFamilyData() {
         try {
             const res = await apiFetch(`${BACKEND_URL}/api/get_family_data`);
             const data = await res.json();
             familyBalance = data.balance || 0;
             document.getElementById('fam-balance').innerText = familyBalance + " €";
-        } catch(e) {}
+
+            const txList = document.getElementById('fam-tx-list');
+            if (!data.transactions || data.transactions.length === 0) {
+                txList.innerHTML = '<span style="color:#aaa; font-size:11px;">История пуста...</span>';
+            } else {
+                let html = '';
+                data.transactions.forEach(tx => {
+                    const sign = tx.action_type === 'deposit' ? '+' : '-';
+                    const color = tx.action_type === 'deposit' ? '#2ecc71' : '#e74c3c';
+                    html += `
+                    <div style="font-size:10px; border-bottom:1px solid rgba(255,255,255,0.1); padding:5px 0;">
+                        <div><b>${tx.user}</b>: <span style="color: ${color}; font-weight:700;">${sign}${tx.amount} €</span></div>
+                        <div style="color: #aaa; font-size:9px;">${tx.desc || 'Без описания'}</div>
+                    </div>`;
+                });
+                txList.innerHTML = html;
+            }
+        } catch(e) {
+            console.error("Ошибка загрузки семейного счета:", e);
+        }
     }
 
+    // ИСПРАВЛЕННАЯ ФУНКЦИЯ ОПЕРАЦИЙ С КАЗНОЙ С ОПОВЕЩЕНИЯМИ ОБ ОШИБКАХ
     async function submitFamilyAction() {
         const type = document.getElementById('fam-action-type').value;
         const amount = parseInt(document.getElementById('fam-amount').value);
         const desc = document.getElementById('fam-desc').value.trim();
-        await apiFetch(`${BACKEND_URL}/api/family_action`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ user_id: currentUser.id, action_type: type, amount: amount, description: desc }) });
-        loadFamilyData();
+
+        if (isNaN(amount) || amount <= 0) {
+            showModal("Ошибка", "Введите корректную сумму!", false);
+            return;
+        }
+
+        try {
+            const res = await apiFetch(`${BACKEND_URL}/api/family_action`, { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify({ user_id: currentUser.id, action_type: type, amount: amount, description: desc || "Операция с казной" }) 
+            });
+
+            if (!res.ok) {
+                const errData = await res.json();
+                showModal("Ошибка", errData.message || "Не удалось выполнить операцию", false);
+                return;
+            }
+
+            showModal("Успешно", "Операция с казной выполнена!", true);
+            document.getElementById('fam-amount').value = '';
+            document.getElementById('fam-desc').value = '';
+            loadFamilyData();
+        } catch(e) {
+            showModal("Ошибка", "Ошибка соединения с сервером", false);
+        }
     }
 
     async function registerUser() {
