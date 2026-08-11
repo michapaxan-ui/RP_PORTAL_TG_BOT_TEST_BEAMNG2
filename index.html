@@ -761,7 +761,6 @@
         }
 
         let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
-        let cachedDb = JSON.parse(localStorage.getItem('rp_db_data') || '{}');
 
         try {
             const res = await apiFetch(`${BACKEND_URL}/api/get_tablet_data?user_id=${currentUser.id}`);
@@ -770,33 +769,18 @@
             globalWanted = data.wanted || [];
             globalCarAlerts = data.car_alerts || [];
 
-            for (let id in cachedDb) {
-                if (dbData[id]) {
-                    if (cachedDb[id].drive_lic !== undefined) {
-                        dbData[id].drive_lic = cachedDb[id].drive_lic;
-                    }
-                    if (cachedDb[id].cars !== undefined) {
-                        dbData[id].cars = cachedDb[id].cars;
-                    }
-                } else {
-                    dbData[id] = cachedDb[id];
-                }
-            }
-            localStorage.setItem('rp_db_data', JSON.stringify(dbData));
-
             let me = dbData[currentUser.id];
             if (me) {
-                if (localUser.drive_lic !== undefined) {
-                    me.drive_lic = localUser.drive_lic;
-                }
-                if (localUser.cars !== undefined) {
+                if ((!me.cars || me.cars.length === 0) && localUser.cars && localUser.cars.length > 0) {
                     me.cars = localUser.cars;
+                }
+                if (!me.drive_lic && localUser.drive_lic) {
+                    me.drive_lic = localUser.drive_lic;
                 }
                 localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(me));
                 document.getElementById('auth-screen').style.display = 'none';
                 renderUI(me);
             } else if (localUser.telegram_id) {
-                document.getElementById('auth-screen').style.display = 'none';
                 renderUI(localUser);
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
@@ -807,17 +791,12 @@
             renderCarAlertsList();
             renderCitizensDBList();
         } catch(e) {
-            dbData = cachedDb;
             if (localUser && localUser.telegram_id) {
                 document.getElementById('auth-screen').style.display = 'none';
                 renderUI(localUser);
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
             }
-            populateOwnerSelect();
-            renderWantedList();
-            renderCarAlertsList();
-            renderCitizensDBList();
         }
         loadFamilyData();
     }
@@ -886,19 +865,8 @@
         }
 
         if (type === 'drive') {
-            let existingCats = localUser.drive_lic ? localUser.drive_lic.split(',').map(s => s.trim()).filter(Boolean) : [];
-            cats.forEach(c => {
-                if (!existingCats.includes(c)) existingCats.push(c);
-            });
-            const catStr = existingCats.join(', ');
-            
+            const catStr = cats.join(', ');
             localUser.drive_lic = catStr;
-            
-            if (dbData[currentUser.id]) {
-                dbData[currentUser.id].drive_lic = catStr;
-                localStorage.setItem('rp_db_data', JSON.stringify(dbData));
-            }
-
             try {
                 await apiFetch(`${BACKEND_URL}/api/buy_lic`, {
                     method: 'POST',
@@ -1073,12 +1041,9 @@
             if (u && u.cars) {
                 u.cars = u.cars.filter(c => c.vin !== vin);
                 dbData[citizenId] = u;
-                localStorage.setItem('rp_db_data', JSON.stringify(dbData));
                 
                 if (String(currentUser.id) === String(citizenId)) {
-                    let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
-                    localUser.cars = u.cars;
-                    localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
+                    localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(u));
                     renderUI(u);
                 }
 
@@ -1150,16 +1115,14 @@
         if (u) {
             u.drive_lic = remainingCats.join(', ');
             dbData[citizenId] = u;
-            localStorage.setItem('rp_db_data', JSON.stringify(dbData));
 
             if (String(currentUser.id) === String(citizenId)) {
-                let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
-                localUser.drive_lic = u.drive_lic;
-                localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(localUser));
-                renderUI(localUser);
+                localStorage.setItem(`rp_user_${currentUser.id}`, JSON.stringify(u));
+                renderUI(u);
             }
 
             try {
+                // Используем расширенный эндпоинт сохранения, чтобы на сервере тоже фиксировались изменения прав
                 await apiFetch(`${BACKEND_URL}/api/owner_update_full`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -1275,7 +1238,7 @@
     async function reviewApplication(status) {
         const targetId = document.getElementById('owner-user-select').value;
         await apiFetch(`${BACKEND_URL}/api/review_application`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ admin_id: currentUser.id, target_id: parseInt(targetId), status }) });
-        showModal("Готово", "Статус изменен!", true);
+        showModal("Готово", "Статус изменён!", true);
     }
 
     async function saveOwnerChanges() {
