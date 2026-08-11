@@ -273,7 +273,7 @@
     <div id="citizen-dossier-menu" class="app-window">
         <div class="window-header">
             <button class="back-btn" onclick="openSubWindow('citizens-db-menu')">‹ Назад</button>
-            <div style="font-weight:700; color:#2ecc71; font-size:13px;">📄 ДОСЬЕ ГРАЖДАНИНИА</div>
+            <div style="font-weight:700; color:#2ecc71; font-size:13px;">📄 ДОСЬЕ ГРАЖДАНИНА</div>
             <div></div>
         </div>
         <div class="window-body" id="dossier-body"></div>
@@ -703,18 +703,18 @@
     function createTechPassportsHTML(carsList, citizenId = null, canUnregister = false) {
         if (!carsList || carsList.length === 0) return '';
         let html = '';
-        carsList.forEach((car, index) => {
+        carsList.forEach((car) => {
             html += `
             <div class="tech-passport">
                 <div class="tech-title">ТЕХНИЧЕСКИЙ ПАСПОРТ ТС</div>
                 <div style="font-size:10px;">
-                    <div><b>Владелец:</b> ${car.fname} ${car.lname}</div>
-                    <div><b>Марка:</b> ${car.brand} (${car.year})</div>
-                    <div><b>Цвет:</b> ${car.color} | <b>Номер:</b> ${car.plate}</div>
-                    <div><b>VIN:</b> <span style="color:#f39c12; font-family:monospace;">${car.vin}</span></div>
-                    <div><b>Двигатель:</b> ${car.engine} (${car.hp} ЛС)</div>
-                    <div><b>Бак:</b> ${car.tank} | <b>Привод:</b> ${car.drive}</div>
-                    <div><b>Топливо:</b> ${car.fuel_type} (${car.fuel_cons})</div>
+                    <div><b>Владелец:</b> ${car.fname || ''} ${car.lname || ''}</div>
+                    <div><b>Марка:</b> ${car.brand || ''} (${car.year || ''})</div>
+                    <div><b>Цвет:</b> ${car.color || ''} | <b>Номер:</b> ${car.plate || ''}</div>
+                    <div><b>VIN:</b> <span style="color:#f39c12; font-family:monospace;">${car.vin || 'VIN-TEST'}</span></div>
+                    <div><b>Двигатель:</b> ${car.engine || ''} (${car.hp || ''} ЛС)</div>
+                    <div><b>Бак:</b> ${car.tank || ''} | <b>Привод:</b> ${car.drive || ''}</div>
+                    <div><b>Топливо:</b> ${car.fuel_type || ''} (${car.fuel_cons || ''})</div>
                     ${car.extra ? `<div style="margin-top:4px; color:#aaa;"><b>Доп. инфо:</b> ${car.extra}</div>` : ''}
                 </div>
                 ${canUnregister ? `<button class="btn-action red" style="margin-top:8px;" onclick="confirmUnregisterCar('${citizenId}', '${car.vin}')">Отрегистрировать</button>` : ''}
@@ -1047,7 +1047,19 @@
     function openCitizenDossier(id) {
         const u = dbData[id];
         if(!u) return;
-        let dossierHTML = createPassportHTML(u) + createTechPassportsHTML(u.cars, id, true) + createDriverLicenseHTML(u, id, true);
+
+        let targetData = u;
+        if (String(id) === String(currentUser.id)) {
+            let localUser = JSON.parse(localStorage.getItem(`rp_user_${currentUser.id}`) || '{}');
+            if (localUser.telegram_id) {
+                targetData = { ...u, ...localUser };
+            }
+        }
+
+        let dossierHTML = createPassportHTML(targetData);
+        dossierHTML += createTechPassportsHTML(targetData.cars, id, true);
+        dossierHTML += createDriverLicenseHTML(targetData, id, true);
+
         document.getElementById('dossier-body').innerHTML = dossierHTML;
         openSubWindow('citizen-dossier-menu');
     }
