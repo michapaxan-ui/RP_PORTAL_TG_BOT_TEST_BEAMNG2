@@ -625,6 +625,7 @@
     const factionRanks = {
         "Государство": ["Стажер", "Секретарь", "Министр", "Губернатор"],
         "ФСБ": ["Курсант", "Оперативник", "Старший агент", "Начальник отдела"],
+        "ТЦК": ["Рекрут", "Боец", "Офицер", "Командир"],
         "МВД": ["Кадет", "Сержант", "Лейтенант", "Полковник"],
         "ДПС": ["Инспектор", "Старший инспектор", "Капитан", "Начальник ДПС"]
     };
@@ -703,7 +704,7 @@
     function createTechPassportsHTML(carsList, citizenId = null, canUnregister = false) {
         if (!carsList || carsList.length === 0) return '';
         let html = '';
-        carsList.forEach((car, index) => {
+        carsList.forEach((car) => {
             html += `
             <div class="tech-passport">
                 <div class="tech-title">ТЕХНИЧЕСКИЙ ПАСПОРТ ТС</div>
@@ -740,7 +741,7 @@
         document.getElementById('sber-card').innerText = me.card_num || "CARD: **** **** **** 0000";
         document.getElementById('sber-iban').innerText = me.iban || "IBAN: RU00BEAM000000000000";
 
-        const allowedFactions = ["Государство", "ФСБ", "МВД", "ДПС"];
+        const allowedFactions = ["Государство", "ФСБ", "МВД", "ДПС", "ТЦК"];
         const baseIcon = document.getElementById('base-app-icon');
         if (allowedFactions.includes(me.faction)) {
             baseIcon.style.display = 'flex';
@@ -765,6 +766,7 @@
 
         try {
             const res = await apiFetch(`${BACKEND_URL}/api/get_tablet_data?user_id=${currentUser.id}`);
+            if (!res.ok) throw new Error('Network response error');
             const data = await res.json();
             dbData = data.citizens || {};
             globalWanted = data.wanted || [];
@@ -867,7 +869,7 @@
 
         if (source === 'personal') {
             if ((localUser.balance || 0) < price) {
-                showModal("Отказано", "Недостаточно средств на личным счёте", false);
+                showModal("Отказано", "Недостаточно средств на личном счёте", false);
                 return;
             }
             localUser.balance = (localUser.balance || 0) - price;
